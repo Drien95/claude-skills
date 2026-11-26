@@ -22,6 +22,8 @@
 | Joueur noir dans la scène de nuit | normal : pas de lumière sur lui |
 | Fondu coloré de 5 s qui couvre tout l'écran | flash court pour une couleur d'ambiance ; fondu seulement pour les fins et coupures |
 | Script multijoueur / DarkRP | séparation `sv_` / `cl_` / `sh_config.lua` (renvoie sa table, pas de global), messages net ; le banc solo ne prouve pas le DarkRP |
+| Prop du dupe « caché » côté client qui reste visible (A2 v13, 26/11/2026 : anneau propre autour du socle, trace « 1 redevenus visibles ») | `SetNoDraw` client sur une entité réseau est remis à zéro par le serveur : `RenderOverride` vide + `SetNoDraw` réappliqués chaque seconde ; vérifier le masquage par une trace console (trouvés, cachés, redevenus visibles) avant de juger une planche |
+| Bord net et clair autour d'un objet posé sur le sable (A2 v13, 26/11/2026) | un quad plat ou un décal translucide ne prend ni la teinte ni la pénombre du sable et dessine un cercle propre : faire monter le vrai sable (hook de hauteur lu par le script du sol) |
 | Rien dans le chat | messages seulement dans la console de celui qui a tapé la commande |
 | Couches superposées d'un même maillage (base, détail, voile) à 0,08 u : fragments anguleux vus de haut (z-fighting, A2 26/11) | écart ≥ 0,3 u entre couches + `$decal 1` sur les couches du dessus ; changer le nom du matériau (`CreateMaterial` garde les anciens paramètres) ; diagnostic : le motif reste identique quelle que soit la texture |
 | Autorefresh muet quand le jeu tourne en fond | ne pas s'y fier : bascule de map (tâche `bascule`) et une trace `print("[x] chargé vN")` en fin de script, vérifiée dans la console avant la planche |
