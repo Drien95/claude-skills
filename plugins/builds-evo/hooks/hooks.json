@@ -1,5 +1,5 @@
 {
-  "description": "Interdits du banc GMod et des scripts de scène EVO (plugin builds-evo).",
+  "description": "Interdits du banc GMod et des scripts de scène EVO, et économie de jetons des builds (plugin builds-evo).",
   "hooks": {
     "PreToolUse": [
       {
@@ -13,6 +13,12 @@
         "hooks": [
           { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/garde_lua.py\" pre", "timeout": 10 }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit|Read|Agent|Task|mcp__.*banc_(passe|tester)",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/budget.py\" pre", "timeout": 10 }
+        ]
       }
     ],
     "PostToolUse": [
@@ -20,6 +26,40 @@
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/garde_lua.py\" post", "timeout": 10 }
+        ]
+      },
+      {
+        "matcher": "mcp__.*banc_(passe|tester)",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/budget.py\" post", "timeout": 10 }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/budget.py\" prompt", "timeout": 10 }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/budget.py\" debut", "timeout": 10 }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/budget.py\" stop", "timeout": 30 }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/budget.py\" stop", "timeout": 30 }
         ]
       }
     ]

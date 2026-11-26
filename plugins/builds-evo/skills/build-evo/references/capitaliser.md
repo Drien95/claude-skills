@@ -23,6 +23,7 @@ Règle du repo : si une erreur a coûté une version, une capture ratée ou une 
 | le rythme, les séquences, la caméra, le son, la fiche MJ | mise-en-scene | la fiche du domaine |
 | GMod, banc.py, l'Atelier, les captures, le focus | banc-gmod | `references/regles-banc.md` ou `procedure-banc.md` |
 | la méthode, l'ordre des étapes, la note | build-evo | `SKILL.md` ou `boucle-piece.md` |
+| un gaspillage de jetons (passe inutile, session trop longue, image en trop, exigence oubliée au cahier) | build-evo | `references/economie.md` ou `modeles/cahier-des-charges.md` (contrôle gratuit possible : `outils/controle_auto.py`, `controle_livraison.py`) |
 
 Si la règle est un **interdit strict** vérifiable sur une commande ou un fichier, proposer aussi un test dans un hook (`hooks/`), avec son test dans `tests/`.
 

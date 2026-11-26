@@ -93,6 +93,23 @@ class Planche(unittest.TestCase):
             self.assertTrue((apres / "planche_1.jpg").is_file())
 
 
+class ControleAvantCollage(unittest.TestCase):
+    def test_dupe_en_erreur_refuse_sans_coller(self):
+        cube = "models/hunter/blocks/cube1x1x1.mdl"
+        ents = [{"kind": "prop", "model": cube, "pos": [0, 0, 23.7], "ang": [0, 0, 0], "color": [9, 9, 9],
+                 "mat": "", "note": n} for n in ("tete", "double")]
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "scene.json").write_text(json.dumps({"ents": ents, "fx": [], "head": "tete"}), encoding="utf-8")
+            subprocess.run([sys.executable, str(RACINE / "plugins" / "builds-evo" / "outils" / "dunes" / "encode.py"), "x"],
+                           cwd=d, check=True, capture_output=True, timeout=60)
+            texte, erreur = appel("banc_passe", {"dupe": str(Path(d) / "build.txt"), "montrer": False},
+                                  {"FAUX_GMOD": str(Path(d) / "gmod"), "FAUX_CAPTURES": str(Path(d) / "captures")})
+            self.assertTrue(erreur)
+            self.assertIn("contrôle auto", texte)
+            self.assertIn("double", texte)
+            self.assertFalse((Path(d) / "captures").exists(), "rien ne doit être collé")
+
+
 @unittest.skipUnless(__import__("shutil").which("luajit"), "LuaJIT absent")
 class Passe(unittest.TestCase):
     """banc_passe avec le faux banc : faux dossier GMod, captures et console simulées."""

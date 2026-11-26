@@ -4,7 +4,7 @@ Catalogue privé de plugins Claude Code d'Adrien (Drien95). Chaque plugin regrou
 
 | Plugin | Contenu | État |
 |---|---|---|
-| `builds-evo` | builds GMod pour le serveur EVO : 6 skills de méthode, 3 commandes, 2 agents, hooks des interdits du banc et des scripts, serveur MCP du banc, ligne d'état | 0.2.0 |
+| `builds-evo` | builds GMod pour le serveur EVO : 6 skills de méthode, 6 commandes, 4 agents, hooks des interdits du banc et des scripts, hook d'économie de jetons, contrôles gratuits, serveur MCP du banc, ligne d'état | 0.3.0 (+ non publié) |
 | `mj-evo` | maîtrise MJ, personnage d'Adler, souffleur | prévu |
 
 ## Ce que fait `builds-evo`
@@ -22,12 +22,17 @@ Catalogue privé de plugins Claude Code d'Adrien (Drien95). Chaque plugin regrou
 | `nouvelle-piece` | `/builds-evo:nouvelle-piece <scène> <pièce>` : fiche de pièce + ligne du journal |
 | `lecon` | `/builds-evo:lecon <ce qui s'est passé>` : range une erreur corrigée dans le bon skill, par PR |
 | `retro` | `/builds-evo:retro <scène>` : rétro de 5 min en fin de build |
+| `cahier` | `/builds-evo:cahier <scène>` : cahier des charges complet, validé par Adrien en un message, avant toute construction |
+| `relais` | `/builds-evo:relais` : passation de 2 Ko en fin d'étape, pour repartir dans une session neuve |
+| `conso` | `/builds-evo:conso [scène]` : jetons consommés par scène, pièce et modèle |
 
 Chaque skill a un `SKILL.md` d'une page et des fiches dans `references/` (les 21 fiches de recherche sourcées du 26/11/2026 gardent leur numéro ; la table de correspondance est dans `build-evo/SKILL.md`).
 
 **Agents** (chacun coûte de 10 000 à 30 000 tokens par passage, à lancer aux bons moments) :
-- `critique-build` : note les captures d'une pièce sur la grille 7,5 sans connaître son historique, pour éviter les notes trop gentilles. À chaque planche de décision.
-- `allegement` : propose une variante allégée d'une pièce à rendu égal (méthode du katana 100 → 50). Quand une pièce dépasse son budget.
+- `critique-build` (Sonnet) : note la planche d'une pièce sur la grille 7,5 sans connaître son historique, pour éviter les notes trop gentilles. À chaque planche de décision.
+- `allegement` (Sonnet) : propose une variante allégée d'une pièce à rendu égal (méthode du katana 100 → 50). Quand une pièce dépasse son budget.
+- `passe-banc` (Sonnet) : exécute une passe à partir d'un ordre écrit (2 corrections au plus), contrôle auto, `banc_passe`, rapport de 10 lignes. Le modèle fort ne sert qu'à concevoir et juger.
+- `critique-finale` (modèle fort) : une fois par pièce, avant de l'annoncer finie ; juge contre le cahier et la fiche.
 
 **Serveur MCP `banc`** (outils chargés à la demande, rapports de quelques lignes) : `banc_etat`, `banc_tester`, `banc_nettoyer`, `banc_planche`, `banc_montrer`. Il enveloppe `sites\gmod-build\banc\banc.py` sans le modifier et applique lui-même les règles : jamais de focus, lancement en éclair seulement avec l'accord d'Adrien, un seul GMod gardé ouvert, collage loin du bâtiment central. Chemin du banc : variable `BANC_PY`. Pillow est nécessaire pour les planches. Après chaque planche, `banc_planche` met à jour le tableau de bord `03-builds/etat-builds.md` du coffre OPTIMUS (encadrés par pièce colorés par la note, jauges, vignette de la dernière planche, avancement de la scène), que Obsidian Git pousse sur main. L'Atelier a déjà son propre MCP (`atelier\mcp_atelier.py`).
 
@@ -39,6 +44,10 @@ Chaque skill a un `SKILL.md` d'une page et des fiches dans `references/` (les 21
 |---|---|---|
 | `garde_banc` (commandes Bash, PowerShell, device_bash) | `--focus` ; lancer GMod par le banc ou l'Atelier sans `--eclair` ; lancer `gmod.exe`, `hl2.exe` ou Steam app 4000 à la main | ouvrir un nouveau GMod (`--lancer --eclair`) ; fermer GMod |
 | `garde_lua` (écriture d'un `.lua`) | touches en dur (`KEY_*`, `input.IsKeyDown`, `PlayerButtonDown`…) ; coordonnées de la zone de build du serveur ; musique (`sound.PlayURL`, chemins `music/`, `ost`, `bgm`…) | rien ; il signale seulement un `Vector` littéral très loin du repère |
+
+| `budget` (banc, agents, lectures d'images, messages, début et fin de session) | toute passe du banc sans cahier des charges validé ; plus de 12 vues par passe ; une 6e passe sans point avec Adrien ; une 2e critique sur la même planche ; la lecture d'une capture quand la planche existe ; l'écriture à la main de `compteurs.json` et `conso.json` | rien ; au début d'une session il relit le relais (2 Ko) ; à la fin de chaque tour il compte les jetons (0 token) |
+
+**Économie de jetons** (l'A2 a pris environ 10 % de la semaine Max) : règles dans `build-evo/references/economie.md`. Cahier des charges d'abord, une session par étape avec un relais court, Sonnet pour les passes et le modèle fort pour concevoir et juger, 5 passes au plus sans point avec Adrien, contrôles gratuits avant toute critique (`outils/controle_auto.py` dans `banc_passe`, `outils/controle_livraison.py` avant la livraison), une critique par planche, la planche plutôt que les captures. La ligne d'état montre les passes depuis le dernier point, l'indice de consommation de la scène et « → /relais » à 60 % de contexte.
 
 Couper un hook ponctuellement, avec l'accord d'Adrien : variable d'environnement `BUILDS_EVO_HOOKS_OFF=garde_banc` (ou `garde_lua`, ou les deux séparés par une virgule).
 

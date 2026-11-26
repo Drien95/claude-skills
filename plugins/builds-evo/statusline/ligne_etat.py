@@ -1,6 +1,8 @@
 """Ligne d'état Claude Code pour les builds EVO (0 token : elle tourne sur le PC).
 
-Affiche :  Lac noir › Cathédrale v10 · 218/400 posés · pièce 74/90 · planche 2/3 · note 7,5 · Opus · contexte 34 %
+Affiche :  Lac noir › Cathédrale v10 · 218/400 posés · pièce 74/90 · planche 2/3 · note 7,5 · passes 3/5 · indice 4,2 · Opus · contexte 34 %
+Passes depuis le dernier point avec Adrien et indice de consommation de la scène : tenus par le hook budget
+(compteurs.json, conso.json). À 60 % de contexte : « → /relais » (passer à une session neuve).
 
 Elle lit le fichier d'état de la pièce en cours, `.claude/builds-evo/piece.json`, cherché depuis le
 dossier de la session vers le haut. Ce fichier est écrit par /builds-evo:nouvelle-piece et mis à jour
@@ -15,6 +17,12 @@ import sys
 from pathlib import Path
 
 ETAT = Path(".claude") / "builds-evo" / "piece.json"
+SEUIL_RELAIS = 60
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "hooks"))
+try:
+    import budget  # compteurs et consommation (même plugin)
+except ImportError:  # ligne d'état copiée seule : on s'en passe
+    budget = None
 
 
 def trouver_etat(depart):
@@ -56,6 +64,17 @@ def ligne(entree):
             n = e["note"]
             marque = "" if not isinstance(n, (int, float)) or n >= 7.5 else " ↓"
             morceaux.append("note %s%s" % (nombre(n), marque))
+        if budget is not None:
+            c = budget.lire(f.parent / "compteurs.json")
+            plafond = budget.entier(e.get("plafond_passes"), budget.PLAFOND_DEFAUT)
+            if c.get("passes_total") is not None:
+                faites = budget.entier(c.get("passes_depuis_point"), 0)
+                morceaux.append("passes %s/%s%s" % (faites, plafond, " ⚠ point" if 0 < plafond <= faites else "")
+                                if plafond > 0 else "passes %s" % faites)
+            if e.get("scene"):
+                ind = budget.total_scene(f.parent, e["scene"])
+                if ind:
+                    morceaux.append("indice %s" % nombre(round(ind, 1)))
     modele = (entree.get("model") or {}).get("display_name")
     if modele:
         morceaux.append(modele)
@@ -64,7 +83,7 @@ def ligne(entree):
     if pct is None and ctx.get("total_input_tokens") and ctx.get("context_window_size"):
         pct = 100.0 * ctx["total_input_tokens"] / ctx["context_window_size"]
     if pct is not None:
-        morceaux.append("contexte %d %%" % round(pct))
+        morceaux.append("contexte %d %%%s" % (round(pct), " → /relais" if pct >= SEUIL_RELAIS else ""))
     return " · ".join(morceaux)
 
 

@@ -4,7 +4,20 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Ajouté
+- Économie de jetons (demande d'Adrien, 26/11 : l'A2 a pris ~10 % de la semaine Max) : règles dans `build-evo/references/economie.md` (diagnostic de l'A2, 10 règles, ordres de grandeur, sorties de secours), section « Économie » de `build-evo/SKILL.md`.
+- Hook `budget` (`hooks/budget.py`, 0 token) : passe du banc refusée sans cahier des charges validé (`cahier_valide` dans `piece.json`) ; 12 vues au plus par passe (`max_vues`) ; plafond de 5 passes sans point avec Adrien (`plafond_passes`, remis à 0 par son message) ; une critique par planche et une critique finale par passe ; lecture d'une capture refusée quand la planche existe (copie dans `zoom/` pour une vue de près) ; relais de session relu au démarrage ; jetons comptés par scène, pièce et modèle à la fin de chaque tour (`conso.json`), rapport `budget.py rapport`.
+- Commandes `/builds-evo:cahier` (cahier des charges complet validé en un message, modèle `modeles/cahier-des-charges.md` : scène, jeu, livraison, budget de travail), `/builds-evo:relais` (passation de 2 Ko, modèle `modeles/relais.md`), `/builds-evo:conso`.
+- Agents `passe-banc` (Sonnet : une passe d'après un ordre écrit, rapport de 10 lignes) et `critique-finale` (modèle fort, une fois par pièce, contre le cahier et la fiche).
+- Contrôles gratuits : `outils/controle_auto.py` (lit un dupe AdvDupe2 rév. 5 ou un `scene.json` : 400 posés ou budget, classes bloquées, playermodels, modèles hors liste, doublons au même endroit, boîte, clé Frozen, props qui flottent d'après les bornes), lancé par `banc_passe` avant le collage (passe refusée sur erreur, rien n'est collé ; `controle: false` pour s'en passer) ; `outils/controle_livraison.py` (addon : `_tout_effacer`, aucune notification à l'écran, règles de `garde_lua`, gravure, `COMMANDES.md` et README complets, diag, bind).
+- Ligne d'état : passes depuis le dernier point (« ⚠ point » au plafond), indice de consommation de la scène, « → /relais » à 60 % de contexte.
+
+### Tests
+- `tests/test_budget.py` (17 tests), `tests/test_controle.py` (10 tests), refus du contrôle auto dans `tests/test_mcp_banc.py`, ligne d'état (passes, indice, relais).
+
 ### Modifié
+- Agents `critique-build` et `allegement` sur Sonnet (`model` dans l'en-tête) ; la critique lit la planche et le rapport du contrôle auto, réponse en 15 lignes au plus.
+- `build-evo` : étape 0 cahier des charges, passes confiées à `passe-banc`, plafond de 5 passes, critique finale, relais en fin d'étape, consommation à la rétro ; `nouvelle-piece` écrit `cahier_valide`, `plafond_passes`, `max_vues` ; `retro` relève les jetons ; `banc-gmod` (Cadence) et `capitaliser` (où ranger un gaspillage) ; colonne « Indice » dans `journal/mesures.md`.
 - `assemblage-livraison` : comment faire l'effacement total d'une scène (retrait par plan du dupe, registre des hooks client, serveur en veille), d'après `a2_tout_effacer` (A2, 26/11).
 - `assemblage-livraison` : les scènes n'affichent aucune notification à l'écran (chat, `notification.*`, HUD), seulement du texte en console (Adrien, 26/11).
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).

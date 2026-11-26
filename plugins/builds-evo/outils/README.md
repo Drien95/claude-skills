@@ -8,6 +8,8 @@
 | `dunes/params_finition.json` | Exemple de paramètres (version finale A2 du 26/11/2026). |
 | `dunes/essai_dunes_lointaines_modele.lua` | Modèle du script client ; le générateur y met les hauteurs calculées. |
 | `dunes/encode.py` | Encodeur AdvDupe2 du gabarit (avec `ModelScale` pour evo_taille). |
+| `controle_auto.py` | Contrôle gratuit d'un dupe ou d'un `scene.json` avant le banc et la critique : `python controle_auto.py <dupe.txt|scene.json> [--budget N] [--boite DX DY DZ]`. Erreurs (code 1) : 400 posés ou budget, classes bloquées, playermodels, modèles hors `modeles_autorises.txt`, doublons au même endroit, hors boîte. Attentions : clé Frozen, props qui flottent (d'après `bornes_modeles.json`). `banc_passe` le lance tout seul. |
+| `controle_livraison.py` | Contrôle gratuit d'un addon avant la PR : `python controle_livraison.py <dossier> [--sans-gravure]` : `<nom>_tout_effacer`, aucune notification à l'écran, touches / coordonnées / musique (règles de `garde_lua`), gravure, `COMMANDES.md` et README qui listent toutes les commandes, diag, bind. |
 
 ## Variables d'environnement
 | Variable | Défaut | Sert à |
