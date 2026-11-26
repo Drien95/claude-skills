@@ -10,6 +10,7 @@ Relevé de ses retours, du 14/11 au 26/11/2026. À relire avant toute propositio
 - Le **grandiose** : effets et sous-effets au niveau de la tornade J3 (« c'est magnifique », 25/11) ; « on doit rester dans cette voie ».
 - Les **faisceaux qui parcourent la pierre** (veines qui s'allument en courant) : effet signature à réutiliser.
 - L'**allumage par onde** depuis le centre, jamais tout d'un coup ; rien ne s'allume avant le boum.
+- Une **contrainte retournée en jeu RP** : les pierres de l'A2 jouées en `/me`, le visuel comme verdict du MJ, le sable et la dune autour (« tu as fait mieux », 27/11).
 - Le cinéma pour les personnages mythiques : voir le skill `mise-en-scene`.
 
 ## Il refuse

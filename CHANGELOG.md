@@ -4,6 +4,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Rétro de conception de l'A2 (27/11/2026)
+- `composition-scene/references/conception-scene.md` : ce qui a marché dans la conception de l'A2 (contrainte du moteur retournée en mécanique RP, accent rare, formes porteuses de sens, tout tracé depuis la pièce de tête, décor à 3 niveaux, son et silence dans la fiche), pourquoi elle a plafonné à 6 ou 6,5, et la méthode en 6 points dans la fiche DA, sans passe de banc en plus. Lien dans `composition-scene/SKILL.md` ; ligne datée dans `gouts-adrien.md`.
+
 ### Audit du 27/11/2026 (demande d'Adrien : « aucune régression »)
 - Hook `budget` : « lire la planche, pas chaque capture » ne s'applique plus que pendant un build (`piece.json` présent) ; hors build (Atelier, séance MJ), lire une capture reste libre. Tests : `test_hors_build_lecture_libre`, `test_hors_arbre_du_build_lecture_libre`.
 - `/builds-evo:lecon`, `/builds-evo:nouvelle-piece` et `capitaliser` : jamais de changement de branche dans `C:\Project\claude-skills` (le plugin installé en est tiré) ; le travail se fait dans un worktree à part, retiré après la PR.
