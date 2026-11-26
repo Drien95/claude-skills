@@ -9,9 +9,15 @@ Mode « pre » (PreToolUse), bloque :
     jamais de musique dans un script, les MJ la gèrent.
 Mode « post » (PostToolUse), signale sans bloquer :
   - un Vector littéral très loin de l'origine (|x| ou |y| >= 8000) :
-    vérifier qu'il est bien relatif au repère.
+    vérifier qu'il est bien relatif au repère ;
+  - avec LuaJIT (dans le PATH ou variable LUAJIT) sur le fichier écrit : erreur de syntaxe, et nom déclaré
+    `local` dans le fichier mais lu comme globale (GGET) quelque part : fonction locale appelée avant sa
+    déclaration, globale nil à l'exécution (construireRides, 26/11/2026).
 """
+import os
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -86,6 +92,41 @@ def avertissements(code):
     return None
 
 
+LOCALE = re.compile(r"\blocal\s+(?:function\s+)?([A-Za-z_][\w ,\t]*)")
+GGET = re.compile(r"\bGGET\b.*;\s*\"([A-Za-z_]\w*)\"")
+
+
+def noms_locaux(code):
+    noms = set()
+    for m in LOCALE.finditer(sans_commentaires(code)):
+        for n in m.group(1).split(","):
+            n = n.strip().split()[0] if n.strip() else ""
+            if n and n != "function":
+                noms.add(n)
+    return noms
+
+
+def controle_luajit(chemin):
+    """Texte d'alerte, ou None (rien à signaler, ou pas de LuaJIT)."""
+    exe = os.environ.get("LUAJIT") or shutil.which("luajit")
+    if not exe or not os.path.isfile(chemin):
+        return None
+    try:
+        r = subprocess.run([exe, "-bl", chemin], capture_output=True, timeout=20)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    sortie = r.stdout.decode("utf-8", "replace")
+    if r.returncode != 0:
+        return "LuaJIT refuse " + Path(chemin).name + " : " + r.stderr.decode("utf-8", "replace").strip()[:300]
+    code = Path(chemin).read_text(encoding="utf-8", errors="replace")
+    lus = set(GGET.findall(sortie)) & noms_locaux(code)
+    if lus:
+        return ("Nom local lu comme globale dans " + Path(chemin).name + " : " + ", ".join(sorted(lus)) +
+                ". Une fonction locale appelée avant sa déclaration vaut nil à l'exécution : la déclarer avant "
+                "(`local nom` en tête, puis `nom = function() ... end`).")
+    return None
+
+
 def main():
     if commun.desactive("garde_lua"):
         return
@@ -101,9 +142,9 @@ def main():
         if liste:
             commun.decision("PreToolUse", "deny", "Script de scène refusé (" + Path(chemin).name + ") :\n- " + "\n- ".join(liste))
     else:
-        texte = avertissements(code)
-        if texte:
-            commun.contexte("PostToolUse", texte)
+        textes = [t for t in (avertissements(code), controle_luajit(chemin)) if t]
+        if textes:
+            commun.contexte("PostToolUse", "\n".join(textes))
 
 
 if __name__ == "__main__":

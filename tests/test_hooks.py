@@ -108,5 +108,26 @@ class GardeLua(unittest.TestCase):
         self.assertIsNone(lua("local pres = Vector(0, 1400, 300)", mode="post"))
 
 
+@unittest.skipUnless(__import__("shutil").which("luajit"), "LuaJIT absent")
+class GardeLuaJIT(unittest.TestCase):
+    def ecrire(self, code):
+        import tempfile
+        d = tempfile.mkdtemp()
+        chemin = str(Path(d) / "scene.lua")
+        Path(chemin).write_text(code, encoding="utf-8")
+        return lua(code, chemin=chemin, mode="post")
+
+    def test_locale_appelee_avant_declaration(self):
+        code = "local function a() return b() end\nlocal function b() return 1 end\nprint(a())\n"
+        self.assertEqual(self.ecrire(code), "remarque")
+
+    def test_declaration_anticipee_ok(self):
+        code = "local b\nlocal function a() return b() end\nb = function() return 1 end\nprint(a())\n"
+        self.assertIsNone(self.ecrire(code))
+
+    def test_syntaxe(self):
+        self.assertEqual(self.ecrire("local x = = 1\n"), "remarque")
+
+
 if __name__ == "__main__":
     unittest.main()

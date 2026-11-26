@@ -3,7 +3,8 @@
 | Piège | Règle |
 |---|---|
 | Limite de 200 locales par fonction (Lua 5.1) | nouvelles variables dans une table (`SC`, `Q`), modules dans des fonctions à part |
-| Locale lue avant sa déclaration = globale nil (yeux d'Azeno V7) | déclarer les fonctions locales avant usage ; `luajit -bl` et chercher les GGET après chaque passe |
+| Locale lue avant sa déclaration = globale nil (yeux d'Azeno V7, `construireRides` du sable A2) | déclarer les fonctions locales avant usage (`local nom` en tête, puis `nom = function`) ; le hook garde_lua le signale après chaque écriture si LuaJIT est là (GGET d'un nom déclaré `local`) |
+| Une erreur dans un hook de dessin le relance à chaque image | `pcall` autour du dessin : à la première erreur, un seul message et le hook s'arrête |
 | Nom masqué dans un module (`local SB, SC = 16, 64`) | ne pas réutiliser un nom de table partagée |
 | « ambiguous syntax » | ligne qui commence par `(` après `end)` : mettre `;` devant |
 | Deux scripts, même nom de hook | ils s'écrasent : noms distincts, préfixés par la scène |
