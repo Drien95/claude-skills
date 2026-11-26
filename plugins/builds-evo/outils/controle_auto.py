@@ -89,7 +89,12 @@ def lire_dupe(chemin):
     if fin < 0:
         raise ValueError("bloc d'infos du dupe illisible")
     comp = data[fin + 2:] if data[fin + 1:fin + 2] == b"\n" else data[fin + 1:]
-    brut = lzma.LZMADecompressor(format=lzma.FORMAT_ALONE).decompress(comp)
+    try:
+        brut = lzma.LZMADecompressor(format=lzma.FORMAT_ALONE).decompress(comp)
+    except lzma.LZMAError:
+        # taille connue + marque de fin : certaines versions de liblzma (Windows) refusent ; taille « inconnue »
+        comp = comp[:5] + b"\xff" * 8 + comp[13:]
+        brut = lzma.LZMADecompressor(format=lzma.FORMAT_ALONE).decompress(comp)
     racine = Lecteur(brut).valeur()
     ents = []
     for e in (racine.get("Entities") or {}).values():
