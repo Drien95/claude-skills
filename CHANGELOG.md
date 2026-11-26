@@ -4,6 +4,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Modifié
+- `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
+
 ## [builds-evo 0.3.0] - 2026-11-26
 
 ### Modifié

@@ -19,6 +19,7 @@
 - Démo jouée en direct dans GMod sans voler le focus : format apprécié pour juger les sous-effets.
 
 ## Après
+- Rangement des dupes (26/11/2026) : le banc copie ses essais dans `data/advdupe2/banc/` (vidable sans risque). Les versions finales vont dans un dossier par projet (`data/advdupe2/<projet>/`, ex. `a2-sable-du-fond/`, `lac-noir/`), jamais à la racine ; les anciennes versions dans `data/advdupe2_corbeille/`, hors du menu AdvDupe2.
 - Nettoyer la map (`gmod_admin_cleanup`, ou une tâche avec un dupe inexistant : `game.CleanUpMap` passe avant la lecture du dupe).
 - Retirer du banc les scripts des autres pièces pendant un essai (`_claude_stage/retires/`) : ils s'accrochent à la plaque repère.
 
