@@ -5,6 +5,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 ## Non publié
 
 ### Modifié
+- `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
+
+### Modifié
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
 
 ## [builds-evo 0.3.0] - 2026-11-26
