@@ -39,3 +39,13 @@ B['models/hunter/tubes/tube4x4x8c.mdl']   # {'min': [...], 'max': [...], 'src': 
 | `ecart` | distance entre deux variantes collées ensemble |
 
 Règles : la commande console `a2_dunes 0|1` allume ou éteint le script. Aucune touche en dur. Tout est placé relativement au prop de tête. Tout ce qui n'est pas solide (brume, poussière, lumière) va en script, jamais en props.
+
+## Gravure d'usine (`gravure.py`, `gravure_lua/sh_gravure.lua`)
+Pour qu'un script de scène retrouve SON build parmi des milliers de props (Hueco, PermaProps), sans coordonnée de map.
+
+1. `python gravure.py "A2 v15" --json gravure.json --lua gravure.lua` : 3 marques (plate025x025, liste blanche) relatives au prop repère, tirées de l'identifiant (sha256, déterministe) : écarts de 30 u au moins dans ±90 u, lacet jamais multiple de 5°, couleur aux composantes jamais rondes. `--z` règle la hauteur (défaut 3,5 : posées sur une plaque PHX).
+2. Le générateur du build ajoute les marques à la position du repère : alpha 0, groupe de collision « debris » (traversables), figées, sous le sable.
+3. Le script copie `sh_gravure.lua` (module sans état : `local G = include(".../sh_gravure.lua")`, `AddCSLuaFile` des deux côtés) et colle la table Lua dans sa config. `G.chercher(modeleRepere, marques, 2)` donne les repères qui portent au moins 2 marques, du plus complet au moins complet ; `G.lire(repere, marques)` donne le nombre trouvé et le détail (lacet, couleur).
+4. Garder un motif de props en secours (ancien dupe), et annoncer « gravure incomplète (n/3) » quand une marque manque.
+
+Seule la position compte (tolérance 2 u) ; lacet et couleur sont rapportés à part, car un collage ou PermaProps peut les arrondir. Tests : `tests/test_gravure.py`.
