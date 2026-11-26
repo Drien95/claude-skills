@@ -1,0 +1,8 @@
+{
+  "name": "optimus",
+  "version": "0.1.0",
+  "description": "Coffre OPTIMUS (second cerveau d'Adrien) : passation de fin de fil contrôlée par le script du coffre, sans hook ni coût au démarrage autre que la description.",
+  "author": { "name": "Adrien", "url": "https://github.com/Drien95" },
+  "repository": "https://github.com/Drien95/claude-skills",
+  "keywords": ["optimus", "obsidian", "notes", "passation"]
+}

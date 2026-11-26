@@ -180,5 +180,39 @@ class Passe(unittest.TestCase):
             self.assertIn("bascule", texte)
 
 
+class CopieDuBanc(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, str(SERVEUR.parent))
+        import banc_mcp
+        self.m = banc_mcp
+        self._tmp = tempfile.TemporaryDirectory()
+        self.d = Path(self._tmp.name)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_copie_versionnee_livree(self):
+        self.assertTrue(self.m.COPIE_BANC.is_file())
+        self.assertIn("def ", self.m.COPIE_BANC.read_text(encoding="utf-8"))
+
+    def test_identique_silencieux_meme_en_fins_de_ligne_windows(self):
+        (self.d / "a.py").write_bytes(b"x = 1\r\ny = 2\r\n")
+        (self.d / "b.py").write_bytes(b"x = 1\ny = 2\n")
+        self.assertIsNone(self.m.ecart_copie(self.d / "a.py", self.d / "b.py"))
+
+    def test_ecart_signale(self):
+        (self.d / "a.py").write_text("x = 1\n", encoding="utf-8")
+        (self.d / "b.py").write_text("x = 2\n", encoding="utf-8")
+        self.assertIn("PR", self.m.ecart_copie(self.d / "a.py", self.d / "b.py"))
+
+    def test_banc_absent_silencieux(self):
+        self.assertIsNone(self.m.ecart_copie(self.d / "absent.py", self.d / "absent2.py"))
+
+    def test_banc_etat_signale_l_ecart_du_faux_banc(self):
+        texte, erreur = appel("banc_etat")
+        self.assertFalse(erreur, texte)
+        self.assertIn("copie versionnée", texte)
+
+
 if __name__ == "__main__":
     unittest.main()

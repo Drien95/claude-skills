@@ -143,12 +143,15 @@ def pre(ev):
         if nom in GERES and "builds-evo" in str(entree.get("file_path") or "").replace("\\", "/"):
             return commun.decision("PreToolUse", "deny", "%s est tenu par les hooks du plugin, pas à la main." % nom)
         return None
-    if outil == "Read":
-        raison = verifier_lecture(entree.get("file_path"))
-        return commun.decision("PreToolUse", "deny", raison) if raison else None
     dossier = trouver_dossier(cwd)
     if dossier is None:
         return None
+    if outil == "Read":
+        # seulement pendant un build (piece.json) : hors build (Atelier, séance MJ), lire une capture reste libre
+        if not (dossier / "piece.json").is_file():
+            return None
+        raison = verifier_lecture(entree.get("file_path"))
+        return commun.decision("PreToolUse", "deny", raison) if raison else None
     if OUTIL_PASSE.search(outil):
         raison = verifier_passe(entree, dossier, cwd)
         return commun.decision("PreToolUse", "deny", raison) if raison else None
