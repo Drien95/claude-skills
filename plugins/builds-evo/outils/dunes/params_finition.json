@@ -1,0 +1,79 @@
+{
+ "nom": "a2-dunes-finition",
+ "ecart": 4000,
+ "gonfle": 10,
+ "passes_pied": 6,
+ "variantes": [
+  {
+   "nom": "F",
+   "type": "chaine",
+   "modele": "tube4x4x16c",
+   "graine": 7,
+   "n": 10,
+   "r": 880,
+   "h": 55,
+   "var": 0.08,
+   "onde_h": 0.25,
+   "onde_r": 60,
+   "phase": 0.6,
+   "tangage": 4,
+   "roulis": 4,
+   "jitter_r": 5,
+   "jitter_angle": 3,
+   "echelle": [
+    1,
+    1
+   ]
+  }
+ ],
+ "lointaines": [
+  {
+   "r": 1060,
+   "h": 120,
+   "var_r": 55,
+   "var_h": 0.25,
+   "w_in": 150,
+   "w_out": 90,
+   "phase": 0.4,
+   "selles": [
+    [
+     70,
+     0.45,
+     18
+    ],
+    [
+     200,
+     0.3,
+     14
+    ]
+   ]
+  },
+  {
+   "r": 1285,
+   "h": 205,
+   "var_r": 65,
+   "var_h": 0.2,
+   "w_in": 180,
+   "w_out": 120,
+   "phase": 2.0,
+   "selles": [
+    [
+     250,
+     0.35,
+     20
+    ]
+   ]
+  }
+ ],
+ "fondu": [
+  1200,
+  1600
+ ],
+ "drape": {
+  "lissage": 8,
+  "sur": 8,
+  "w_in": 125,
+  "w_out": 100,
+  "plancher": 0.85
+ }
+}

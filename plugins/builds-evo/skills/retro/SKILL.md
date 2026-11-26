@@ -1,6 +1,6 @@
 ---
 name: retro
-description: Rétro de 5 minutes à la fin d'un build EVO (ou d'une pièce longue), à la demande d'Adrien (/retro <scène>) ou quand un fil clôt un build : complète le journal de mesure, tire 3 leçons et les range par PR.
+description: "Rétro de 5 minutes à la fin d'un build EVO (ou d'une pièce longue), à la demande d'Adrien (/retro <scène>) ou quand un fil clôt un build : complète le journal de mesure, tire 3 leçons et les range par PR."
 argument-hint: <scène>
 ---
 

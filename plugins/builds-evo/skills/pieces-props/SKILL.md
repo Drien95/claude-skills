@@ -1,6 +1,6 @@
 ---
 name: pieces-props
-description: Construire ou corriger une pièce en props pour un dupe AdvDupe2 du serveur EVO : règles du collage (prop_physics seul, liste blanche, 400 posés), modèles PHX et EVO, matériaux, géométrie mesurée, allègement, génération par build.py, recettes de pièces. À utiliser pour écrire un build.py, choisir des props ou alléger un build.
+description: "Construire ou corriger une pièce en props pour un dupe AdvDupe2 du serveur EVO : règles du collage (prop_physics seul, liste blanche, 400 posés), modèles PHX et EVO, matériaux, géométrie mesurée, allègement, génération par build.py, recettes de pièces. À utiliser pour écrire un build.py, choisir des props ou alléger un build."
 ---
 
 # Pièces en props (dupe AdvDupe2 pour EVO)

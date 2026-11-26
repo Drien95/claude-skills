@@ -1,6 +1,6 @@
 ---
 name: nouvelle-piece
-description: Ouvrir une nouvelle pièce de build EVO, à la demande d'Adrien (/nouvelle-piece <scène> <pièce>) ou quand un fil commence une pièce : crée sa fiche de pièce et sa ligne dans le journal de mesure.
+description: "Ouvrir une nouvelle pièce de build EVO, à la demande d'Adrien (/nouvelle-piece <scène> <pièce>) ou quand un fil commence une pièce : crée sa fiche de pièce et sa ligne dans le journal de mesure."
 argument-hint: <scène> <pièce> [budget]
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: banc-gmod
-description: Banc de test GMod solo sur le PC d'Adrien (banc.py, atelier.py jeu, captures, planches, démos, tournage). À lire AVANT toute commande qui lance, pilote, filme ou ferme GMod : mode éclair sans addons, focus jamais volé, un seul GMod, nettoyage de la map, accord d'Adrien pour lancer.
+description: "Banc de test GMod solo sur le PC d'Adrien (banc.py, atelier.py jeu, captures, planches, démos, tournage). À lire AVANT toute commande qui lance, pilote, filme ou ferme GMod : mode éclair sans addons, focus jamais volé, un seul GMod, nettoyage de la map, accord d'Adrien pour lancer."
 ---
 
 # Banc GMod (PC d'Adrien)

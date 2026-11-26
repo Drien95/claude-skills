@@ -1,6 +1,6 @@
 ---
 name: composition-scene
-description: Composition et direction artistique d'une scène ou d'une vue de build EVO : point focal, trois plans, lumière clé et brume, couleur, échelle et gigantisme, illusion d'infini, narration du décor, goûts d'Adrien. À utiliser pour concevoir la fiche DA, choisir les vues, ou critiquer une capture avant de toucher aux props.
+description: "Composition et direction artistique d'une scène ou d'une vue de build EVO : point focal, trois plans, lumière clé et brume, couleur, échelle et gigantisme, illusion d'infini, narration du décor, goûts d'Adrien. À utiliser pour concevoir la fiche DA, choisir les vues, ou critiquer une capture avant de toucher aux props."
 ---
 
 # Composition de scène
