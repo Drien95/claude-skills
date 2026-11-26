@@ -30,3 +30,7 @@ Le Lac noir final : 105 posés pour l'île, le trône, l'épée et le lac ; 218 
 | Aqueducs | arcade 208_1, étage bas k 1,55, étage haut k 0,84 affaissé (roulis -2,5°), arche effondrée | cascade sur une arche penchée > 10° |
 | Sceau (Exequias v15) | 2 anneaux `tube4x4x025` / `tube2x2x025` + 8 `plate025x3` debugwhite sur la tranche | modèle sans `.phy` |
 | Sol de sable (A2, 26/11) | props = forme + collision (fond plate5x5, couronne 16 plate5x8 à 14°, extérieur 16 plate16x16) ; le sable est un maillage en script 1,2 u au-dessus (matériau HL2 `nature/dirtfloor_mine001a` désaturé, détail à 128 u), ~0,04 ms/image | aucune des 44 OverrideMaterials ne fait du sable (plastic = carrelage, shiny = aplat, fabric = moquette bleue) ; creux de 25 u illisible, 60 u minimum ; grille polaire = étoile au centre ; rides concentriques = « cible » |
+
+## Surface en script sur des props de collision (A2, 26/11/2026)
+- Les props donnent la collision juste sous le sable (≤ 3 u) ; le maillage en script est la surface vue. Si des taches percent : vérifier d'abord en masquant les props côté client (`SetNoDraw`, plaques et tubes PHX dans la boîte) puis en passant le sable en uni ; motif inchangé dans les deux cas = z-fighting entre couches du maillage, pas les props ni la texture.
+- Couches d'un même maillage : écart ≥ 0,3 u et `$decal` sur les couches du dessus, jamais 0,08 u.

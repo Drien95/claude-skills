@@ -23,3 +23,5 @@
 | Fondu coloré de 5 s qui couvre tout l'écran | flash court pour une couleur d'ambiance ; fondu seulement pour les fins et coupures |
 | Script multijoueur / DarkRP | séparation `sv_` / `cl_` / `sh_config.lua` (renvoie sa table, pas de global), messages net ; le banc solo ne prouve pas le DarkRP |
 | Rien dans le chat | messages seulement dans la console de celui qui a tapé la commande |
+| Couches superposées d'un même maillage (base, détail, voile) à 0,08 u : fragments anguleux vus de haut (z-fighting, A2 26/11) | écart ≥ 0,3 u entre couches + `$decal 1` sur les couches du dessus ; changer le nom du matériau (`CreateMaterial` garde les anciens paramètres) ; diagnostic : le motif reste identique quelle que soit la texture |
+| Autorefresh muet quand le jeu tourne en fond | ne pas s'y fier : bascule de map (tâche `bascule`) et une trace `print("[x] chargé vN")` en fin de script, vérifiée dans la console avant la planche |
