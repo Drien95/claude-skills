@@ -18,7 +18,17 @@ Le banc juge les pièces en vrai rendu Source, sur gm_flatgrass, en solo. Ce ski
 8. Ne jamais contourner la protection d'une map vendeur (Hueco) : recréer la zone sur flatgrass.
 9. Supprimer un fichier : corbeille Windows (`DeleteFile ... SendToRecycleBin` en PowerShell), jamais `rm`.
 
-## Commandes usuelles
+## Outils MCP du banc (à préférer aux commandes)
+Le serveur MCP `banc` du plugin applique lui-même ces règles et renvoie des rapports courts :
+| Outil | Rôle |
+|---|---|
+| `banc_etat` | GMod ouvert ? partie du banc ? dernière tâche. Ne lance rien. |
+| `banc_tester` | colle un dupe (y = -8000 par défaut) et prend les vues ; `lancer` exige `accord_adrien`, toujours en éclair, GMod gardé ouvert |
+| `banc_nettoyer` | nettoie la map après une série |
+| `banc_planche` | planche des vues, ou avant/après (`avant=<dossier>`) |
+| `banc_montrer` | ouvre les planches sur l'écran d'Adrien |
+
+## Commandes usuelles (si le MCP n'est pas disponible)
 | Besoin | Commande |
 |---|---|
 | Coller une pièce à côté de l'Atelier | `python atelier.py jeu <build> --cote --eclair` |

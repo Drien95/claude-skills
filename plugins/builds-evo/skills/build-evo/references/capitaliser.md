@@ -1,3 +1,15 @@
+# Amélioration continue (validé par Adrien le 26/11/2026)
+
+Il manquera toujours des choses : on ne les découvre qu'en construisant. Le système apprend tout seul par 5 règles :
+
+1. **Capturer chaque erreur tout de suite** : `/builds-evo:lecon` après chaque correction. L'erreur devient une ligne dans le bon skill, sur une branche, pour la PR d'Adrien.
+2. **Rétro de 5 min en fin de build** : ce qui a coûté le plus de versions, ce qui a marché, ce qui manquait au skill. Le journal de mesure dit si on progresse (versions, heures, planches). Les conclusions partent en `/builds-evo:lecon`.
+3. **Promouvoir ce qui revient** : une même erreur vue **2 fois** devient un **hook** qui la bloque ; une méthode qui marche **3 fois** monte dans la checklist d'une page (`build-evo/SKILL.md`).
+4. **Ménage tous les 3 ou 4 builds** : relire les skills, supprimer les règles mortes ou en double, fusionner. Un skill court et à jour vaut mieux qu'un gros (chaque ligne recoûte des tokens).
+5. **Bibliothèque de pièces validées** : chaque pièce réussie devient un module réutilisable (`pieces-props/references/bibliotheque.md`) ; chaque build part de plus haut.
+
+Pour compter les répétitions (règle 3), chaque leçon porte sa date ; une leçon qui revient reçoit une 2e date sur la même ligne au lieu d'une nouvelle ligne.
+
 # Chaque erreur corrigée devient une ligne dans le bon skill
 
 Règle du repo : si une erreur a coûté une version, une capture ratée ou une remarque d'Adrien, elle ne doit pas se reproduire. On l'écrit **une fois, au bon endroit**, au format « ce qu'on a vu | cause | règle ».

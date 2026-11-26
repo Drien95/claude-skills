@@ -21,10 +21,11 @@ Ce skill fabrique la **forme** : tout ce qu'on touche ou voit de près. Tout le 
 Détail et causes : `references/regles-dupe-evo.md`.
 
 ## Méthode
+- **D'abord la bibliothèque** de pièces validées (`references/bibliotheque.md`) : copier et adapter une pièce existante plutôt que repartir de zéro.
 - On part du **gabarit** (`build.py` + `encode.py` + `rochers.py`, dossier `gmod-build/gabarit/` du projet) : le build est généré par Python, jamais posé à la main. Une version = un fichier numéroté, on garde les anciennes.
 - 3 silhouettes en parallèle avant le détail (skill `build-evo`).
 - **Masse générée, héros composé à la main** : `references/20-generation-procedurale.md`.
-- **Allègement** : le détail va où l'œil regarde ; une longue pièce plutôt que plusieurs petites ; la matière remplace le relief ; supprimer l'invisible ; comparer côte à côte complet vs allégé. `references/16-allegement.md`.
+- **Allègement** (agent `allegement` si la pièce dépasse son budget) : le détail va où l'œil regarde ; une longue pièce plutôt que plusieurs petites ; la matière remplace le relief ; supprimer l'invisible ; comparer côte à côte complet vs allégé. `references/16-allegement.md`.
 - **Set dressing** : grappes de 3, usure qui a une cause. `references/04-set-dressing.md`.
 - Recettes qui ont marché (épée, trône, île, lac, cathédrale…) : `references/recettes-pieces.md`.
 - Props EVO utiles et refusés : `references/catalogue-evo.md`.
