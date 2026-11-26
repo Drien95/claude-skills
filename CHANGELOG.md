@@ -33,6 +33,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
 
+## [optimus 0.2.0] - 2026-11-27
+
+### Ajouté
+- Hook `Stop` `rappel_passation.py` : quand un fil a fait un `git commit` ou un `gh pr create` sans passation, la fin du tour est bloquée **une seule fois** avec la consigne de lancer `/optimus:passation <note>` (Adrien ne retient pas les commandes). Rien si la passation est faite (skill ou `optimus.py passation`), si le fil n'a rien livré, ou si le rappel a déjà eu lieu. Tests : `tests/test_rappel_passation.py` (8).
+
 ## [optimus 0.1.0] - 2026-11-27
 
 ### Ajouté
