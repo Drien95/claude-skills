@@ -4,6 +4,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Modifié
+- Note d'état OPTIMUS devenue tableau de bord Obsidian natif (sans plugin) : encadré par scène (avancement x/N pièces validées, jauge des posés /400), encadré par pièce coloré par la note (vert dès 7,5, orange dès 6, rouge, gris si pas notée) avec barres de note et de posés, vignette de la dernière planche (`03-builds/vignettes/`, exclue de git en local), historique. Données dans un commentaire `%% banc %%`, taille gardée sous 4 Ko. Nouveau champ facultatif `pieces_scene` dans `piece.json`.
+
 ### Ajouté
 - `pieges-lua` et `recettes-pieces` : couches superposées d'un maillage (écart ≥ 0,3 u + `$decal`), diagnostic des fragments, autorefresh muet (bascule + trace de chargement).
 - `banc_passe` (serveur MCP du banc) : une passe en un appel (générer, contrôler et installer les scripts, rechargement à chaud, coller + vues, console lue, planche, ouvrir, nettoyer) ; planche refusée si erreur Lua dans la console ; temps de chaque étape.
