@@ -4,6 +4,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+## [builds-evo 0.2.0] - 2026-11-26
+
+### Ajouté
+- Serveur MCP `banc` (`mcp/banc_mcp.py`, déclaré dans `.mcp.json`) qui enveloppe `banc.py` sans le modifier : `banc_etat`, `banc_tester` (jamais de focus, lancement seulement avec `accord_adrien`, toujours en éclair, GMod gardé ouvert, collage à y = -8000 par défaut), `banc_nettoyer`, `banc_planche` (planche simple ou avant/après), `banc_montrer` (ouvre les planches sur l'écran d'Adrien). Chemin du banc réglable par `BANC_PY`.
+- Agent `allegement` : variante allégée d'une pièce à rendu égal (invisible, fusion, matière, Gestalt, script, gros modèle EVO), sans toucher à l'original.
+- Ligne d'état (`statusline/ligne_etat.py`) : scène, pièce, version, posés/400, posés de la pièce/budget, planche, note (flèche sous 7,5), modèle, contexte. 0 token. Lit `.claude/builds-evo/piece.json`.
+- Commande `/builds-evo:retro` : rétro de 5 min en fin de build (journal, 3 leçons, ménage).
+- Les 5 règles d'amélioration continue validées par Adrien (README, `build-evo/references/capitaliser.md`, CONTRIBUTING) : leçon immédiate, rétro, promotion (2 fois → hook, 3 fois → checklist), ménage tous les 3-4 builds, bibliothèque de pièces.
+- Bibliothèque de pièces validées (`pieces-props/references/bibliotheque.md`), amorcée avec les pièces du Lac noir, Azeno et le sceau de l'Exequias.
+- Tests du serveur MCP (avec un faux banc) et de la ligne d'état.
+
+### Modifié
+- `build-evo` : étapes qui citent la bibliothèque, l'état de pièce, les outils MCP du banc, les agents `critique-build` et `allegement`, la rétro.
+- `banc-gmod` : table des outils MCP, à préférer aux commandes.
+- `/builds-evo:nouvelle-piece` écrit aussi l'état de la ligne d'état et regarde la bibliothèque ; `/builds-evo:lecon` compte les répétitions et propose les promotions.
+
 ## [builds-evo 0.1.0] - 2026-11-26
 
 ### Ajouté

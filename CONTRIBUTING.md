@@ -8,6 +8,8 @@
 5. Descriptions des skills : une phrase « quoi + quand », bien distincte des autres skills (c'est elle qui déclenche le skill).
 6. Pas de secret, pas de clé d'API (Adrien utilise son abonnement Max, pas l'API).
 
+7. **Ménage tous les 3 ou 4 builds** (règle 4 du README) : PR `menage/AAAA-MM-JJ` qui supprime les règles mortes ou en double et fusionne ; une ligne « Ménage » dans le CHANGELOG (la rétro s'en sert pour savoir quand proposer le suivant).
+
 ## Avant chaque PR
 ```
 python -m unittest discover -s tests

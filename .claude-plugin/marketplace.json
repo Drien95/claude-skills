@@ -3,14 +3,14 @@
   "owner": { "name": "Adrien", "url": "https://github.com/Drien95" },
   "metadata": {
     "description": "Skills, hooks et agents Claude Code d'Adrien pour le serveur GMod EVO.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "builds-evo",
       "source": "./plugins/builds-evo",
       "description": "Builds GMod pour EVO : méthode, composition, props, effets Lua, mise en scène, banc de test ; hooks des interdits du banc et des scripts.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "category": "productivity",
       "keywords": ["gmod", "evo", "advdupe2", "lua", "build"]
     }
