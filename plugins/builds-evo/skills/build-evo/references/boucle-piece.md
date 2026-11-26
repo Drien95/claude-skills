@@ -30,3 +30,4 @@
 
 ## Arrêt
 3 planches de décision + 1 finition. Si une pièce dépasse 3 planches, noter pourquoi dans le journal (fiche floue ? goût qui change ? contrainte technique ?). C'est ce qui améliore la méthode.
+Critique qui plafonne (A2, 26/11/2026 : séries 5 à 8 à 6 / 6,5 / 7 / 6,5) : après 3 séries au même plafond (± 0,5), arrêter les passes et faire juger Adrien en jeu ou sur un film court (30 s) ; c'est lui qui tranche (A2 : série 8 livrée).

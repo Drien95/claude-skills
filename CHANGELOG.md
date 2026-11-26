@@ -5,6 +5,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 ## Non publié
 
 ### Modifié
+- Rétro A2 (26/11) : critique qui plafonne (3 séries au même plafond, faire juger Adrien en jeu ou en film) ; rééclairage de nuit des props limité à la boîte ; ancre par motif de props (Lac noir muet sur EVO, 9 plaques pareilles dans l'A2) ; appel protégé après copie à chaud d'un nouveau fichier partagé ; collisions des pièces dessinées en script par blocs invisibles ; contrôle gel/collisions avant livraison ; état partagé versionné et rattrapage à l'entrée dans la boîte. Journal de mesure A2 complété.
 - Pièges Lua : masquage client d'un prop réseau à vérifier par trace (`SetNoDraw` remis à zéro par le serveur) ; bords nets des décals sur le sable, remplacés par une bosse du vrai sable (A2, 26/11).
 - Note d'état OPTIMUS devenue tableau de bord Obsidian natif (sans plugin) : encadré par scène (avancement x/N pièces validées, jauge des posés /400), encadré par pièce coloré par la note (vert dès 7,5, orange dès 6, rouge, gris si pas notée) avec barres de note et de posés, vignette de la dernière planche (`03-builds/vignettes/`, exclue de git en local), historique. Données dans un commentaire `%% banc %%`, taille gardée sous 4 Ko. Nouveau champ facultatif `pieces_scene` dans `piece.json`.
 

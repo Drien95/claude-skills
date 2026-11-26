@@ -34,3 +34,4 @@ Le Lac noir final : 105 posés pour l'île, le trône, l'épée et le lac ; 218 
 ## Surface en script sur des props de collision (A2, 26/11/2026)
 - Les props donnent la collision juste sous le sable (≤ 3 u) ; le maillage en script est la surface vue. Si des taches percent : vérifier d'abord en masquant les props côté client (`SetNoDraw`, plaques et tubes PHX dans la boîte) puis en passant le sable en uni ; motif inchangé dans les deux cas = z-fighting entre couches du maillage, pas les props ni la texture.
 - Couches d'un même maillage : écart ≥ 0,3 u et `$decal` sur les couches du dessus, jamais 0,08 u.
+- Collision d'une pièce dessinée en script (A2 v14, 26/11/2026) : bloc posé invisible sous la forme vue (plate1x1, alpha 0 donc RenderMode 1), dessus à la hauteur vue ; décor qu'on doit traverser en CollisionGroup 1 (débris). Vérifier au banc par trace (pieds à la bonne hauteur, décor traversé) et sur capture (blocs invisibles).
