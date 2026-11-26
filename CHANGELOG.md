@@ -5,6 +5,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 ## Non publié
 
 ### Modifié
+- `assemblage-livraison` : comment faire l'effacement total d'une scène (retrait par plan du dupe, registre des hooks client, serveur en veille), d'après `a2_tout_effacer` (A2, 26/11).
 - `assemblage-livraison` : les scènes n'affichent aucune notification à l'écran (chat, `notification.*`, HUD), seulement du texte en console (Adrien, 26/11).
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
