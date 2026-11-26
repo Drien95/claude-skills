@@ -36,6 +36,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
 
+## [optimus 0.3.0] - 2026-11-27
+
+### Ajouté
+- Commande `/optimus:suivi <suivi ou texte collé>` (demande d'Adrien, 27/11/2026) : crée ou met à jour la note du suivi dans `06-lore/suivis/` du coffre (modèle `_modeles/suivi.md`, OPTIMUS PR 12), écrit un brouillon de réponse d'Adrien **en MJ, hors personnage** (jamais comme Adler), lie un build (`build: "[[...]]"`, note de chantier `en attente` créée au besoin), change le statut, puis contrôle à 0 jeton (`journal`, `index`, `passation`, `verifier`). Ne lit que la note du suivi ; rien n'est posté sur le panel staff. Pas de nouveau hook : le rappel de passation suffit. Tests : `tests/test_suivi.py` (4).
+
 ## [optimus 0.2.0] - 2026-11-27
 
 ### Ajouté
