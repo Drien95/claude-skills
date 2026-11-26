@@ -4,6 +4,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Audit du 27/11/2026 (demande d'Adrien : « aucune régression »)
+- Hook `budget` : « lire la planche, pas chaque capture » ne s'applique plus que pendant un build (`piece.json` présent) ; hors build (Atelier, séance MJ), lire une capture reste libre. Tests : `test_hors_build_lecture_libre`, `test_hors_arbre_du_build_lecture_libre`.
+- `/builds-evo:lecon`, `/builds-evo:nouvelle-piece` et `capitaliser` : jamais de changement de branche dans `C:\Project\claude-skills` (le plugin installé en est tiré) ; le travail se fait dans un worktree à part, retiré après la PR.
+- Copie versionnée du banc : `banc/banc.py` (copie du 27/11 du banc du PC, qui reste celui utilisé) et `banc/README.md` ; `banc_etat` signale en une ligne un banc du PC différent de la copie. Tests : `CopieDuBanc` (5).
+- `pieces-props/references/regles-dupe-evo.md` : ligne « salle cachée dans un rocher » (Exequias, 18/11), reprise de la note OPTIMUS `gmod-dupe-regles` avant son allègement.
+- Vérification GitHub : LuaJIT installé sous Linux, les 8 tests de `garde_lua` et de `banc_passe` ne sont plus sautés.
+
 ### Modifié
 - `performance` : tout dessin et tout parcours d'entités côté client derrière le test de boîte ; recherche serveur = revalider d'abord ; pas d'allocation par image dans les sprites (audit de perf A2, 26/11).
 
@@ -25,6 +32,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - `assemblage-livraison` : les scènes n'affichent aucune notification à l'écran (chat, `notification.*`, HUD), seulement du texte en console (Adrien, 26/11).
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
+
+## [optimus 0.1.0] - 2026-11-27
+
+### Ajouté
+- Nouveau plugin `optimus` : commande `/optimus:passation <note>` (fin de fil sur un chantier du coffre : résumé, État, Passation, statut, maj, journal, index), contrôlée à 0 jeton par `python scripts/optimus.py passation <note>` du coffre (repo Drien95/optimus). Aucun hook.
 
 ## [builds-evo 0.3.0] - 2026-11-26
 

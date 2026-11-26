@@ -5,6 +5,7 @@ Catalogue privé de plugins Claude Code d'Adrien (Drien95). Chaque plugin regrou
 | Plugin | Contenu | État |
 |---|---|---|
 | `builds-evo` | builds GMod pour le serveur EVO : 6 skills de méthode, 6 commandes, 4 agents, hooks des interdits du banc et des scripts, hook d'économie de jetons, contrôles gratuits, serveur MCP du banc, ligne d'état | 0.3.0 (+ non publié) |
+| `optimus` | coffre OPTIMUS : `/optimus:passation <note>`, fin de fil contrôlée par le script du coffre (aucun hook) | 0.1.0 |
 | `mj-evo` | maîtrise MJ, personnage d'Adler, souffleur | prévu |
 
 ## Ce que fait `builds-evo`
@@ -65,9 +66,10 @@ Puis, dans Claude Code :
 ```
 /plugin marketplace add C:\Project\claude-skills
 /plugin install builds-evo@drien95
+/plugin install optimus@drien95
 ```
 
-Le catalogue pointe sur le clone local : après un `git pull` (une PR mergée), `/plugin marketplace update drien95` recharge la nouvelle version. Les commandes `/builds-evo:lecon` et `/builds-evo:nouvelle-piece` écrivent dans ce clone (`CLAUDE_SKILLS_REPO` si le clone est ailleurs).
+Le catalogue pointe sur le clone local : après un `git pull` (une PR mergée), `/plugin marketplace update drien95` recharge la nouvelle version. Les commandes `/builds-evo:lecon` et `/builds-evo:nouvelle-piece` partent de ce clone (`CLAUDE_SKILLS_REPO` si le clone est ailleurs) mais travaillent dans un worktree à part : ne jamais changer de branche dans le clone, d'où vient le plugin.
 
 Ligne d'état (les plugins ne peuvent pas la poser eux-mêmes), dans `%USERPROFILE%\.claude\settings.json` :
 

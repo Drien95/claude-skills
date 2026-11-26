@@ -2,7 +2,7 @@
   "name": "drien95",
   "owner": { "name": "Adrien", "url": "https://github.com/Drien95" },
   "metadata": {
-    "description": "Skills, hooks et agents Claude Code d'Adrien pour le serveur GMod EVO.",
+    "description": "Skills, hooks et agents Claude Code d'Adrien pour le serveur GMod EVO et son coffre OPTIMUS.",
     "version": "0.3.0"
   },
   "plugins": [
@@ -13,6 +13,14 @@
       "version": "0.3.0",
       "category": "productivity",
       "keywords": ["gmod", "evo", "advdupe2", "lua", "build"]
+    },
+    {
+      "name": "optimus",
+      "source": "./plugins/optimus",
+      "description": "Coffre OPTIMUS : passation de fin de fil (/optimus:passation), contrôlée par le script du coffre.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "keywords": ["optimus", "obsidian", "notes"]
     }
   ]
 }

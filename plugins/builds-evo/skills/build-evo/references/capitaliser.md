@@ -28,7 +28,7 @@ Règle du repo : si une erreur a coûté une version, une capture ratée ou une 
 Si la règle est un **interdit strict** vérifiable sur une commande ou un fichier, proposer aussi un test dans un hook (`hooks/`), avec son test dans `tests/`.
 
 ## Comment
-1. Dans le clone local du repo : nouvelle branche `lecon/<sujet-court>`.
+1. Dans un worktree à part du clone local (jamais de changement de branche dans le clone, d'où vient le plugin) : nouvelle branche `lecon/<sujet-court>` (détail : `/builds-evo:lecon`, étape 2).
 2. Une ligne (ou une ligne de tableau) datée, avec la source (pièce, version).
 3. Si la ligne contredit une règle existante : remplacer l'ancienne, ne pas empiler.
 4. Ligne dans `CHANGELOG.md` sous « Non publié ».

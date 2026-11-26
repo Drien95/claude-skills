@@ -29,6 +29,7 @@ Source : guide `gmod-build-lecons.md` (Exequias, El Osario, Azeno, Lac noir, 14-
 | Pièces dans le vide | proportion supposée | mesurer les bornes réelles (`geo_catalogue.json`) |
 | Blocs PHX décalés | PHX pas centrés sur leur origine ; tubes hunter : origine à la base | poser par le centre des bornes |
 | Porte impossible dans un rocher | on ne perce pas un prop | portes dans nos murs, rochers autour ; vérifier par calcul (`rochers.py`) qu'aucun rocher ne traverse un passage |
+| Salle cachée dans un rocher qui se voit | la face du rocher apparaît dans l'ouverture | modèle creux, ou rochers seulement en décor autour (Exequias, 18/11/2026) |
 | Toit noir vu d'en haut | rien au-dessus | `huecomundosetails198` = nappe à une face vers le haut |
 | On voit la boîte à travers | enceinte `huecomundosetails137` ajourée | ne pas s'en servir pour cacher |
 | Flatgrass visible | zone de build = flatgrass (herbe, ciel de jour) | chaque build apporte sol, murs et voûte, fermés de partout ; ou rideau en script |

@@ -122,6 +122,7 @@ class Critique(Base):
 
 class Images(Base):
     def test_lire_la_planche_pas_les_captures(self):
+        self.piece()
         cap = self.racine / "captures"
         cap.mkdir()
         (cap / "face.jpg").write_bytes(b"x")
@@ -131,6 +132,24 @@ class Images(Base):
         self.assertEqual(choix, "deny")
         self.assertIn("zoom", raison)
         self.assertEqual(self.pre("Read", {"file_path": str(cap / "planche_1.jpg")})[0], None)
+
+    def captures_avec_planche(self):
+        cap = self.racine / "captures"
+        cap.mkdir()
+        (cap / "face.jpg").write_bytes(b"x")
+        (cap / "planche_1.jpg").write_bytes(b"x")
+        return cap / "face.jpg"
+
+    def test_hors_build_lecture_libre(self):
+        # .claude/builds-evo existe mais aucune pièce en cours (Atelier, séance MJ) : rien n'est refusé
+        self.assertEqual(self.pre("Read", {"file_path": str(self.captures_avec_planche())})[0], None)
+
+    def test_hors_arbre_du_build_lecture_libre(self):
+        face = self.captures_avec_planche()
+        self.piece()
+        with tempfile.TemporaryDirectory() as ailleurs:
+            res = lancer("pre", {"tool_name": "Read", "tool_input": {"file_path": str(face)}, "cwd": ailleurs})
+        self.assertIsNone(res)
 
     def test_fichiers_des_hooks_proteges(self):
         self.assertEqual(self.pre("Write", {"file_path": str(self.etat / "compteurs.json"), "content": "{}"})[0], "deny")

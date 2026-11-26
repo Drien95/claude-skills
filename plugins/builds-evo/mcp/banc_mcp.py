@@ -27,6 +27,8 @@ BANC_PY = Path(os.environ.get("BANC_PY", r"C:\Project\Adler_lore\sites\gmod-buil
 # seuls les scripts de ce dossier (et dessous) peuvent être installés dans l'autorun du banc
 SOURCES = Path(os.environ.get("BANC_SOURCES", r"C:\Project\Adler_lore"))
 IMAGES = (".jpg", ".jpeg", ".png")
+# copie versionnée du banc, livrée avec le plugin (banc/README.md) : banc_etat signale un écart
+COPIE_BANC = Path(__file__).resolve().parents[1] / "banc" / "banc.py"
 
 V2 = {"type": "number"}
 OUTILS = [
@@ -119,8 +121,23 @@ def tester(a, verifier=True):
     return ("ERREUR : " if r.returncode else "") + texte
 
 
+def ecart_copie(banc_py=None, copie=None):
+    """Une ligne si le banc du PC diffère de la copie versionnée du plugin, sinon None (0 jeton quand tout va bien)."""
+    banc_py, copie = Path(banc_py or BANC_PY), Path(copie or COPIE_BANC)
+    try:
+        if banc_py.read_bytes().replace(b"\r\n", b"\n") == copie.read_bytes().replace(b"\r\n", b"\n"):
+            return None
+    except OSError:
+        return None
+    return ("banc.py du PC différent de la copie versionnée du plugin (banc/banc.py) : si le changement est voulu, "
+            "le reporter par PR (banc/README.md).")
+
+
 def etat(_):
     lignes = ["GMod ouvert : %s" % ("oui" if gmod_ouvert() else "non")]
+    ecart = ecart_copie()
+    if ecart:
+        lignes.append(ecart)
     try:
         banc = charger_banc()
         p = banc.partie()

@@ -18,6 +18,9 @@ jobs:
           python-version: "3.12"
       - name: Pillow (planches du MCP du banc)
         run: python -m pip install --quiet pillow
+      - name: LuaJIT (8 tests de garde_lua et de banc_passe, sautés sans lui)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y --no-install-recommends luajit
       - name: Tests des hooks et du catalogue
         run: python -m unittest discover -s tests -v
       - name: Le CHANGELOG bouge avec les plugins
