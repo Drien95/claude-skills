@@ -1,0 +1,12 @@
+{
+  "description": "Rappel de la passation OPTIMUS, une fois par fil, quand le fil a livré un commit ou une PR (plugin optimus).",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/rappel_passation.py\"", "timeout": 10 }
+        ]
+      }
+    ]
+  }
+}

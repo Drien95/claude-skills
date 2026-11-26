@@ -17,8 +17,8 @@
     {
       "name": "optimus",
       "source": "./plugins/optimus",
-      "description": "Coffre OPTIMUS : passation de fin de fil (/optimus:passation), contrôlée par le script du coffre.",
-      "version": "0.1.0",
+      "description": "Coffre OPTIMUS : passation de fin de fil (/optimus:passation), contrôlée par le script du coffre, rappelée une fois par fil après un commit ou une PR.",
+      "version": "0.2.0",
       "category": "productivity",
       "keywords": ["optimus", "obsidian", "notes"]
     }
