@@ -14,10 +14,13 @@
 ## Addon serveur
 - `lua/autorun/<nom>_init.lua` (vérifie la map, `AddCSLuaFile`, `include`) + `lua/<nom>/sh_config.lua`, `sv_*.lua`, `cl_scene.lua` ; sons dans `sound/<nom>/` envoyés par `resource.AddFile`.
 - Droits : `IsAdmin` + SteamID listés dans `sh_config`, revérifiés côté serveur ; convar d'accès. Joueurs qui arrivent en cours : état envoyé après `PlayerInitialSpawn`.
+- État partagé (A2, 26/11/2026) : le serveur tient l'état complet et un numéro de version ; il l'envoie aux joueurs dans la boîte qui n'ont pas la dernière version (relevé toutes les 0,5 s) : celui qui arrive ou entre dans la boîte est rattrapé ; le client redemande l'état à `InitPostEntity`. Sons rejoués seulement si l'événement vient de partir.
+- Ancre par motif de props et commandes `ancre` (MJ) et `diag` (joueur) : voir `pieges-lua.md`.
 - Commandes : lancer, stop, séquence suivante/précédente/N, effacer (avec confirmation dans les 15 s). README avec `bind` suggérés, jamais imposés.
 - Adrien a l'autorisation du staff pour un addon serveur ; le test final se fait sur EVO par le staff.
 
 ## Livraison
 - Dossier `<création>/` dans `Drien95/creations-evo` (README, dupe.txt, scenario.md, addon) par PR.
 - Vérifier qu'une PR n'est pas déjà mergée avant d'y pousser ; sinon nouvelle PR depuis main.
+- Avant de livrer (A2, 26/11/2026, question d'Adrien) : dupe figé (aucune clé `Frozen`), rien de mobile donc pas de bruit de props ni de soudure utile, collisions vérifiées au banc par trace (assises qui portent, décor traversable), puis perma par le staff (PermaProps).
 - Map protégée par son vendeur (Hueco) : pas de test local, ne jamais contourner. Recréer la zone sur flatgrass pour juger.

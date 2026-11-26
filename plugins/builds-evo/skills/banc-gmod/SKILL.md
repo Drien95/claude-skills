@@ -1,6 +1,6 @@
 ---
 name: banc-gmod
-description: Banc de test GMod solo sur le PC d'Adrien (banc.py, atelier.py jeu, captures, planches, démos, tournage). À lire AVANT toute commande qui lance, pilote, filme ou ferme GMod : mode éclair sans addons, focus jamais volé, un seul GMod, nettoyage de la map, accord d'Adrien pour lancer.
+description: "Banc de test GMod solo sur le PC d'Adrien (banc.py, atelier.py jeu, captures, planches, démos, tournage). À lire AVANT toute commande qui lance, pilote, filme ou ferme GMod : mode éclair sans addons, focus jamais volé, un seul GMod, nettoyage de la map, accord d'Adrien pour lancer."
 ---
 
 # Banc GMod (PC d'Adrien)
@@ -38,6 +38,15 @@ Le serveur MCP `banc` du plugin applique lui-même ces règles et renvoie des ra
 | Filmer (fin de build seulement) | `references/filmer.md` |
 
 Procédure complète, positions de collage et photos : `references/procedure-banc.md`.
+
+## Cadence (A2, 26/11 : 25-30 min → 10 min par planche)
+- Un seul collage pour toutes les variantes, sans recharger la map ; toutes les vues en un lot (4 à 6 par variante).
+- Critique indépendante courte (note + 5 défauts), une fois, sur la planche finale de la passe.
+- Planche valide seulement si la console GMod est vide d'erreur Lua entre le début et la fin de la tâche (`.lua:N:`, `attempt to`) : sinon un script a pu ne rien dessiner et la note ne vaut rien (A2, 26/11 : sable absent sur deux planches notées).
+- Tache bleu-cyan floue en bas du cadre sur les vues rasantes : l'arme du joueur du banc, placé 64 u sous la caméra (pas la scène). Le dire à la critique pour qu'elle l'ignore (A2, 26/11).
+- `banc_passe` avec un script modifié : le rechargement à chaud peut tomber pendant la 1re vue (A2 v4 : ciel de jour sur « arrivée »). Vérifier la 1re vue ; si elle est fausse, relancer la passe sans `scripts` (18 s) avant la critique.
+- Critique : Sonnet suffit (essai du 26/11 sur la même planche : mêmes notes à 0,5 près et mêmes défauts que le modèle principal).
+- Mesurer le temps de chaque passe et ce qui l'a pris ; le jeu lui-même compte peu (collage + 12 vues = 40 s), la mesure des bornes et l'écriture du build dominent : partir du catalogue des bornes et d'un générateur à paramètres.
 
 ## Ce qu'on livre à Adrien après une série
 - Une planche (toutes les vues, avant/après) **ouverte sur son écran** (visionneuse + explorateur) : donner un chemin ne suffit pas.

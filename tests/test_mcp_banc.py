@@ -12,16 +12,18 @@ SERVEUR = RACINE / "plugins" / "builds-evo" / "mcp" / "banc_mcp.py"
 FAUX = Path(__file__).resolve().parent / "faux" / "banc.py"
 
 
-def dialogue(*messages):
+def dialogue(*messages, env_plus=None):
     entree = "\n".join(json.dumps(m) for m in messages) + "\n"
     # OPTIMUS_DIR absent : les tests n'écrivent jamais dans le vrai coffre d'Adrien
-    env = dict(os.environ, BANC_PY=str(FAUX), OPTIMUS_DIR=str(RACINE / "tests" / "faux" / "pas-de-coffre"))
+    env = dict(os.environ, BANC_PY=str(FAUX), OPTIMUS_DIR=str(RACINE / "tests" / "faux" / "pas-de-coffre"),
+               **(env_plus or {}))
     r = subprocess.run([sys.executable, str(SERVEUR)], input=entree.encode("utf-8"), capture_output=True, env=env, timeout=60)
     return [json.loads(l) for l in r.stdout.decode("utf-8").splitlines() if l.strip()]
 
 
-def appel(nom, args=None):
-    rep = dialogue({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": nom, "arguments": args or {}}})[0]
+def appel(nom, args=None, env_plus=None):
+    rep = dialogue({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": nom, "arguments": args or {}}},
+                   env_plus=env_plus)[0]
     return rep["result"]["content"][0]["text"], rep["result"]["isError"]
 
 
@@ -32,7 +34,7 @@ class Protocole(unittest.TestCase):
                         {"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
         self.assertEqual(reps[0]["result"]["serverInfo"]["name"], "banc")
         noms = {t["name"] for t in reps[1]["result"]["tools"]}
-        self.assertEqual(noms, {"banc_etat", "banc_tester", "banc_nettoyer", "banc_planche", "banc_montrer"})
+        self.assertEqual(noms, {"banc_etat", "banc_tester", "banc_nettoyer", "banc_planche", "banc_montrer", "banc_passe"})
 
 
 class Regles(unittest.TestCase):
@@ -52,6 +54,10 @@ class Regles(unittest.TestCase):
 
     def test_sans_lancer(self):
         texte, erreur = appel("banc_tester", {"dupe": "piece.txt", "vues": "v.json", "y": 500})
+        sys.path.insert(0, str(SERVEUR.parent))
+        import banc_mcp
+        if banc_mcp.gmod_ouvert():
+            self.skipTest("GMod est ouvert sur ce PC : le refus « GMod fermé » ne peut pas être vérifié")
         if os.name == "nt":
             # Sous Windows le serveur vérifie d'abord que GMod tourne : sans lui, il refuse au lieu de lancer.
             self.assertTrue(erreur)
@@ -85,6 +91,76 @@ class Planche(unittest.TestCase):
             self.assertTrue((apres / "planche_avant_apres_1.jpg").is_file())
             texte, _ = appel("banc_planche", {"dossier": str(apres)})
             self.assertTrue((apres / "planche_1.jpg").is_file())
+
+
+@unittest.skipUnless(__import__("shutil").which("luajit"), "LuaJIT absent")
+class Passe(unittest.TestCase):
+    """banc_passe avec le faux banc : faux dossier GMod, captures et console simulées."""
+
+    def preparer(self, d, erreur=False):
+        d = Path(d)
+        gmod = d / "gmod"
+        client = gmod / "addons" / "banc_essai" / "lua" / "autorun" / "client"
+        client.mkdir(parents=True)
+        (client / "zz_x.lua").write_text("-- ancienne version\n", encoding="utf-8")
+        (d / "x.lua").write_text("local a = 1\nprint(a)\n", encoding="utf-8")
+        env = {"FAUX_GMOD": str(gmod), "FAUX_CAPTURES": str(d / "captures"), "BANC_SOURCES": str(d)}
+        if erreur:
+            env["FAUX_ERREUR_LUA"] = "1"
+        args = {"dupe": "piece.txt", "scripts": [{"source": str(d / "x.lua"), "nom": "zz_x.lua"}],
+                "attente_rechargement": 0, "montrer": False}
+        return args, env, client
+
+    def test_passe_complete(self):
+        try:
+            import PIL  # noqa: F401
+        except ImportError:
+            self.skipTest("Pillow absent")
+        with tempfile.TemporaryDirectory() as d:
+            args, env, client = self.preparer(d)
+            texte, erreur = appel("banc_passe", args, env)
+            self.assertFalse(erreur, texte)
+            self.assertIn("aucune erreur Lua", texte)
+            self.assertIn("planche_1.jpg", texte)
+            self.assertEqual((client / "zz_x.lua").read_text(encoding="utf-8"), "local a = 1\nprint(a)\n")
+
+    def test_erreur_lua_refuse_la_planche(self):
+        try:
+            import PIL  # noqa: F401
+        except ImportError:
+            self.skipTest("Pillow absent")
+        with tempfile.TemporaryDirectory() as d:
+            args, env, _ = self.preparer(d, erreur=True)
+            texte, erreur = appel("banc_passe", args, env)
+            self.assertTrue(erreur)
+            self.assertIn("attempt to call", texte)
+            self.assertFalse((Path(d) / "captures" / "planche_1.jpg").exists())
+
+    def test_source_hors_racine_refusee(self):
+        with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as ailleurs:
+            args, env, _ = self.preparer(d)
+            autre = Path(ailleurs) / "x.lua"
+            autre.write_text("print(1)\n", encoding="utf-8")
+            args["scripts"][0]["source"] = str(autre)
+            texte, erreur = appel("banc_passe", args, env)
+            self.assertTrue(erreur)
+            self.assertIn("hors de", texte)
+
+    def test_touche_en_dur_refusee(self):
+        with tempfile.TemporaryDirectory() as d:
+            args, env, _ = self.preparer(d)
+            Path(args["scripts"][0]["source"]).write_text("if input.IsKeyDown(KEY_F3) then end\n", encoding="utf-8")
+            texte, erreur = appel("banc_passe", args, env)
+            self.assertTrue(erreur)
+            self.assertIn("refusé", texte)
+
+    def test_nouveau_script_refuse(self):
+        with tempfile.TemporaryDirectory() as d:
+            args, env, client = self.preparer(d)
+            (client / "zz_x.lua").unlink()
+            texte, erreur = appel("banc_passe", args, env)
+            self.assertTrue(erreur)
+            self.assertIn("bascule", texte)
 
 
 if __name__ == "__main__":

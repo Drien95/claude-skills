@@ -1,6 +1,6 @@
 ---
 name: mise-en-scene
-description: Mise en scène et rythme d'une scène jouée sur EVO : révélation du lieu, courbe d'intensité, séquences, entrée d'un personnage mythique, plans de caméra et films de l'Atelier, son d'ambiance sans musique, fiche MJ. À utiliser pour écrire la timeline ou les séquences d'une scène, un film, ou le texte et la fiche du MJ.
+description: "Mise en scène et rythme d'une scène jouée sur EVO : révélation du lieu, courbe d'intensité, séquences, entrée d'un personnage mythique, plans de caméra et films de l'Atelier, son d'ambiance sans musique, fiche MJ. À utiliser pour écrire la timeline ou les séquences d'une scène, un film, ou le texte et la fiche du MJ."
 ---
 
 # Mise en scène et rythme

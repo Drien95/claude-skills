@@ -5,11 +5,27 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 ## Non publié
 
 ### Modifié
+- Brique commune « gravure d'usine » : `outils/gravure.py` (3 marques tirées de l'identifiant de la scène, JSON et table Lua), module `outils/gravure_lua/sh_gravure.lua` (lecture côté serveur et client), doc dans `outils/README.md`, tests `tests/test_gravure.py`. Première scène : A2 v15 (banc : build tourné reconnu 3/3, marque retirée 2/3).
+- Rétro A2 (26/11) : critique qui plafonne (3 séries au même plafond, faire juger Adrien en jeu ou en film) ; rééclairage de nuit des props limité à la boîte ; ancre par motif de props (Lac noir muet sur EVO, 9 plaques pareilles dans l'A2) ; appel protégé après copie à chaud d'un nouveau fichier partagé ; collisions des pièces dessinées en script par blocs invisibles ; contrôle gel/collisions avant livraison ; état partagé versionné et rattrapage à l'entrée dans la boîte. Journal de mesure A2 complété.
 - Pièges Lua : masquage client d'un prop réseau à vérifier par trace (`SetNoDraw` remis à zéro par le serveur) ; bords nets des décals sur le sable, remplacés par une bosse du vrai sable (A2, 26/11).
 - Note d'état OPTIMUS devenue tableau de bord Obsidian natif (sans plugin) : encadré par scène (avancement x/N pièces validées, jauge des posés /400), encadré par pièce coloré par la note (vert dès 7,5, orange dès 6, rouge, gris si pas notée) avec barres de note et de posés, vignette de la dernière planche (`03-builds/vignettes/`, exclue de git en local), historique. Données dans un commentaire `%% banc %%`, taille gardée sous 4 Ko. Nouveau champ facultatif `pieces_scene` dans `piece.json`.
 
 ### Ajouté
+- `pieges-lua` et `recettes-pieces` : couches superposées d'un maillage (écart ≥ 0,3 u + `$decal`), diagnostic des fragments, autorefresh muet (bascule + trace de chargement).
+- `banc_passe` (serveur MCP du banc) : une passe en un appel (générer, contrôler et installer les scripts, rechargement à chaud, coller + vues, console lue, planche, ouvrir, nettoyer) ; planche refusée si erreur Lua dans la console ; temps de chaque étape.
+- LuaJIT cherché hors du dossier courant (garde_lua, banc_passe).
+- `garde_lua` (après écriture) : avec LuaJIT, signale une erreur de syntaxe et un nom déclaré `local` lu comme globale (fonction appelée avant sa déclaration).
+- `banc-gmod` : planche invalide si erreur Lua dans la console ; critiques sur Sonnet.
+- `pieges-lua` : `pcall` autour des hooks de dessin.
+- `build-evo` : la fermeture de la scène (ciel, brume, lumière clé) se pose avant de juger sol, dunes et lointains.
+- Outils de build `plugins/builds-evo/outils/` : `faire_bornes.py` et `bornes_modeles.json` (bornes de 1 571 modèles autorisés, PHX lus dans le VPK de GMod, autres tirés de geo_catalogue ; chemins réglables par `--autorises`, `--geo`, `--vpk`, `--sortie`, `CATALOGUE_BUILD`, `GMOD_DIR`), générateur de dunes `dunes/dunes.py` (paramètres JSON vers dupe AdvDupe2, script client de sable drapé et vues du banc ; vérification des PHX par la spawnlist ou, sans GMod, par `bornes_modeles.json`), README d'usage. Tests `tests/test_outils.py` sans GMod.
+- `pieces-props` : recette du sol de sable (A2) : surface en script sur des plaques, matières de dupe à éviter pour le sable, pièges du maillage (étoile polaire, rides en cible).
+- `banc-gmod` : section Cadence (un collage, vues en lot, critique unique, temps mesuré).
+
 - `banc_planche` écrit après chaque planche la note `03-builds/etat-builds.md` du coffre Obsidian OPTIMUS (`mcp/etat_optimus.py`, 0 token) : pièce, version, note, posés sur 400, lien vers la dernière planche, heure, 10 dernières planches. Lit le même `piece.json` que la ligne d'état. Coffre réglable par `OPTIMUS_DIR`, pièce par `BUILDS_EVO_PIECE`. Index du coffre régénéré à la création de la note. Obsidian Git la pousse sur main.
+
+### Corrigé
+- Frontmatter YAML de 6 skills (`banc-gmod`, `composition-scene`, `mise-en-scene`, `nouvelle-piece`, `pieces-props`, `retro`) : descriptions mises entre guillemets ; le « : » dans le texte cassait la lecture et les skills se chargeaient sans métadonnées.
 
 ## [builds-evo 0.2.0] - 2026-11-26
 

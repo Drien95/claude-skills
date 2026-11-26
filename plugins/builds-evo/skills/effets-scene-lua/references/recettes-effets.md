@@ -20,3 +20,6 @@
 | Sons | `CreateSound` en boucle, `FadeOut` à l'extinction ; cloche synthétisée (partiels d'église) ; fond + ponctuels aléatoires + séquence |
 | Lumières | `DynamicLight` en file par priorité selon une convar de qualité, ≤ 2 actives, plage d'id réservée par pièce |
 | Masques EVO hors liste blanche | `ClientsideModel` côté joueur (0 posé) |
+| Vague de poussière (A2, 26/11) | anneau de sprites ronds (hauteur = 0,8 × largeur) plus clairs que le sable (+50), front net et traîne tirée vers l'intérieur ; rides derrière = anneaux de quads ondulés (3 sinus sur le rayon, largeur et opacité variables) : réguliers, ils font une « cible » ; quads à une face : `CullMode NONE` sinon invisibles d'en haut |
+| Point focal de nuit sans éclairer la map (A2, 26/11) | pénombre peinte : maillage en anneau couleur brouillard posé sur le sable, alpha 0 au bord du cercle de lumière puis ~200 ; la dalle et les pierres restent les seules zones claires |
+| Objet « tenu » par un joueur (A2, 26/11) | impossible sur EVO (pas de grab) : l'objet est lié à la place (relatif au prop de tête) et la tenue reste narrative (/me) |
