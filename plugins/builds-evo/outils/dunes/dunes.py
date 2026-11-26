@@ -1,5 +1,5 @@
 # Gabarit de build GMod (AdvDupe2) pour EVO — tiré de la Salle des Exequias (v14).
-# Usage : python3 build.py  ->  scene.json ; puis python3 encode.py  ->  build.txt (à mettre dans garrysmod/data/advdupe2/)
+# Usage : python3 build.py  ->  scene.json ; puis python3 encode.py  ->  build.txt (à mettre dans garrysmod/data/advdupe2/<projet>/)
 # Repère : GMod (x, y, z), 1 P = 47,45 u (taille de base des PHX). Lire gmod-build-lecons.md avant de commencer.
 import math, json, re
 P = 47.45; PT = 3.0; Q = P / 4
