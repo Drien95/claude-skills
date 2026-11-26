@@ -4,6 +4,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Modifié
+- `performance` : tout dessin et tout parcours d'entités côté client derrière le test de boîte ; recherche serveur = revalider d'abord ; pas d'allocation par image dans les sprites (audit de perf A2, 26/11).
+
 ### Ajouté
 - Économie de jetons (demande d'Adrien, 26/11 : l'A2 a pris ~10 % de la semaine Max) : règles dans `build-evo/references/economie.md` (diagnostic de l'A2, 10 règles, ordres de grandeur, sorties de secours), section « Économie » de `build-evo/SKILL.md`.
 - Hook `budget` (`hooks/budget.py`, 0 token) : passe du banc refusée sans cahier des charges validé (`cahier_valide` dans `piece.json`) ; 12 vues au plus par passe (`max_vues`) ; plafond de 5 passes sans point avec Adrien (`plafond_passes`, remis à 0 par son message) ; une critique par planche et une critique finale par passe ; lecture d'une capture refusée quand la planche existe (copie dans `zoom/` pour une vue de près) ; relais de session relu au démarrage ; jetons comptés par scène, pièce et modèle à la fin de chaque tour (`conso.json`), rapport `budget.py rapport`.
