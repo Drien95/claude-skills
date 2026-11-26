@@ -4,7 +4,11 @@ import sys
 import tempfile
 from pathlib import Path
 
-DATA = Path(tempfile.gettempdir()) / "faux_banc_data"
+import os
+
+RACINE = Path(os.environ.get("FAUX_GMOD", Path(tempfile.gettempdir()) / "faux_gmod"))
+DATA = RACINE / "data"
+ADDON_DST = RACINE / "addons" / "banc_essai"
 
 
 def gmod_tourne():
@@ -27,4 +31,15 @@ def attendre_fait(fichier, tache_id, delai):
 
 if __name__ == "__main__":
     print("entités : 12 créées sur 12")
+    if os.environ.get("FAUX_CAPTURES"):
+        d = Path(os.environ["FAUX_CAPTURES"])
+        d.mkdir(parents=True, exist_ok=True)
+        from PIL import Image
+        for nom in ("face", "dos"):
+            Image.new("RGB", (64, 36), "gray").save(d / (nom + ".jpg"))
+        print("captures : 2 dans %s" % d)
+        with open(RACINE / "console.log", "a", encoding="utf-8") as f:
+            f.write("[banc_essai] tâche\n")
+            if os.environ.get("FAUX_ERREUR_LUA"):
+                f.write("[banc_essai] addons/banc_essai/lua/autorun/client/zz_x.lua:175: attempt to call global 'f' (a nil value)\n")
     print("ARGS " + json.dumps(sys.argv[1:]))

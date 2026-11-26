@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 ## Non publié
 
 ### Ajouté
+- `banc_passe` (serveur MCP du banc) : une passe en un appel (générer, contrôler et installer les scripts, rechargement à chaud, coller + vues, console lue, planche, ouvrir, nettoyer) ; planche refusée si erreur Lua dans la console ; temps de chaque étape.
+- LuaJIT cherché hors du dossier courant (garde_lua, banc_passe).
 - `garde_lua` (après écriture) : avec LuaJIT, signale une erreur de syntaxe et un nom déclaré `local` lu comme globale (fonction appelée avant sa déclaration).
 - `banc-gmod` : planche invalide si erreur Lua dans la console ; critiques sur Sonnet.
 - `pieges-lua` : `pcall` autour des hooks de dessin.

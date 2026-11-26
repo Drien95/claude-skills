@@ -106,9 +106,20 @@ def noms_locaux(code):
     return noms
 
 
+def trouver_luajit():
+    """LuaJIT de confiance : LUAJIT (chemin absolu) ou PATH sans le dossier courant ; jamais dans le dossier courant."""
+    os.environ["NoDefaultCurrentDirectoryInExePath"] = "1"   # Windows : which() ne cherche plus dans le dossier courant
+    exe = os.environ.get("LUAJIT") or shutil.which("luajit")
+    if not exe or not os.path.isabs(exe) or not os.path.isfile(exe):
+        return None
+    if Path(os.path.realpath(exe)).parent == Path(os.path.realpath(os.getcwd())):
+        return None
+    return exe
+
+
 def controle_luajit(chemin):
     """Texte d'alerte, ou None (rien à signaler, ou pas de LuaJIT)."""
-    exe = os.environ.get("LUAJIT") or shutil.which("luajit")
+    exe = trouver_luajit()
     if not exe or not os.path.isfile(chemin):
         return None
     try:

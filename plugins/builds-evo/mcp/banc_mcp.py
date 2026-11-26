@@ -14,6 +14,8 @@ Chemin du banc : variable BANC_PY, sinon C:\\Project\\Adler_lore\\sites\\gmod-bu
 import importlib.util
 import json
 import os
+import re
+import shutil
 import subprocess
 import sys
 import time
@@ -44,6 +46,19 @@ OUTILS = [
      "Ouvre des images ou un dossier sur l'écran d'Adrien (visionneuse + explorateur). Règle : les planches s'ouvrent sur son écran, "
      "donner un chemin ne suffit pas.",
      {"chemins": {"type": "array", "items": {"type": "string"}}}),
+    ("banc_passe",
+     "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
+     "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
+     "(avant/après si avant=) -> ouvrir sur l'écran d'Adrien -> nettoyer la map. GMod doit déjà tourner. Un script "
+     "nouveau (jamais chargé) est refusé : il faut une bascule de map. Renvoie la planche et le temps de chaque étape.",
+     {"generateur": {"type": "string", "description": "script Python du générateur (ex. dunes.py), lancé dans le dossier des params"},
+      "params": {"type": "string", "description": "JSON de paramètres passé au générateur"},
+      "scripts": {"type": "array", "description": "[{source, nom}] : fichier .lua -> addons/banc_essai/lua/autorun/client/<nom>",
+                  "items": {"type": "object", "properties": {"source": {"type": "string"}, "nom": {"type": "string"}}}},
+      "dupe": {"type": "string"}, "vues": {"type": "string"}, "x": V2, "y": V2, "type": {"type": "string"},
+      "avant": {"type": "string", "description": "dossier de captures de la passe précédente (planche avant/après)"},
+      "attente_rechargement": {"type": "integer", "description": "secondes après copie des scripts (défaut 25)"},
+      "montrer": {"type": "boolean", "description": "défaut true"}, "nettoyer": {"type": "boolean", "description": "défaut true"}}),
 ]
 
 
@@ -88,9 +103,9 @@ def resume(texte, n=18):
     return "\n".join(lignes[-n:])
 
 
-def tester(a):
+def tester(a, verifier=True):
     cmd = commande_tester(a)
-    if not a.get("lancer") and os.name == "nt" and not gmod_ouvert():
+    if verifier and not a.get("lancer") and os.name == "nt" and not gmod_ouvert():
         return "ERREUR : GMod est fermé. Demande l'accord d'Adrien pour le lancer (lancer=true, accord_adrien=true)."
     r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
                        timeout=int(a.get("attente", 600)) + 180, cwd=str(BANC_PY.parent))
@@ -185,7 +200,112 @@ def montrer(a):
     return "Ouvert sur l'écran d'Adrien : %d élément(s)." % len(chemins)
 
 
-ACTIONS = {"banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer}
+ERREUR_LUA = re.compile(r"\.lua:\d+:|attempt to (call|index|perform|compare|concatenate)|stack traceback")
+
+
+def erreurs_lua(texte, n=3):
+    """Lignes d'erreur Lua d'un morceau de console.log (au plus n)."""
+    return [l.strip() for l in texte.splitlines() if ERREUR_LUA.search(l)][:n]
+
+
+def _console(banc):
+    return Path(banc.DATA).parent / "console.log"
+
+
+def trouver_luajit():
+    """LuaJIT de confiance : LUAJIT (chemin absolu) ou PATH sans le dossier courant ; jamais dans le dossier courant."""
+    os.environ["NoDefaultCurrentDirectoryInExePath"] = "1"   # Windows : which() ne cherche plus dans le dossier courant
+    exe = os.environ.get("LUAJIT") or shutil.which("luajit")
+    if not exe or not os.path.isabs(exe) or not os.path.isfile(exe):
+        return None
+    if Path(os.path.realpath(exe)).parent == Path(os.path.realpath(os.getcwd())):
+        return None
+    return exe
+
+
+def _installer(banc, scripts):
+    """Contrôle (LuaJIT si présent) puis copie ; renvoie la liste des noms installés. Lève ValueError."""
+    dossier = Path(banc.ADDON_DST) / "lua" / "autorun" / "client"
+    luajit = trouver_luajit()
+    poses = []
+    for sc in scripts:
+        src, nom = Path(sc.get("source", "")), str(sc.get("nom", ""))
+        if not src.is_file():
+            raise ValueError("script introuvable : %s" % src)
+        if not re.fullmatch(r"[\w.\-]+\.lua", nom):
+            raise ValueError("nom de script invalide : %r" % nom)
+        cible = dossier / nom
+        if not cible.is_file():
+            raise ValueError("%s n'a jamais été chargé : un nouveau fichier autorun demande une bascule de map, pas un rechargement à chaud" % nom)
+        if luajit:
+            r = subprocess.run([luajit, "-b", str(src), os.devnull], capture_output=True)
+            if r.returncode:
+                raise ValueError("LuaJIT refuse %s : %s" % (src.name, r.stderr.decode("utf-8", "replace").strip()[:300]))
+        shutil.copyfile(src, cible)
+        poses.append(nom)
+    return poses
+
+
+def passe(a):
+    banc = charger_banc()
+    if not banc.gmod_tourne():
+        return "ERREUR : GMod est fermé. banc_passe ne lance jamais GMod : demande l'accord d'Adrien et lance-le avec banc_tester."
+    temps, t0 = [], time.time()
+
+    def etape(nom):
+        nonlocal t0
+        temps.append("%s %.0f s" % (nom, time.time() - t0))
+        t0 = time.time()
+
+    if a.get("generateur"):
+        params = Path(a.get("params") or "")
+        if not params.is_file():
+            raise ValueError("params introuvables : %s" % params)
+        r = subprocess.run([sys.executable, str(a["generateur"]), params.name], cwd=str(params.parent), capture_output=True,
+                           text=True, encoding="utf-8", errors="replace", timeout=600)
+        if r.returncode:
+            return "ERREUR : le générateur a échoué :\n" + resume((r.stdout or "") + "\n" + (r.stderr or ""), 8)
+        etape("générer")
+    poses = _installer(banc, a.get("scripts") or [])
+    if poses:
+        time.sleep(int(a.get("attente_rechargement", 25)))
+        etape("scripts")
+    console = _console(banc)
+    debut = console.stat().st_size if console.is_file() else 0
+    sortie = tester({k: a[k] for k in ("dupe", "vues", "x", "y", "type") if k in a}, verifier=False)   # gmod_tourne vérifié plus haut
+    etape("coller + vues")
+    if sortie.startswith("ERREUR"):
+        return sortie
+    m = re.search(r"captures : \d+ dans (.+)", sortie)
+    if not m:
+        return "ERREUR : pas de dossier de captures dans la sortie du banc :\n" + sortie
+    captures = m.group(1).strip()
+    erreurs = []
+    if console.is_file():
+        with open(console, "rb") as f:
+            f.seek(debut)
+            erreurs = erreurs_lua(f.read().decode("utf-8", "replace"))
+    lignes = [l for l in sortie.splitlines() if l.startswith("entit")]
+    if erreurs:
+        if a.get("nettoyer", True):
+            nettoyer({})
+        return ("ERREUR : planche refusée, erreur Lua dans la console pendant la passe (un script a pu ne rien dessiner) :\n"
+                + "\n".join(erreurs) + "\ncaptures (à ne pas juger) : " + captures)
+    res = planche({"dossier": captures, "avant": a["avant"]} if a.get("avant") else {"dossier": captures})
+    etape("planche")
+    if res.startswith("ERREUR"):
+        return res
+    images = res.splitlines()[1:]
+    if a.get("montrer", True):
+        montrer({"chemins": images})
+    if a.get("nettoyer", True):
+        nettoyer({})
+        etape("nettoyer")
+    return "\n".join(lignes + ["console : aucune erreur Lua", "scripts : " + (", ".join(poses) or "aucun")]
+                     + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
+
+
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer}
 
 
 def repondre(i, res=None, err=None):
