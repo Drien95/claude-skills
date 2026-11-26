@@ -4,6 +4,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Ajouté
+- `banc_planche` écrit après chaque planche la note `03-builds/etat-builds.md` du coffre Obsidian OPTIMUS (`mcp/etat_optimus.py`, 0 token) : pièce, version, note, posés sur 400, lien vers la dernière planche, heure, 10 dernières planches. Lit le même `piece.json` que la ligne d'état. Coffre réglable par `OPTIMUS_DIR`, pièce par `BUILDS_EVO_PIECE`. Index du coffre régénéré à la création de la note. Obsidian Git la pousse sur main.
+
 ## [builds-evo 0.2.0] - 2026-11-26
 
 ### Ajouté

@@ -14,7 +14,8 @@ FAUX = Path(__file__).resolve().parent / "faux" / "banc.py"
 
 def dialogue(*messages):
     entree = "\n".join(json.dumps(m) for m in messages) + "\n"
-    env = dict(os.environ, BANC_PY=str(FAUX))
+    # OPTIMUS_DIR absent : les tests n'écrivent jamais dans le vrai coffre d'Adrien
+    env = dict(os.environ, BANC_PY=str(FAUX), OPTIMUS_DIR=str(RACINE / "tests" / "faux" / "pas-de-coffre"))
     r = subprocess.run([sys.executable, str(SERVEUR)], input=entree.encode("utf-8"), capture_output=True, env=env, timeout=60)
     return [json.loads(l) for l in r.stdout.decode("utf-8").splitlines() if l.strip()]
 

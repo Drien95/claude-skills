@@ -19,6 +19,8 @@ import sys
 import time
 from pathlib import Path
 
+import etat_optimus  # même dossier que ce script : note d'état du coffre OPTIMUS
+
 BANC_PY = Path(os.environ.get("BANC_PY", r"C:\Project\Adler_lore\sites\gmod-build\banc\banc.py"))
 IMAGES = (".jpg", ".jpeg", ".png")
 
@@ -165,7 +167,8 @@ def planche(a):
         nom = dossier / (modele % (k // par_page + 1))
         img.save(nom, quality=85)
         sorties.append(str(nom))
-    return "Planches :\n" + "\n".join(sorties)
+    # 26/11 : note d'état dans le coffre OPTIMUS (0 token), poussée sur main par Obsidian Git
+    return "Planches :\n" + "\n".join(sorties) + "\n" + etat_optimus.ecrire(sorties, os.getcwd())
 
 
 def montrer(a):
