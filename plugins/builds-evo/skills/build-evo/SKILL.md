@@ -18,7 +18,7 @@ Une page à suivre dans l'ordre. Le détail est dans les autres skills du plugin
 3. **Budget** : posés par élément sur 400 (props + particules + lumières du catalogue ; le script est hors quota). Ce qui n'est pas un prop (flammes, gaz, fumée, lumière, lointains) va en script. → `pieces-props`
 4. **Fiche de pièce** pour chaque élément héros (`modeles/fiche-piece.md`) : rôle, budget, 3 vues, critères « fini quand ».
 5. **Courbe de séquence** en secondes : calme → signe → montée → silence → sommet → retombée. → `mise-en-scene`
-6. **Journal et état** : `/builds-evo:nouvelle-piece` crée la fiche, la ligne du journal (`references/journal-mesure.md`) et l'état `.claude/builds-evo/piece.json` lu par la ligne d'état. Mettre cet état à jour à chaque version (version, posés, planche, note).
+6. **Journal et état** : `/builds-evo:nouvelle-piece` crée la fiche, la ligne du journal (`references/journal-mesure.md`) et l'état `.claude/builds-evo/piece.json` lu par la ligne d'état et par le tableau de bord OPTIMUS (écrit par `banc_planche`). Mettre cet état à jour à chaque version (version, posés, planche, note) AVANT la planche, pour que le tableau montre la bonne note.
 
 ## 2. Construire une pièce (boucle détaillée : `references/boucle-piece.md`)
 7. **Maquette three.js** = décor + timeline seulement, en gris (humain de 72 u, caméras réelles). Les effets se règlent au banc, pas dans la maquette.
