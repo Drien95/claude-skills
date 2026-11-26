@@ -8,7 +8,7 @@ description: "Composition et direction artistique d'une scène ou d'une vue de b
 Ce skill décide **ce que l'œil voit et dans quel ordre**. Il ne pose aucun prop (→ `pieces-props`) et n'écrit aucun effet (→ `effets-scene-lua`).
 
 ## Les 5 pratiques prioritaires
-1. **Écrire avant de construire** : fiche DA (modèle dans le skill `build-evo`, `modeles/fiche-da.md`).
+1. **Écrire avant de construire** : fiche DA (modèle dans le skill `build-evo`, `modeles/fiche-da.md`) ; chaque chose que le moteur ne sait pas faire y devient narration, script ou suppression (`references/conception-scene.md`).
 2. **Un point focal par vue** : seul endroit avec le fort contraste, l'accent de couleur et le détail ; le reste se repose.
 3. **Trois plans** : premier plan sombre qui cadre, milieu = sujet, fond clair et brumeux (perspective atmosphérique).
 4. **Une lumière clé + la brume** avant toute autre lumière ou effet.
@@ -23,6 +23,7 @@ Ce skill décide **ce que l'œil voit et dans quel ordre**. Il ne pose aucun pro
 ## Quelle fiche lire
 | Question | Fiche |
 |---|---|
+| Que faire d'une contrainte du moteur ? Pourquoi une scène plafonne ? | `references/conception-scene.md` (rétro A2) |
 | Où regarde l'œil, dans quel ordre ? | `references/01-composition.md` |
 | Quelle règle visuelle unique ? (fiche DA) | `references/02-direction-artistique.md` |
 | D'où vient la lumière ? | `references/03-eclairage.md` |
