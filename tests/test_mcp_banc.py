@@ -91,6 +91,7 @@ class Planche(unittest.TestCase):
             self.assertTrue((apres / "planche_1.jpg").is_file())
 
 
+@unittest.skipUnless(__import__("shutil").which("luajit"), "LuaJIT absent")
 class Passe(unittest.TestCase):
     """banc_passe avec le faux banc : faux dossier GMod, captures et console simulées."""
 
@@ -101,7 +102,7 @@ class Passe(unittest.TestCase):
         client.mkdir(parents=True)
         (client / "zz_x.lua").write_text("-- ancienne version\n", encoding="utf-8")
         (d / "x.lua").write_text("local a = 1\nprint(a)\n", encoding="utf-8")
-        env = {"FAUX_GMOD": str(gmod), "FAUX_CAPTURES": str(d / "captures")}
+        env = {"FAUX_GMOD": str(gmod), "FAUX_CAPTURES": str(d / "captures"), "BANC_SOURCES": str(d)}
         if erreur:
             env["FAUX_ERREUR_LUA"] = "1"
         args = {"dupe": "piece.txt", "scripts": [{"source": str(d / "x.lua"), "nom": "zz_x.lua"}],
@@ -132,6 +133,24 @@ class Passe(unittest.TestCase):
             self.assertTrue(erreur)
             self.assertIn("attempt to call", texte)
             self.assertFalse((Path(d) / "captures" / "planche_1.jpg").exists())
+
+    def test_source_hors_racine_refusee(self):
+        with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as ailleurs:
+            args, env, _ = self.preparer(d)
+            autre = Path(ailleurs) / "x.lua"
+            autre.write_text("print(1)\n", encoding="utf-8")
+            args["scripts"][0]["source"] = str(autre)
+            texte, erreur = appel("banc_passe", args, env)
+            self.assertTrue(erreur)
+            self.assertIn("hors de", texte)
+
+    def test_touche_en_dur_refusee(self):
+        with tempfile.TemporaryDirectory() as d:
+            args, env, _ = self.preparer(d)
+            Path(args["scripts"][0]["source"]).write_text("if input.IsKeyDown(KEY_F3) then end\n", encoding="utf-8")
+            texte, erreur = appel("banc_passe", args, env)
+            self.assertTrue(erreur)
+            self.assertIn("refusé", texte)
 
     def test_nouveau_script_refuse(self):
         with tempfile.TemporaryDirectory() as d:

@@ -22,6 +22,8 @@ import time
 from pathlib import Path
 
 BANC_PY = Path(os.environ.get("BANC_PY", r"C:\Project\Adler_lore\sites\gmod-build\banc\banc.py"))
+# seuls les scripts de ce dossier (et dessous) peuvent être installés dans l'autorun du banc
+SOURCES = Path(os.environ.get("BANC_SOURCES", r"C:\Project\Adler_lore"))
 IMAGES = (".jpg", ".jpeg", ".png")
 
 V2 = {"type": "number"}
@@ -227,20 +229,32 @@ def _installer(banc, scripts):
     """Contrôle (LuaJIT si présent) puis copie ; renvoie la liste des noms installés. Lève ValueError."""
     dossier = Path(banc.ADDON_DST) / "lua" / "autorun" / "client"
     luajit = trouver_luajit()
+    if not luajit:
+        raise ValueError("LuaJIT introuvable (PATH ou variable LUAJIT) : banc_passe n'installe pas de script non contrôlé")
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "hooks"))
+    import garde_lua  # mêmes règles que le hook : touches, coordonnées de map, musique
+    racine = SOURCES.resolve()
     poses = []
     for sc in scripts:
         src, nom = Path(sc.get("source", "")), str(sc.get("nom", ""))
-        if not src.is_file():
-            raise ValueError("script introuvable : %s" % src)
+        if not src.is_file() or src.suffix.lower() != ".lua":
+            raise ValueError("script .lua introuvable : %s" % src)
+        try:
+            src.resolve().relative_to(racine)
+        except ValueError:
+            raise ValueError("script hors de %s (variable BANC_SOURCES) : %s" % (racine, src)) from None
+        refus = garde_lua.problemes(src.read_text(encoding="utf-8", errors="replace"))
+        if refus:
+            raise ValueError("script refusé (%s) : %s" % (src.name, refus[0]))
         if not re.fullmatch(r"[\w.\-]+\.lua", nom):
             raise ValueError("nom de script invalide : %r" % nom)
         cible = dossier / nom
         if not cible.is_file():
             raise ValueError("%s n'a jamais été chargé : un nouveau fichier autorun demande une bascule de map, pas un rechargement à chaud" % nom)
-        if luajit:
-            r = subprocess.run([luajit, "-b", str(src), os.devnull], capture_output=True)
-            if r.returncode:
-                raise ValueError("LuaJIT refuse %s : %s" % (src.name, r.stderr.decode("utf-8", "replace").strip()[:300]))
+        r = subprocess.run([luajit, "-b", str(src), os.devnull], capture_output=True)
+        if r.returncode:
+            premiere = (r.stderr.decode("utf-8", "replace").strip().splitlines() or [""])[0]
+            raise ValueError("LuaJIT refuse %s : %s" % (src.name, premiere.rsplit(":", 1)[-1].strip()[:120]))
         shutil.copyfile(src, cible)
         poses.append(nom)
     return poses
