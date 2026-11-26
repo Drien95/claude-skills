@@ -5,6 +5,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 ## Non publié
 
 ### Ajouté
+- `garde_lua` (après écriture) : avec LuaJIT, signale une erreur de syntaxe et un nom déclaré `local` lu comme globale (fonction appelée avant sa déclaration).
+- `banc-gmod` : planche invalide si erreur Lua dans la console ; critiques sur Sonnet.
+- `pieges-lua` : `pcall` autour des hooks de dessin.
 - `build-evo` : la fermeture de la scène (ciel, brume, lumière clé) se pose avant de juger sol, dunes et lointains.
 - Outils de build `plugins/builds-evo/outils/` : `faire_bornes.py` et `bornes_modeles.json` (bornes de 1 571 modèles autorisés, PHX lus dans le VPK de GMod, autres tirés de geo_catalogue ; chemins réglables par `--autorises`, `--geo`, `--vpk`, `--sortie`, `CATALOGUE_BUILD`, `GMOD_DIR`), générateur de dunes `dunes/dunes.py` (paramètres JSON vers dupe AdvDupe2, script client de sable drapé et vues du banc ; vérification des PHX par la spawnlist ou, sans GMod, par `bornes_modeles.json`), README d'usage. Tests `tests/test_outils.py` sans GMod.
 - `pieces-props` : recette du sol de sable (A2) : surface en script sur des plaques, matières de dupe à éviter pour le sable, pièges du maillage (étoile polaire, rides en cible).
