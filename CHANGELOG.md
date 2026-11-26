@@ -4,6 +4,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+## [builds-evo 0.3.0] - 2026-11-26
+
 ### Modifié
 - Brique commune « gravure d'usine » : `outils/gravure.py` (3 marques tirées de l'identifiant de la scène, JSON et table Lua), module `outils/gravure_lua/sh_gravure.lua` (lecture côté serveur et client), doc dans `outils/README.md`, tests `tests/test_gravure.py`. Première scène : A2 v15 (banc : build tourné reconnu 3/3, marque retirée 2/3).
 - Rétro A2 (26/11) : critique qui plafonne (3 séries au même plafond, faire juger Adrien en jeu ou en film) ; rééclairage de nuit des props limité à la boîte ; ancre par motif de props (Lac noir muet sur EVO, 9 plaques pareilles dans l'A2) ; appel protégé après copie à chaud d'un nouveau fichier partagé ; collisions des pièces dessinées en script par blocs invisibles ; contrôle gel/collisions avant livraison ; état partagé versionné et rattrapage à l'entrée dans la boîte. Journal de mesure A2 complété.
@@ -23,6 +25,16 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - `banc-gmod` : section Cadence (un collage, vues en lot, critique unique, temps mesuré).
 
 - `banc_planche` écrit après chaque planche la note `03-builds/etat-builds.md` du coffre Obsidian OPTIMUS (`mcp/etat_optimus.py`, 0 token) : pièce, version, note, posés sur 400, lien vers la dernière planche, heure, 10 dernières planches. Lit le même `piece.json` que la ligne d'état. Coffre réglable par `OPTIMUS_DIR`, pièce par `BUILDS_EVO_PIECE`. Index du coffre régénéré à la création de la note. Obsidian Git la pousse sur main.
+- README : le serveur MCP `banc` met à jour le tableau de bord OPTIMUS après chaque planche.
+- `build-evo/references/boucle-piece.md` : `piece.json` à jour AVANT la planche, pour que le tableau de bord OPTIMUS montre la bonne note.
+- `journal/mesures.md` : lignes de l'A2 (heures, versions, planches, posés, note).
+
+### Tests
+- `tests/test_gravure.py` (6 tests : déterminisme, écarts et zone, lacets et couleurs improbables, refus, sortie JSON et Lua de la CLI).
+- `tests/test_etat_optimus.py` : tableau de bord OPTIMUS (encadrés, couleurs par note, jauges, taille sous 4 Ko).
+- `tests/test_outils.py` : bornes des modèles et générateur de dunes, sans GMod.
+- `tests/test_hooks.py` : `garde_lua` avec LuaJIT (syntaxe, locale lue comme globale).
+- `tests/test_mcp_banc.py` et faux banc `tests/faux/banc.py` : `banc_passe` (console lue, planche refusée sur erreur Lua, temps des étapes).
 
 ### Corrigé
 - Frontmatter YAML de 6 skills (`banc-gmod`, `composition-scene`, `mise-en-scene`, `nouvelle-piece`, `pieces-props`, `retro`) : descriptions mises entre guillemets ; le « : » dans le texte cassait la lecture et les skills se chargeaient sans métadonnées.
