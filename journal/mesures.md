@@ -7,3 +7,4 @@ Une ligne par pièce, ouverte par `/builds-evo:nouvelle-piece` et complétée à
 | Lac noir (avant méthode) | Épée (katana K3L) | 2026-11-24 | 2026-11-25 | | ~90 | – | ≤ 50 | 57 | 7,5 | itérations en série, une retouche à la fois |
 | Lac noir (avant méthode) | Trône K5 | 2026-11-25 | 2026-11-25 | | à compléter | – | ≤ 40 | 27 | 8,5 | notes surévaluées au début (fonction de base non vérifiée) |
 | Lac noir (avant méthode) | Cathédrale v10 | 2026-11-25 | 2026-11-25 | | 10 (passe 2) | – | ≤ 90 | | 7,5 | |
+| A2 Le Sable du Fond | Sol en creux | 2026-11-26 | | | | | ≤ 37 | | | |
