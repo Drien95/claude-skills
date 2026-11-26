@@ -1,0 +1,30 @@
+name: Vérifier
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Tests des hooks et du catalogue
+        run: python -m unittest discover -s tests -v
+      - name: Le CHANGELOG bouge avec les plugins
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          git fetch --depth=1 origin "${{ github.base_ref }}"
+          changes=$(git diff --name-only "origin/${{ github.base_ref }}" HEAD)
+          if echo "$changes" | grep -q '^plugins/' && ! echo "$changes" | grep -q '^CHANGELOG.md$'; then
+            echo "::error::Un plugin a changé sans ligne dans CHANGELOG.md (section Non publié)."
+            exit 1
+          fi
