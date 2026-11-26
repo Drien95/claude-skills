@@ -6,6 +6,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ### Ajouté
 - `pieces-props` : recette du sol de sable (A2) : surface en script sur des plaques, matières de dupe à éviter pour le sable, pièges du maillage (étoile polaire, rides en cible).
+- `banc-gmod` : section Cadence (un collage, vues en lot, critique unique, temps mesuré).
 
 ## [builds-evo 0.2.0] - 2026-11-26
 
