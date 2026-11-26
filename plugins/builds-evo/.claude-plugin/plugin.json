@@ -1,6 +1,6 @@
 {
   "name": "builds-evo",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Builds GMod pour le serveur EVO : méthode d'un build (checklist, seuil 7,5/10), composition de scène, pièces en props AdvDupe2, effets de scène en Lua, mise en scène, banc de test ; hooks des interdits du banc et des scripts ; agent critique de build.",
   "author": { "name": "Adrien", "url": "https://github.com/Drien95" },
   "repository": "https://github.com/Drien95/claude-skills",
