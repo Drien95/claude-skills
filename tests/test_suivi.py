@@ -30,6 +30,18 @@ class SkillSuivi(unittest.TestCase):
         for cle in ("_modeles/suivi.md", "06-lore/suivis/", "optimus.py passation", "optimus.py verifier"):
             self.assertIn(cle, self.t)
 
+    def test_fermeture_apres_72_h(self):
+        self.assertIn("72 h", self.t)
+        self.assertIn("brouillon de message de clôture", self.t)
+
+    def test_ecole_de_l_abime_arrancar_seulement(self):
+        self.assertIn("Arrancar", self.t)
+        self.assertIn("jamais Adler proposé comme maître", self.t)
+
+    def test_proprietes_de_la_vue(self):
+        for cle in ("`parcours`", "`action`", "`priorite`"):
+            self.assertIn(cle, self.t)
+
 
 if __name__ == "__main__":
     unittest.main()

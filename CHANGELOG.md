@@ -36,6 +36,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
 
+## [optimus 0.3.1] - 2026-11-27
+
+### Modifié (décisions d'Adrien du 27/11/2026)
+- `/optimus:suivi` : 72 h sans réponse du joueur = fermeture possible ; toute relance fixe `relance` à +72 h, l'échéance passée donne un brouillon de clôture puis le statut `abandonné`.
+- `/optimus:suivi` : Reiryoku, d'abord la race ; l'école de l'Abîme (prérequis de la grille V1) vaut seulement pour les Arrancar, jamais Adler comme maître d'un Shinigami.
+- `/optimus:suivi` : remplit `parcours`, `action` (30 caractères) et `priorite`, affichés par la vue Bases du coffre (optimus PR 15).
+- Tests : `test_fermeture_apres_72_h`, `test_ecole_de_l_abime_arrancar_seulement`, `test_proprietes_de_la_vue`.
+
 ## [optimus 0.3.0] - 2026-11-27
 
 ### Ajouté
