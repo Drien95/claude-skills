@@ -24,7 +24,8 @@ Une page à suivre dans l'ordre. Le détail est dans les autres skills du plugin
 7. **Maquette three.js** = décor + timeline seulement, en gris (humain de 72 u, caméras réelles). Les effets se règlent au banc, pas dans la maquette.
 8. **3 silhouettes en parallèle**, une planche côte à côte, **une décision par planche**. Puis formes moyennes (2 variantes), puis détail. On ne revient plus aux grandes formes. → `references/15-iterations.md`
 9. **Props** : d'abord la bibliothèque de pièces validées (`pieces-props`, `bibliotheque.md`), sinon générés par `build.py` depuis le gabarit, jamais posés à la main. → `pieces-props`
-10. **Banc en plein jour** pour la forme, de nuit pour les effets, par les outils MCP `banc_*`. → `banc-gmod` (lire AVANT toute commande GMod)
+10. **Fermeture d'abord** (ciel noir, brouillard, brume, lumière clé en script) dès la première pièce : un sol, des dunes ou des lointains se jugent DANS la scène fermée, jamais seuls au banc de jour (A2 : 4 passes bloquées à 6,5 par l'herbe et le ciel du banc).
+10 bis. **Banc en plein jour** pour la forme, de nuit pour les effets, par les outils MCP `banc_*`. → `banc-gmod` (lire AVANT toute commande GMod)
 11. **Effets et sous-effets en script** (niveau tornade J3), son sans musique. → `effets-scene-lua`, `mise-en-scene`
 
 ## 3. Contrôler
