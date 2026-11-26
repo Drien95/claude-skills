@@ -53,7 +53,8 @@ OUTILS = [
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
-     "(avant/après si avant=) -> ouvrir sur l'écran d'Adrien -> nettoyer la map. GMod doit déjà tourner. Un script "
+     "(avant/après si avant=) -> ouvrir sur l'écran d'Adrien -> nettoyer la map. Avant le collage, contrôle auto du dupe "
+     "(400 posés ou budget, classes bloquées, playermodels, doublons, boîte) : passe refusée sur erreur, sans rien coller. GMod doit déjà tourner. Un script "
      "nouveau (jamais chargé) est refusé : il faut une bascule de map. Renvoie la planche et le temps de chaque étape.",
      {"generateur": {"type": "string", "description": "script Python du générateur (ex. dunes.py), lancé dans le dossier des params"},
       "params": {"type": "string", "description": "JSON de paramètres passé au générateur"},
@@ -62,7 +63,8 @@ OUTILS = [
       "dupe": {"type": "string"}, "vues": {"type": "string"}, "x": V2, "y": V2, "type": {"type": "string"},
       "avant": {"type": "string", "description": "dossier de captures de la passe précédente (planche avant/après)"},
       "attente_rechargement": {"type": "integer", "description": "secondes après copie des scripts (défaut 25)"},
-      "montrer": {"type": "boolean", "description": "défaut true"}, "nettoyer": {"type": "boolean", "description": "défaut true"}}),
+      "montrer": {"type": "boolean", "description": "défaut true"}, "nettoyer": {"type": "boolean", "description": "défaut true"},
+      "controle": {"type": "boolean", "description": "défaut true : contrôle auto du dupe avant collage (outils/controle_auto.py)"}}),
 ]
 
 
@@ -263,6 +265,28 @@ def _installer(banc, scripts):
     return poses
 
 
+def controle_dupe(dupe):
+    """Contrôle auto (0 token) avant de coller : renvoie (erreur ou None, ligne de rapport)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "outils"))
+    import controle_auto
+    piece = {}
+    for d in [Path.cwd(), *Path.cwd().parents]:
+        f = d / ".claude" / "builds-evo" / "piece.json"
+        if f.is_file():
+            try:
+                piece = json.loads(f.read_text(encoding="utf-8"))
+            except ValueError:
+                pass
+            break
+    boite = piece.get("boite") if isinstance(piece.get("boite"), list) and len(piece["boite"]) == 3 else None
+    try:
+        erreurs, attentions, res = controle_auto.controler(dupe, piece.get("budget_scene"), boite)
+    except Exception as e:  # dupe illisible : on ne bloque pas, on le dit
+        return None, "contrôle auto : sauté (%s)" % str(e)[:80]
+    texte = controle_auto.rapport(erreurs, attentions, res)
+    return ("ERREUR : passe refusée par le contrôle auto, rien n'a été collé :\n" + texte) if erreurs else None, texte
+
+
 def passe(a):
     banc = charger_banc()
     if not banc.gmod_tourne():
@@ -289,6 +313,12 @@ def passe(a):
         if r.returncode:
             return "ERREUR : le générateur a échoué :\n" + resume((r.stdout or "") + "\n" + (r.stderr or ""), 8)
         etape("générer")
+    controle = ""
+    if a.get("dupe") and a.get("controle", True) and Path(a["dupe"]).is_file():
+        refus, controle = controle_dupe(a["dupe"])
+        if refus:
+            return refus
+        etape("contrôle")
     poses = _installer(banc, a.get("scripts") or [])
     if poses:
         time.sleep(int(a.get("attente_rechargement", 25)))
@@ -324,7 +354,7 @@ def passe(a):
     if a.get("nettoyer", True):
         nettoyer({})
         etape("nettoyer")
-    return "\n".join(lignes + ["console : aucune erreur Lua", "scripts : " + (", ".join(poses) or "aucun")]
+    return "\n".join(lignes + ([controle] if controle else []) + ["console : aucune erreur Lua", "scripts : " + (", ".join(poses) or "aucun")]
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 

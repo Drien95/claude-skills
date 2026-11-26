@@ -1,0 +1,206 @@
+"""Tests du hook d'économie budget.py (cahier, vues, plafond de passes, critique, planche, consommation, relais)."""
+import json
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+HOOK = Path(__file__).resolve().parents[1] / "plugins" / "builds-evo" / "hooks" / "budget.py"
+PASSE = "mcp__plugin_builds-evo_banc__banc_passe"
+
+
+def lancer(mode, evenement, cwd=None):
+    r = subprocess.run([sys.executable, str(HOOK), mode], input=json.dumps(evenement).encode("utf-8"),
+                       capture_output=True, timeout=20, cwd=cwd)
+    assert r.returncode == 0, r.stderr.decode()
+    sortie = r.stdout.decode("utf-8").strip()
+    return json.loads(sortie)["hookSpecificOutput"] if sortie else None
+
+
+class Base(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.racine = Path(self._tmp.name)
+        self.etat = self.racine / ".claude" / "builds-evo"
+        self.etat.mkdir(parents=True)
+        self.sous = self.racine / "sites" / "scene"
+        self.sous.mkdir(parents=True)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def piece(self, **k):
+        d = {"scene": "A3", "piece": "Arche", "version": 2, "cahier_valide": "2026-11-27"}
+        d.update(k)
+        (self.etat / "piece.json").write_text(json.dumps(d), encoding="utf-8")
+
+    def compteurs(self):
+        return json.loads((self.etat / "compteurs.json").read_text(encoding="utf-8"))
+
+    def pre(self, outil, entree):
+        res = lancer("pre", {"tool_name": outil, "tool_input": entree, "cwd": str(self.sous)})
+        return res and res["permissionDecision"], res and res.get("permissionDecisionReason", "")
+
+    def passe_reussie(self):
+        lancer("post", {"tool_name": PASSE, "tool_input": {}, "tool_response": [{"type": "text", "text": "planche : x"}],
+                        "cwd": str(self.sous)})
+
+
+class Cahier(Base):
+    def test_sans_build_rien_ne_bloque(self):
+        (self.etat / "piece.json").unlink(missing_ok=True)
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+    def test_passe_refusee_sans_cahier(self):
+        self.piece(cahier_valide=None)
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("/builds-evo:cahier", raison)
+        self.assertEqual(self.pre("mcp__plugin_builds-evo_banc__banc_tester", {"dupe": "a.txt"})[0], "deny")
+
+    def test_passe_permise_avec_cahier(self):
+        self.piece()
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+        self.assertEqual(self.pre("mcp__plugin_builds-evo_banc__banc_planche", {"dossier": "x"})[0], None)
+
+
+class Vues(Base):
+    def test_trop_de_vues(self):
+        self.piece()
+        (self.sous / "v.json").write_text(json.dumps({"vues": [{"nom": str(i)} for i in range(14)]}), encoding="utf-8")
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt", "vues": "v.json"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("14 vues", raison)
+        self.piece(max_vues=16)
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt", "vues": "v.json"})[0], None)
+
+
+class Plafond(Base):
+    def test_plafond_puis_point_d_adrien(self):
+        self.piece(plafond_passes=3)
+        for _ in range(3):
+            self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+            self.passe_reussie()
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("point", raison)
+        lancer("prompt", {"prompt": "1 oui, 2 non", "cwd": str(self.sous)})
+        self.assertEqual(self.compteurs()["passes_depuis_point"], 0)
+        self.assertEqual(self.compteurs()["passes_total"], 3)
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+    def test_passe_en_erreur_non_comptee(self):
+        self.piece()
+        lancer("post", {"tool_name": PASSE, "tool_response": [{"type": "text", "text": "ERREUR : GMod est fermé"}],
+                        "cwd": str(self.sous)})
+        self.assertFalse((self.etat / "compteurs.json").exists())
+
+    def test_sans_plafond_sur_ordre(self):
+        self.piece(plafond_passes=0)
+        for _ in range(7):
+            self.passe_reussie()
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+
+class Critique(Base):
+    def test_une_critique_par_planche(self):
+        self.piece()
+        self.passe_reussie()
+        agent = {"subagent_type": "builds-evo:critique-build", "prompt": "planche"}
+        self.assertEqual(self.pre("Agent", agent)[0], None)
+        self.assertEqual(self.pre("Agent", agent)[0], "deny")
+        finale = {"subagent_type": "builds-evo:critique-finale", "prompt": "planche"}
+        self.assertEqual(self.pre("Agent", finale)[0], None)
+        self.passe_reussie()
+        self.assertEqual(self.pre("Task", agent)[0], None)
+
+    def test_autres_agents_libres(self):
+        self.piece()
+        self.assertEqual(self.pre("Agent", {"subagent_type": "Explore"})[0], None)
+
+
+class Images(Base):
+    def test_lire_la_planche_pas_les_captures(self):
+        cap = self.racine / "captures"
+        cap.mkdir()
+        (cap / "face.jpg").write_bytes(b"x")
+        self.assertEqual(self.pre("Read", {"file_path": str(cap / "face.jpg")})[0], None)
+        (cap / "planche_1.jpg").write_bytes(b"x")
+        choix, raison = self.pre("Read", {"file_path": str(cap / "face.jpg")})
+        self.assertEqual(choix, "deny")
+        self.assertIn("zoom", raison)
+        self.assertEqual(self.pre("Read", {"file_path": str(cap / "planche_1.jpg")})[0], None)
+
+    def test_fichiers_des_hooks_proteges(self):
+        self.assertEqual(self.pre("Write", {"file_path": str(self.etat / "compteurs.json"), "content": "{}"})[0], "deny")
+        self.assertEqual(self.pre("Edit", {"file_path": str(self.etat / "piece.json")})[0], None)
+
+
+class Conso(Base):
+    def transcript(self, f, lignes):
+        with open(f, "a", encoding="utf-8") as t:
+            for l in lignes:
+                t.write(json.dumps(l) + "\n")
+
+    def msg(self, ident, modele, entree, sortie, lu=0):
+        return {"type": "assistant", "message": {"id": ident, "model": modele, "usage": {
+            "input_tokens": entree, "output_tokens": sortie, "cache_read_input_tokens": lu, "cache_creation_input_tokens": 0}}}
+
+    def test_compte_par_modele_sans_double(self):
+        self.piece()
+        t = self.racine / "session.jsonl"
+        m1 = self.msg("m1", "claude-opus-5-5", 100, 50, 1000)
+        self.transcript(t, [{"type": "user", "message": {"content": "x"}}, m1, m1, self.msg("m2", "claude-sonnet-5-5", 10, 5)])
+        lancer("stop", {"transcript_path": str(t), "cwd": str(self.sous)})
+        lancer("stop", {"transcript_path": str(t), "cwd": str(self.sous)})   # relu : rien de plus
+        self.transcript(t, [self.msg("m3", "claude-opus-5-5", 1, 1)])
+        lancer("stop", {"transcript_path": str(t), "cwd": str(self.sous)})
+        conso = json.loads((self.etat / "conso.json").read_text(encoding="utf-8"))
+        arche = conso["scenes"]["A3"]["Arche"]
+        self.assertEqual(arche["opus"], [101, 0, 1000, 51])
+        self.assertEqual(arche["sonnet"], [10, 0, 0, 5])
+        r = subprocess.run([sys.executable, str(HOOK), "rapport", "A3"], capture_output=True, cwd=str(self.sous), timeout=20)
+        texte = r.stdout.decode("utf-8")
+        self.assertIn("Arche", texte)
+        self.assertIn("indice", texte)
+
+    def test_sous_agent(self):
+        self.piece()
+        t = self.racine / "agent.jsonl"
+        self.transcript(t, [self.msg("a1", "claude-sonnet-5-5", 20, 10)])
+        lancer("stop", {"transcript_path": str(self.racine / "absent.jsonl"), "agent_transcript_path": str(t),
+                        "cwd": str(self.sous)})
+        conso = json.loads((self.etat / "conso.json").read_text(encoding="utf-8"))
+        self.assertEqual(conso["scenes"]["A3"]["Arche"]["sonnet"], [20, 0, 0, 10])
+
+    def test_stop_ne_dit_rien(self):
+        self.piece()
+        t = self.racine / "s.jsonl"
+        self.transcript(t, [self.msg("m1", "claude-opus-5-5", 1, 1)])
+        self.assertIsNone(lancer("stop", {"transcript_path": str(t), "cwd": str(self.sous)}))
+
+
+class Debut(Base):
+    def test_relais_et_etat_injectes(self):
+        self.piece(cahier_valide=None)
+        (self.etat / "relais.md").write_text("# Relais : A3 › conception → arche\n- Prochaine étape : arche v1", encoding="utf-8")
+        res = lancer("debut", {"source": "startup", "cwd": str(self.sous)})
+        self.assertEqual(res["hookEventName"], "SessionStart")
+        self.assertIn("arche v1", res["additionalContext"])
+        self.assertIn("NON validé", res["additionalContext"])
+
+    def test_relais_trop_long_coupe(self):
+        self.piece()
+        (self.etat / "relais.md").write_text("x" * 5000, encoding="utf-8")
+        res = lancer("debut", {"cwd": str(self.sous)})
+        self.assertLess(len(res["additionalContext"]), 3500)
+        self.assertIn("raccourcir", res["additionalContext"])
+
+    def test_hors_build_silencieux(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertIsNone(lancer("debut", {"cwd": d}))
+
+
+if __name__ == "__main__":
+    unittest.main()

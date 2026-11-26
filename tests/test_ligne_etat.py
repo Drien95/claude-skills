@@ -28,6 +28,17 @@ class LigneEtat(unittest.TestCase):
                            "context_window": {"used_percentage": 34.4}})
             self.assertEqual(texte, "Lac noir › Cathédrale v10 · 218/400 posés · pièce 74/90 · planche 2/3 · note 7 ↓ · Opus · contexte 34 %")
 
+    def test_passes_indice_et_relais(self):
+        with tempfile.TemporaryDirectory() as d:
+            etat = Path(d, ".claude", "builds-evo")
+            etat.mkdir(parents=True)
+            (etat / "piece.json").write_text(json.dumps({"scene": "A3", "piece": "Arche", "plafond_passes": 5}), encoding="utf-8")
+            (etat / "compteurs.json").write_text(json.dumps({"passes_depuis_point": 5, "passes_total": 7}), encoding="utf-8")
+            (etat / "conso.json").write_text(json.dumps({"scenes": {"A3": {"Arche": {"sonnet": [0, 0, 0, 1000000]}}}}),
+                                             encoding="utf-8")
+            texte = ligne({"cwd": d, "context_window": {"used_percentage": 64}})
+            self.assertEqual(texte, "A3 › Arche · passes 5/5 ⚠ point · indice 15 · contexte 64 % → /relais")
+
     def test_sans_piece(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(ligne({"cwd": d, "model": {"display_name": "Opus"}}), "Opus")
