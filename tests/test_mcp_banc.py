@@ -50,7 +50,12 @@ class Regles(unittest.TestCase):
         self.assertEqual(args[args.index("--y") + 1], "-8000.0")
 
     def test_sans_lancer(self):
-        texte, _ = appel("banc_tester", {"dupe": "piece.txt", "vues": "v.json", "y": 500})
+        texte, erreur = appel("banc_tester", {"dupe": "piece.txt", "vues": "v.json", "y": 500})
+        if os.name == "nt":
+            # Sous Windows le serveur vérifie d'abord que GMod tourne : sans lui, il refuse au lieu de lancer.
+            self.assertTrue(erreur)
+            self.assertIn("GMod est fermé", texte)
+            return
         args = json.loads(texte.split("ARGS ", 1)[1])
         self.assertNotIn("--lancer", args)
         self.assertNotIn("--eclair", args)

@@ -13,7 +13,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - Commande `/builds-evo:retro` : rétro de 5 min en fin de build (journal, 3 leçons, ménage).
 - Les 5 règles d'amélioration continue validées par Adrien (README, `build-evo/references/capitaliser.md`, CONTRIBUTING) : leçon immédiate, rétro, promotion (2 fois → hook, 3 fois → checklist), ménage tous les 3-4 builds, bibliothèque de pièces.
 - Bibliothèque de pièces validées (`pieces-props/references/bibliotheque.md`), amorcée avec les pièces du Lac noir, Azeno et le sceau de l'Exequias.
-- Tests du serveur MCP (avec un faux banc) et de la ligne d'état.
+- Tests du serveur MCP (avec un faux banc) et de la ligne d'état ; Pillow installée dans la vérification GitHub pour tester les planches.
 
 ### Modifié
 - `build-evo` : étapes qui citent la bibliothèque, l'état de pièce, les outils MCP du banc, les agents `critique-build` et `allegement`, la rétro.
