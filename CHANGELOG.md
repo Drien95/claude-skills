@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- builds-evo : pièges construction étalée en coroutine, allocations par image (ramasse-miettes), halo pondéré par `util.PixelVisible` (Sumii P1, 27/11/2026).
 
 - builds-evo : pieges-lua, bandes claires sur des sphères Mesh() sans élimination des faces arrière : maillage à part en CullMode CW (Sumii P1 v28, 27/11).
 - builds-evo : pieges-lua, `$color` ne recolore pas une texture verte, partir d'une texture neutre ; tige peinte dans la texture, recadrer les UV (Sumii P1 v23, 27/11).
