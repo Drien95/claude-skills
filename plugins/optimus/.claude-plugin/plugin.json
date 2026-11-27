@@ -1,6 +1,6 @@
 {
   "name": "optimus",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Coffre OPTIMUS (second cerveau d'Adrien) : passation de fin de fil contrôlée par le script du coffre, rappelée une fois par fil quand le fil a livré un commit ou une PR (hook Stop, 0 jeton sinon) ; suivis de joueurs MJ : note du suivi, brouillon de réponse hors personnage, build lié, statut.",
   "author": { "name": "Adrien", "url": "https://github.com/Drien95" },
   "repository": "https://github.com/Drien95/claude-skills",

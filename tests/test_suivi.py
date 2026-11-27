@@ -42,6 +42,10 @@ class SkillSuivi(unittest.TestCase):
         self.assertIn("grille-maitrise-v1", self.t)
         self.assertIn("grade minimum", self.t)
 
+    def test_grade_minimum_par_la_grille_des_grades(self):
+        self.assertIn("grades-v1", self.t)
+        self.assertIn("sans trancher", self.t)
+
     def test_proprietes_de_la_vue(self):
         for cle in ("`parcours`", "`action`", "`priorite`"):
             self.assertIn(cle, self.t)

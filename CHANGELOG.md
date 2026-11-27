@@ -36,6 +36,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
 
+## [optimus 0.3.2] - 2026-11-27
+
+### Modifié
+- `/optimus:suivi` : grade minimum vérifié avec la grille des grades V1 (note `grades-v1` du coffre, optimus PR 18) : grade de la fiche converti (Shinigami ou Hollow, 1 à 16), noté dans `grade` ; un grade insuffisant est signalé à Adrien sans trancher, brouillon en suspens. Test : `test_grade_minimum_par_la_grille_des_grades`.
+
 ## [optimus 0.3.1] - 2026-11-27
 
 ### Modifié (décisions d'Adrien du 27/11/2026)
