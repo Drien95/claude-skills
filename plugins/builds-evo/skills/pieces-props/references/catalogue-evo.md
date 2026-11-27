@@ -4,6 +4,7 @@
 - Catalogue 3D local : `C:\Project\Adler_lore\sites\catalogue-evo\index.html` ; métadonnées (champ `phy`) dans `catalogue-evo/tools/meta/models_*.json` ; géométrie mesurée dans `geo_catalogue.json`. Liste blanche du collage : `sites\gmod-build\catalogue-build\modeles_autorises.txt`.
 - **Chercher large avant de dire qu'un asset n'existe pas** (63 masques d'Arrancar trouvés après un « il n'y en a pas »).
 - **Modèle absent du banc** : chercher l'addon EVO qui le contient AVANT de le remplacer, y compris dans les **pakfiles des maps** (lump 40 des `.bsp` des gma : ni le catalogue ni l'index éclair ne les lisent) ; l'ajouter à l'éclair ; ne jamais substituer un autre modèle sans le dire à Adrien. Ex. `models/nt/props_nature/*` (tree01 à 09_sg, rochers, papillons) = pakfile de `rp_shinonome_evo`, addon #9 (3620395110). Risque à vérifier : un pakfile n'est monté que sur sa map, donc ces modèles peuvent sortir en ERROR ailleurs sur EVO (27/11/2026, Sumii P1 v14).
+- **Sources autorisées** (décision d'Adrien, 27/11/2026 04 h 04) : seulement les addons lus par le catalogue (EVO #1, 3 à 11, 13). Un modèle trouvé ailleurs (pakfile d'une map, autre addon) se propose à Adrien, il ne s'utilise pas. Vérifier aussi que le fichier existe encore dans le gma actuel : le catalogue peut être plus ancien (`dylennt/dylenuage*` absent de l'addon #1 allégé).
 - Un modèle hors liste blanche peut être **dessiné par script** côté joueur (`ClientsideModel`, 0 posé) : masques EVO, décors impossibles en dupe.
 
 ## Utiles
