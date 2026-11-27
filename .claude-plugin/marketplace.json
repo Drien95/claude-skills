@@ -18,7 +18,7 @@
       "name": "optimus",
       "source": "./plugins/optimus",
       "description": "Coffre OPTIMUS : passation de fin de fil (/optimus:passation), rappelée une fois par fil après un commit ou une PR ; suivis de joueurs MJ (/optimus:suivi) avec brouillon de réponse.",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "category": "productivity",
       "keywords": ["optimus", "obsidian", "notes", "suivi", "mj"]
     }
