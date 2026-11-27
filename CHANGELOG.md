@@ -4,6 +4,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+- builds-evo : pieges-lua, 5 pièges de Sumii P1 v16 à v18 (texture absente en damier, cache de CreateMaterial, teinte des nuages qui dérivent, modèles client persistants, $color plafonné).
 - builds-evo : catalogue-evo, chercher un modèle absent dans les pakfiles des maps (nt/props_nature dans rp_shinonome_evo) avant de le substituer (Sumii P1, 27/11).
 
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
