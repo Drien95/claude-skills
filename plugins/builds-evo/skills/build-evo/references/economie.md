@@ -39,3 +39,7 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 - `"plafond_passes": 0` (pas de plafond), `"max_vues": N`, `"cahier_valide": "dispense"`, `"maquette_validee": "dispense"` dans `piece.json`.
 - `BUILDS_EVO_HOOKS_OFF=budget` coupe le hook entier (comptage compris).
 - Le compteur de passes repart à 0 à chaque message reçu dans la session : dans une session pilotée par un autre fil (Remote Control), ce fil doit relayer le point d'Adrien, pas le simuler.
+
+## Questions à Adrien et budget (Sumii, 27/11/2026)
+- Des questions reposées alors qu'Adrien avait déjà répondu (accord sur l'aperçu, forme de la boîte) : ses messages courts arrivent pendant qu'on travaille et parfois en retard. Règle : relire ses derniers messages du fil juste avant de poster une question, et retirer ce qui est déjà répondu.
+- Un choix présenté comme « dépasse la limite de 110 » : 110 n'était qu'un plafond de travail du cahier. Adrien : « On a 400 props de limite ». Règle : la limite est 400 posés ; un plafond de travail se présente comme tel et ne sert jamais à écarter une option.

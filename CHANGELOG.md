@@ -4,6 +4,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Leçons du script de Sumii et de son banc (27/11/2026, demande d'Adrien)
+- `pieges-lua.md` : relais après effacement, état « déjà construit » au recollage, repère confondu avec une voisine, rechargement à chaud partiel.
+- `procedure-banc.md` : GMod au premier plan pendant une série.
+- `economie.md` : relire les réponses avant de questionner ; 400 posés est la seule limite.
+
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
 La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii : une passation a envoyé la session de build directement au banc.
 - Hook `budget` : `banc_passe` et `banc_tester` refusés tant que `piece.json` n'a pas `maquette_validee` (date ou `dispense` sur la parole d'Adrien) ; l'état au début de session dit si la maquette est validée. Tests : `Maquette` (4).
