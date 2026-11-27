@@ -31,7 +31,7 @@ class Base(unittest.TestCase):
         self._tmp.cleanup()
 
     def piece(self, **k):
-        d = {"scene": "A3", "piece": "Arche", "version": 2, "cahier_valide": "2026-11-27"}
+        d = {"scene": "A3", "piece": "Arche", "version": 2, "cahier_valide": "2026-11-27", "maquette_validee": "2026-11-27"}
         d.update(k)
         (self.etat / "piece.json").write_text(json.dumps(d), encoding="utf-8")
 
@@ -63,6 +63,28 @@ class Cahier(Base):
         self.piece()
         self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
         self.assertEqual(self.pre("mcp__plugin_builds-evo_banc__banc_planche", {"dossier": "x"})[0], None)
+
+
+class Maquette(Base):
+    def test_passe_refusee_sans_maquette(self):
+        self.piece(maquette_validee=None)
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("three.js", raison)
+        self.assertEqual(self.pre("mcp__plugin_builds-evo_banc__banc_tester", {"dupe": "a.txt"})[0], "deny")
+
+    def test_planche_libre_sans_maquette(self):
+        self.piece(maquette_validee=None)
+        self.assertEqual(self.pre("mcp__plugin_builds-evo_banc__banc_planche", {"dossier": "x"})[0], None)
+
+    def test_dispense(self):
+        self.piece(maquette_validee="dispense")
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+    def test_debut_signale_maquette(self):
+        self.piece(maquette_validee=None)
+        res = lancer("debut", {"cwd": str(self.sous)})
+        self.assertIn("maquette NON validée", res["additionalContext"])
 
 
 class Vues(Base):

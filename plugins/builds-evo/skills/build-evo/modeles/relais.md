@@ -2,6 +2,7 @@
 
 (2 Ko au plus : il est relu au début de chaque session par le hook budget. Le reste est dans les fichiers.)
 
+- **Étapes faites et restantes** (obligatoire, recopiée de la checklist 0 à 15 du skill `build-evo`) : faites … ; restantes …, dans l'ordre
 - **Fait** : … (version, note, posés)
 - **Décisions d'Adrien** depuis le dernier relais : … (date)
 - **Fichiers clés** : cahier.md, fiche, build.py, dupe, dernière planche (chemins)
