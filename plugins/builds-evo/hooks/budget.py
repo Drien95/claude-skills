@@ -1,7 +1,7 @@
 """Hooks d'économie du plugin builds-evo (0 token : ils ne parlent que pour bloquer ou au début d'une session).
 
 Un seul script, cinq modes (voir hooks.json) :
-  pre     PreToolUse   : cahier des charges validé avant toute passe du banc ; au plus N vues par passe ;
+  pre     PreToolUse   : cahier des charges ET maquette three.js validés avant toute passe du banc ; au plus N vues par passe ;
                          plafond de passes sans point avec Adrien ; une critique par planche ; lire la planche,
                          pas chaque capture ; compteurs et journal de consommation gérés par les hooks seuls.
   post    PostToolUse  : compte une passe du banc réussie.
@@ -12,7 +12,7 @@ Un seul script, cinq modes (voir hooks.json) :
 CLI : python budget.py rapport [scène]  -> consommation par scène et par pièce (pour /builds-evo:conso et la rétro).
 
 Fichiers, dans `.claude/builds-evo/` cherché depuis le dossier de la session vers le haut (comme la ligne d'état) :
-  piece.json      (écrit par les fils) : scene, piece, version, cahier_valide, plafond_passes (défaut 5, 0 = sans
+  piece.json      (écrit par les fils) : scene, piece, version, cahier_valide, maquette_validee, plafond_passes (défaut 5, 0 = sans
                   plafond, sur ordre d'Adrien seulement), max_vues (défaut 12)
   compteurs.json  (hooks seuls) : passes_depuis_point, passes_total, critique_passe, finale_passe, point
   conso.json      (hooks seuls) : jetons par scène / pièce / modèle, position lue dans chaque transcript
@@ -89,6 +89,10 @@ def verifier_passe(outil_entree, dossier, cwd):
         return ("Pas de cahier des charges validé pour « %s » : lancer /builds-evo:cahier, faire valider la checklist par "
                 "Adrien en un message, puis écrire \"cahier_valide\": \"AAAA-MM-JJ\" dans piece.json. Aucune passe du banc "
                 "avant (A2 : les exigences ajoutées en route ont rouvert l'addon 4 fois)." % (piece.get("scene") or "?"))
+    if not piece.get("maquette_validee"):
+        return ("Pas de maquette three.js validée pour « %s » : étape 7 du skill build-evo (décor + timeline en gris, "
+                "humain de 72 u, caméras réelles), montrée à Adrien, puis \"maquette_validee\": \"AAAA-MM-JJ\" dans "
+                "piece.json. Aucun GMod avant (Sumii, 27/11 : étape sautée par une passation)." % (piece.get("scene") or "?"))
     vues = outil_entree.get("vues")
     max_vues = entier(piece.get("max_vues"), VUES_DEFAUT)
     if vues:
@@ -332,10 +336,12 @@ def debut(ev):
     if piece:
         c = lire(dossier / "compteurs.json")
         plafond = entier(piece.get("plafond_passes"), PLAFOND_DEFAUT)
-        etat = "Build en cours : %s › %s v%s ; passes depuis le dernier point %s/%s ; cahier %s." % (
+        etat = "Build en cours : %s › %s v%s ; passes depuis le dernier point %s/%s ; cahier %s ; maquette %s." % (
             piece.get("scene"), piece.get("piece"), piece.get("version"), entier(c.get("passes_depuis_point"), 0),
             plafond if plafond > 0 else "sans plafond", "validé le %s" % piece["cahier_valide"] if piece.get("cahier_valide")
-            else "NON validé (/builds-evo:cahier avant toute passe)")
+            else "NON validé (/builds-evo:cahier avant toute passe)",
+            "validée le %s" % piece["maquette_validee"] if piece.get("maquette_validee")
+            else "NON validée (three.js, étape 7, avant tout GMod)")
         morceaux.append(etat + " Règles d'économie : skill build-evo, `references/economie.md`.")
     if morceaux:
         commun.contexte("SessionStart", "\n\n".join(morceaux))

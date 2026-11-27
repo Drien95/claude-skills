@@ -13,7 +13,7 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 | Mesures à la main | bornes des modèles mesurées pièce par pièce | `bornes_modeles.json`, générateurs à paramètres |
 
 ## Les 10 règles (les hooks du plugin font respecter celles marquées ⚙)
-1. ⚙ **Cahier des charges validé avant toute passe** (`/builds-evo:cahier`) : `banc_passe` et `banc_tester` sont refusés tant que `piece.json` n'a pas `cahier_valide`.
+1. ⚙ **Cahier des charges puis maquette three.js validés avant toute passe** (`/builds-evo:cahier`, étape 7) : `banc_passe` et `banc_tester` sont refusés tant que `piece.json` n'a pas `cahier_valide` et `maquette_validee`.
 2. ⚙ **Une session (ou un fil) par étape** : conception, build d'une pièce, script, livraison. Fin d'étape ou ligne d'état « → /relais » (contexte ≥ 60 %) : `/builds-evo:relais`, puis session neuve. Le hook relit le relais au démarrage.
 3. **Le bon modèle à chaque étape** (les agents portent leur modèle dans leur en-tête) :
    | Étape | Modèle |
@@ -36,6 +36,6 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 - L'indice de `/builds-evo:conso` pondère les jetons par les prix API relatifs (Opus 5, Sonnet 3, Haiku 1 ; cache lu 0,1, écrit 1,25, sortie 5) : il compare deux builds, ce n'est pas un pourcentage du forfait.
 
 ## Sorties de secours (seulement sur la parole d'Adrien, dans le fil)
-- `"plafond_passes": 0` (pas de plafond), `"max_vues": N`, `"cahier_valide": "dispense"` dans `piece.json`.
+- `"plafond_passes": 0` (pas de plafond), `"max_vues": N`, `"cahier_valide": "dispense"`, `"maquette_validee": "dispense"` dans `piece.json`.
 - `BUILDS_EVO_HOOKS_OFF=budget` coupe le hook entier (comptage compris).
 - Le compteur de passes repart à 0 à chaque message reçu dans la session : dans une session pilotée par un autre fil (Remote Control), ce fil doit relayer le point d'Adrien, pas le simuler.

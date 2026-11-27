@@ -4,6 +4,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
+La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii : une passation a envoyé la session de build directement au banc.
+- Hook `budget` : `banc_passe` et `banc_tester` refusés tant que `piece.json` n'a pas `maquette_validee` (date ou `dispense` sur la parole d'Adrien) ; l'état au début de session dit si la maquette est validée. Tests : `Maquette` (4).
+- `build-evo/SKILL.md` : liste des étapes 0 à 15 posée sur la checklist au début de chaque build ou reprise, cochée seulement quand son fichier existe ; étape 7 (maquette) remontée dans la partie « Écrire et maquetter avant de construire », validée par Adrien avant tout GMod (le classement dans « Construire une pièce » a permis de la passer).
+- Modèle de relais et `/builds-evo:relais` : ligne obligatoire « étapes faites et restantes ».
+- `/builds-evo:nouvelle-piece` (champ `maquette_validee` dans `piece.json`) et `economie.md` (règle 1, sorties de secours) alignés.
+
 ### Rétro de conception de l'A2 (27/11/2026)
 - `composition-scene/references/conception-scene.md` : ce qui a marché dans la conception de l'A2 (contrainte du moteur retournée en mécanique RP, accent rare, formes porteuses de sens, tout tracé depuis la pièce de tête, décor à 3 niveaux, son et silence dans la fiche), pourquoi elle a plafonné à 6 ou 6,5, et la méthode en 6 points dans la fiche DA, sans passe de banc en plus. Lien dans `composition-scene/SKILL.md` ; ligne datée dans `gouts-adrien.md`.
 

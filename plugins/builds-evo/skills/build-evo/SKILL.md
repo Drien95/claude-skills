@@ -5,33 +5,34 @@ description: Chef d'orchestre d'un build GMod pour le serveur EVO (dupe AdvDupe2
 
 # Build EVO : la checklist d'un build
 
-Une page, dans l'ordre. Le détail est dans les autres skills et dans `references/` : ne charger une fiche que quand l'étape en a besoin.
+Une page, dans l'ordre. Le détail est dans les autres skills et `references/`, à charger quand l'étape en a besoin.
 
 ## Avant tout
+- **Étapes 0 à 15 sur la checklist** au début de chaque build ou reprise ; une étape cochée seulement si son fichier existe.
 - **Rien ne démarre sans demande explicite d'Adrien.** Une question (« quels assets ? ») n'est pas un feu vert.
-- Un build = un chantier découpé en sessions par étape (26/11, remplace « un seul fil »), chacune autonome au banc jusqu'au seuil. Une pièce à la fois, jamais la scène complète en image (on garde la surprise).
-- Répondre d'abord à Adrien, travailler ensuite ; un point toutes les ~5 min.
+- Un build = des sessions par étape, chacune autonome jusqu'au seuil. Une pièce à la fois, jamais la scène complète en image (surprise).
+- Répondre d’abord à Adrien ; un point toutes les 5 min.
 
 ## Économie (l'A2 a pris ~10 % de la semaine Max) → `references/economie.md`
-- **Cahier validé d'abord** (`/builds-evo:cahier`) ; **une session par étape**, `/builds-evo:relais` entre deux ou dès « → /relais ».
+- **Cahier puis maquette validés d'abord** ; **une session par étape**, `/builds-evo:relais` entre deux ou dès « → /relais ».
 - **Modèle fort** : concevoir, `critique-finale`. **Sonnet** : `passe-banc`, `critique-build`, `allegement`, script.
 - **5 passes au plus sans point avec Adrien** ; ses retours groupés en un message, par numéros.
 - **Gratuit avant payant** : contrôle auto et console avant toute critique, `controle_livraison.py` avant la finale ; une critique par planche ; la planche, pas les captures ; 12 vues au plus (hook `budget`).
 
-## 1. Écrire avant de construire (Adrien valide, rien n'est posé avant)
+## 1. Écrire et maquetter avant de construire (Adrien valide, rien n'est posé ni lancé avant)
 0. **Cahier des charges** (`/builds-evo:cahier`) : scène, jeu, livraison, budget de travail ; validé en un message.
 1. **Fiche DA** d'une page (`modeles/fiche-da.md`). → skill `composition-scene`
 2. **Points de vue** : arrivée des joueurs + 2 ou 3 vues de jugement. → `composition-scene`, `mise-en-scene`
-3. **Budget** : posés par élément sur 400 (props + particules + lumières du catalogue ; script hors quota). Ce qui n'est pas un prop va en script. → `pieces-props`
+3. **Budget** : posés par élément sur 400 (props + particules + lumières du catalogue ; script hors quota). → `pieces-props`
 4. **Fiche de pièce** pour chaque élément héros (`modeles/fiche-piece.md`) : rôle, budget, 3 vues, critères « fini quand ».
 5. **Courbe de séquence** en secondes : calme → signe → montée → silence → sommet → retombée. → `mise-en-scene`
-6. **Journal et état** : `/builds-evo:nouvelle-piece` (fiche, ligne du journal, `.claude/builds-evo/piece.json` lu par la ligne d'état et le tableau de bord OPTIMUS). État mis à jour à chaque version AVANT la planche.
+6. **Journal et état** : `/builds-evo:nouvelle-piece` (fiche, ligne du journal, `piece.json` lu par la ligne d'état et OPTIMUS). État mis à jour à chaque version AVANT la planche.
+7. **Maquette three.js** : décor + timeline en gris (humain de 72 u, caméras réelles), validée par Adrien AVANT tout GMod (`maquette_validee` dans `piece.json`, sinon le hook refuse le banc).
 
 ## 2. Construire une pièce (boucle détaillée : `references/boucle-piece.md`)
-7. **Maquette three.js** = décor + timeline en gris (humain de 72 u, caméras réelles) ; les effets se règlent au banc.
 8. **3 silhouettes en parallèle**, une planche côte à côte, **une décision par planche**. Puis formes moyennes (2 variantes), puis détail. On ne revient plus aux grandes formes. → `references/15-iterations.md`
 9. **Props** : d'abord la bibliothèque (`pieces-props`, `bibliotheque.md`), sinon générés par `build.py` depuis le gabarit, jamais à la main. → `pieces-props`
-10. **Fermeture d'abord** (ciel noir, brume, lumière clé en script) dès la première pièce : sol, dunes, lointains se jugent DANS la scène fermée (A2 : 4 passes bloquées à 6,5 par le ciel du banc).
+10. **Fermeture d'abord** (ciel noir, brume, lumière clé en script) dès la première pièce : sol, dunes, lointains se jugent DANS la scène fermée.
 10 bis. **Banc** de jour pour la forme, de nuit pour les effets : chaque passe = un ordre écrit (2 corrections au plus) pour l'agent `passe-banc`. → `banc-gmod` (AVANT toute commande GMod)
 11. **Effets et sous-effets en script** (niveau tornade J3), son sans musique. → `effets-scene-lua`, `mise-en-scene`
 
