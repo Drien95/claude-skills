@@ -36,6 +36,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - `assemblage-livraison` : toute scène livre la liste complète de ses commandes (README, `COMMANDES.md`, note OPTIMUS) et une commande d'effacement total à double confirmation (props, gravure, effets, sons, état, timers, hooks), testée au banc (demande d'Adrien, A2, 26/11).
 - `banc-gmod` : rangement des dupes (essais du banc dans `advdupe2/banc/`, finales dans un dossier par projet, anciennes versions dans `advdupe2_corbeille/`).
 
+## [optimus 0.3.3] - 2026-11-27
+
+### Modifié
+- `/optimus:suivi` (demande d'Adrien) : relit tout l'historique du ticket et la section « Échanges » de la note avant un brouillon ; ne répète jamais ce qu'Adler a déjà envoyé, répond seulement au dernier message du joueur et à ce qui reste ; chaque message envoyé est noté dans « Échanges » avec son heure (Paris). Test : `test_ne_repete_pas_et_note_les_echanges`.
+
 ## [optimus 0.3.2] - 2026-11-27
 
 ### Modifié

@@ -46,6 +46,10 @@ class SkillSuivi(unittest.TestCase):
         self.assertIn("grades-v1", self.t)
         self.assertIn("sans trancher", self.t)
 
+    def test_ne_repete_pas_et_note_les_echanges(self):
+        self.assertIn("Ne jamais répéter ce qu'Adler a déjà envoyé", self.t)
+        self.assertIn("« Échanges »", self.t)
+
     def test_proprietes_de_la_vue(self):
         for cle in ("`parcours`", "`action`", "`priorite`"):
             self.assertIn(cle, self.t)
