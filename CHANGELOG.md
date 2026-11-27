@@ -9,6 +9,7 @@ La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii
 - Hook `budget` : `banc_passe` et `banc_tester` refusés tant que `piece.json` n'a pas `maquette_validee` (date ou `dispense` sur la parole d'Adrien) ; l'état au début de session dit si la maquette est validée. Tests : `Maquette` (4).
 - `build-evo/SKILL.md` : liste des étapes 0 à 15 posée sur la checklist au début de chaque build ou reprise, cochée seulement quand son fichier existe ; étape 7 (maquette) remontée dans la partie « Écrire et maquetter avant de construire », validée par Adrien avant tout GMod (le classement dans « Construire une pièce » a permis de la passer).
 - Modèle de relais et `/builds-evo:relais` : ligne obligatoire « étapes faites et restantes ».
+- `journal/mesures.md` : ligne ouverte pour Sumii, P1 (sol, fermeture, ciel couchant).
 - `/builds-evo:nouvelle-piece` (champ `maquette_validee` dans `piece.json`) et `economie.md` (règle 1, sorties de secours) alignés.
 
 ### Rétro de conception de l'A2 (27/11/2026)
