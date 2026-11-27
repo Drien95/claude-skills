@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- Leçon (effets-scene-lua, pièges Lua) : cache du test de boîte par image ET par œil ; ciel complet dessiné dans `PreDrawSkyBox` (Sumii P1, 27/11/2026).
 
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
 La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii : une passation a envoyé la session de build directement au banc.
