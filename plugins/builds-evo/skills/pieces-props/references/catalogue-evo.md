@@ -11,6 +11,8 @@
 - Dalles à sommet arrondi `hm197_18`, dalles `197_1`, arcade `208_1` (recettes du Lac noir).
 - Lumière par props : plaques `debugwhite` teintées ; cristaux `models/arid_valley_v2/arid_crystal_01_test_01` (`_065`, `_045`), unlitgeneric, mais bleus et non teintables.
 
+- Gros feuillu (Sumii P1, 27/11/2026) : les arbres `nt/props_nature/tree0x_sg` de la liste blanche ne sont PAS sur le PC (banc impossible). Seul gros feuillu autorisé ET présent : `models/propper/rp_seireitei_v1/watcher_skr_treesakura_1.mdl` (655 u, .phy), teinté (70, 214, 64) : le rose devient vert tendre, le tronc tire au vert. Vérifier la présence locale (index éclair de l'Atelier) avant d'écrire un modèle dans une fiche de pièce.
+
 ## Refusés (par EVO ou par Adrien)
 - s_40 (bocal de labo), hm40 (cuivre non teintable), cristaux arid en décor coloré, éclats hm20 et cônes hm197_29 (grossiers), siège d'Espada s_71 (plat), velours rouge.
 - Aucune épée seule au catalogue (seulement présentoirs, râteliers, panoplies) : la katana est faite en props.

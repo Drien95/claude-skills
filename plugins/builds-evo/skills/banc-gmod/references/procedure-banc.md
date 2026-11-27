@@ -4,7 +4,7 @@
 1. Demander l'accord d'Adrien si GMod n'est pas déjà ouvert.
 2. Un seul GMod sur gm_flatgrass solo, mode éclair. `gmod.exe -hijack ... +map gm_flatgrass` charge la carte dans un GMod déjà ouvert (c'est le banc qui le fait).
 3. Hors focus, GMod ne dessine les props que si ce processus les a déjà dessinés une fois avec le focus : un build « contenu » (un exemplaire de chaque modèle), un seul passage au premier plan de 3 à 5 s avec l'accord d'Adrien, focus rendu (`banc.gmod_en_bas()`), puis toutes les tâches sans `--lancer` ni `--focus` dans ce même GMod. Un GMod neuf par tâche = captures vides.
-4. Un GMod éclair n'a que le contenu de son build.
+4. Un GMod éclair n'a que le contenu de son build. Un modèle ajouté en cours de série (Sumii P1, 27/11/2026) : copier ses fichiers dans `addons/banc_contenu` SANS vider le dossier (`eclair.besoins` + `eclair._ecrire` sur le nouveau dupe) ; GMod le trouve au collage suivant, sans relance.
 5. Vérifier sur une capture que le script est chargé AVANT la série.
 
 ## Où coller

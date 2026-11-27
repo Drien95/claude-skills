@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- Leçon (pieces-props, banc-gmod) : arbres nt absents du PC, cerisier teinté vert ; ajout de contenu au banc éclair sans relance (Sumii P1, 27/11/2026).
 - Leçon (effets-scene-lua, pièges Lua) : cache du test de boîte par image ET par œil ; ciel complet dessiné dans `PreDrawSkyBox` (Sumii P1, 27/11/2026).
 
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
