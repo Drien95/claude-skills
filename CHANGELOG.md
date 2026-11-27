@@ -4,6 +4,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 
 ## Non publié
 
+- effets-scene-lua : profondeur du matériau couleur, `OverrideDepthEnable` répété et `cam.IgnoreZ` par caméra (banc Sumii, 27/11/2026).
 - effets-scene-lua : un mur de fermeture en script cache le ciel et les halos dessinés plus loin (Sumii, 27/11/2026).
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
 La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii : une passation a envoyé la session de build directement au banc.
