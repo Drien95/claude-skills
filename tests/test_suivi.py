@@ -38,6 +38,10 @@ class SkillSuivi(unittest.TestCase):
         self.assertIn("Arrancar", self.t)
         self.assertIn("jamais Adler proposé comme maître", self.t)
 
+    def test_paliers_sur_la_grille_v1(self):
+        self.assertIn("grille-maitrise-v1", self.t)
+        self.assertIn("grade minimum", self.t)
+
     def test_proprietes_de_la_vue(self):
         for cle in ("`parcours`", "`action`", "`priorite`"):
             self.assertIn(cle, self.t)
