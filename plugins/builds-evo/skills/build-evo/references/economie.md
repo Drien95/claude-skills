@@ -12,7 +12,7 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 | Planches fausses | 2 planches notées avec le sable absent (erreur Lua) | console lue par `banc_passe`, planche refusée |
 | Mesures à la main | bornes des modèles mesurées pièce par pièce | `bornes_modeles.json`, générateurs à paramètres |
 
-## Les 10 règles (les hooks du plugin font respecter celles marquées ⚙)
+## Les 16 règles (les hooks du plugin font respecter celles marquées ⚙)
 1. ⚙ **Cahier des charges puis maquette three.js validés avant toute passe** (`/builds-evo:cahier`, étape 7) : `banc_passe` et `banc_tester` sont refusés tant que `piece.json` n'a pas `cahier_valide` et `maquette_validee`.
 2. ⚙ **Une session (ou un fil) par étape** : conception, build d'une pièce, script, livraison. Fin d'étape ou ligne d'état « → /relais » (contexte ≥ 60 %) : `/builds-evo:relais`, puis session neuve. Le hook relit le relais au démarrage.
 3. **Le bon modèle à chaque étape** (les agents portent leur modèle dans leur en-tête) :
@@ -33,6 +33,10 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 12. ⚙ **Passes du banc sur Sonnet** (hook : `banc_passe`/`banc_tester` refusés si la session ou l'agent tourne sur un autre modèle ; `"modele_banc": "dispense"` sur la parole d'Adrien). **Sonnet dès la 4e passe** : jusqu'à 3 passes courtes (1 ou 2 appels chacune), les faire dans la session ; au-delà, ou pour un vrai travail de build, confier les passes à un agent Sonnet (`passe-banc`) avec un ordre écrit, car il recharge ~40 k de contexte à chaque lancement.
 
 13. ⚙ **Plafond de dépense par scène** (`plafond_depense` de `piece.json`, indice de `/builds-evo:conso`, défaut 60, fixé au cahier) : passes, banc et agents refusés une fois atteint ; alerte au début de session dès 80 %. Seul Adrien le relève (Sumii, 28/11 : le plan hebdo y est passé).
+
+14. **Fiches à la demande** : on lit la fiche de l'étape (`index-lecture.md`), par extrait si elle dépasse 5 Ko, et on ne relit pas une fiche déjà lue. ⚙ Le hook refuse la première passe du banc tant que le skill `banc-gmod` n'a pas été lu (session ou agent). Grosse lecture pour une question étroite : agent `lecteur` (Sonnet, citations exactes, 15 lignes).
+15. **Contexte stable, on ajoute à la fin** (le cache lit 0,1 ce qui n'a pas bougé, écrit 1,25 ce qui change) : ne pas rééditer CLAUDE.md, la mémoire ni un skill en cours de fil, ne pas recoller ce qui est déjà dans le fil, un brief d'agent est écrit une fois, en entier.
+16. **Sorties courtes** : un outil rend ses alertes, pas son rapport (`maquette_passe`, `banc_passe`) ; pas de `cat` d'un fichier, `grep -n` puis `Read` avec `offset`/`limit` ; résultat d'un grep large borné (`head`). Mesurer un fil : `python outils/conso_fil.py <journal.jsonl>` (socle, croissance par appel, indice).
 
 ## Lots de script : un seul banc (Sumii, 27-28/11/2026 : un banc par lot L0 à L8, GMod passé au premier plan)
 - Coder 3 à 5 lots hors jeu (`luajit -bl`, garde_lua), écrire AVANT la **checklist de banc** (une ligne par lot : commande, ce qu'on doit voir, mesure), puis un seul passage au banc qui les teste tous ; nouveau banc seulement pour un défaut trouvé.

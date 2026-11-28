@@ -10,7 +10,7 @@
       "name": "builds-evo",
       "source": "./plugins/builds-evo",
       "description": "Builds GMod pour EVO : méthode, composition, props, effets Lua, mise en scène, banc de test ; hooks des interdits du banc et des scripts.",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "category": "productivity",
       "keywords": ["gmod", "evo", "advdupe2", "lua", "build"]
     },
