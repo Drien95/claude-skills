@@ -12,7 +12,7 @@
 - Séquences en temps brut, commandes suivante / précédente / aller à N ; chaque séquence tient sa dernière image.
 
 ## Addon serveur
-- `lua/autorun/<nom>_init.lua` (vérifie la map, `AddCSLuaFile`, `include`) + `lua/<nom>/sh_config.lua`, `sv_*.lua`, `cl_scene.lua` ; sons dans `sound/<nom>/` envoyés par `resource.AddFile`.
+- `lua/autorun/<nom>_init.lua` (vérifie la map, `AddCSLuaFile`, `include`) + `lua/<nom>/sh_config.lua`, `sv_*.lua`, un `cl_<module>.lua` par pièce (comme le Lac noir, pas un seul `cl_scene.lua`) ; sons dans `sound/<nom>/` envoyés par `resource.AddFile`.
 - Droits : `IsAdmin` + SteamID listés dans `sh_config`, revérifiés côté serveur ; convar d'accès. Joueurs qui arrivent en cours : état envoyé après `PlayerInitialSpawn`.
 - État partagé (A2, 26/11/2026) : le serveur tient l'état complet et un numéro de version ; il l'envoie aux joueurs dans la boîte qui n'ont pas la dernière version (relevé toutes les 0,5 s) : celui qui arrive ou entre dans la boîte est rattrapé ; le client redemande l'état à `InitPostEntity`. Sons rejoués seulement si l'événement vient de partir.
 - Ancre par motif de props et commandes `ancre` (MJ) et `diag` (joueur) : voir `pieges-lua.md`.
@@ -31,3 +31,9 @@
 - Vérifier qu'une PR n'est pas déjà mergée avant d'y pousser ; sinon nouvelle PR depuis main.
 - Avant de livrer (A2, 26/11/2026, question d'Adrien) : dupe figé (aucune clé `Frozen`), rien de mobile donc pas de bruit de props ni de soudure utile, collisions vérifiées au banc par trace (assises qui portent, décor traversable), puis perma par le staff (PermaProps).
 - Map protégée par son vendeur (Hueco) : pas de test local, ne jamais contourner. Recréer la zone sur flatgrass pour juger.
+
+## Test de fin standard (Sumii, 28/11/2026 : wipe et visibilité vérifiés à la livraison)
+À écrire dès la 1re pièce jouable (étape 13 de `build-evo`), à rejouer à chaque lot, pas à la fin. Gabarit : `build-evo/modeles/test-de-fin.md`.
+- **Wipe** : effacer puis recoller au même endroit ; props et décor script reviennent, `diag` dit « rien d'actif » après l'effacement, un build voisin est intact, 0 hook ni timer.
+- **Visibilité à 2 places** (MJ + joueur) : ce qui est réservé au MJ n'apparaît pas chez le joueur ; le joueur de la scène n'est ni admin ni MJ ; un joueur hors boîte ne voit ni n'entend rien.
+- **Coût** : une commande de mesure (ms par image, dessins, 1 % pire) lancée par hook avant d'optimiser.

@@ -14,7 +14,7 @@ CLI : python budget.py rapport [scène]  -> consommation par scène et par pièc
 Fichiers, dans `.claude/builds-evo/` cherché depuis le dossier de la session vers le haut (comme la ligne d'état) :
   piece.json      (écrit par les fils) : scene, piece, version, cahier_valide, maquette_validee, fiche_da (chemin de la fiche DA complète, ou "dispense"), plafond_passes (défaut 5, 0 = sans
                   plafond, sur ordre d'Adrien seulement), max_vues (défaut 12)
-  compteurs.json  (hooks seuls) : passes_depuis_point, passes_total, critique_passe, finale_passe, point
+  compteurs.json  (hooks seuls) : passes_depuis_point, passes_total, critique_passe, finale_passe, focus_vols, point
   conso.json      (hooks seuls) : jetons par scène / pièce / modèle, position lue dans chaque transcript
   relais.md       (écrit par /builds-evo:relais) : passation courte entre deux sessions
 Python 3.8+, bibliothèque standard seulement.
@@ -130,6 +130,11 @@ def verifier_passe(outil_entree, dossier, cwd):
             return ("%d vues dans %s : %d au plus par passe (une planche de 9 à 12 vues ; chaque image lue coûte "
                     "~1 500 jetons). Garder les vues de jugement de la fiche." % (n, vues, max_vues))
     c = lire(dossier / "compteurs.json")
+    vols = entier(c.get("focus_vols"), 0)
+    if vols > 0 and piece.get("focus_ok") != "dispense":
+        return ("GMod a pris le premier plan %d fois pendant la série (ligne « garde-focus » du banc ; Sumii, 27/11 : 1 puis 5 fois). "
+                "Arrêter la série et le dire à Adrien avec ce nombre ; la passe suivante reprend après son message "
+                "(son message remet le compteur à 0)." % vols)
     plafond = entier(piece.get("plafond_passes"), PLAFOND_DEFAUT)
     faites = entier(c.get("passes_depuis_point"), 0)
     if plafond > 0 and faites >= plafond:
@@ -208,11 +213,27 @@ def reponse_ok(rep):
     return "ERREUR" not in texte[:400]
 
 
+def texte_reponse(rep):
+    return json.dumps(rep, ensure_ascii=False) if isinstance(rep, (dict, list)) else str(rep or "")
+
+
+def vols_de_focus(rep):
+    """Nombre de passages de GMod au premier plan signalés par le banc (« garde-focus : GMod a pris le premier plan »)."""
+    return len(re.findall(r"garde-focus\s*:\s*GMod a pris le premier plan", texte_reponse(rep)))
+
+
 def post(ev):
     if not OUTIL_PASSE.search(ev.get("tool_name") or ""):
         return
     dossier = trouver_dossier(ev.get("cwd"))
-    if dossier is None or not (dossier / "piece.json").is_file() or not reponse_ok(ev.get("tool_response")):
+    if dossier is None or not (dossier / "piece.json").is_file():
+        return
+    vols = vols_de_focus(ev.get("tool_response"))
+    if vols:
+        c = lire(dossier / "compteurs.json")
+        c["focus_vols"] = entier(c.get("focus_vols"), 0) + vols
+        ecrire(dossier / "compteurs.json", c)
+    if not reponse_ok(ev.get("tool_response")):
         return
     c = lire(dossier / "compteurs.json")
     c["passes_depuis_point"] = entier(c.get("passes_depuis_point"), 0) + 1
@@ -226,8 +247,9 @@ def prompt(ev):
     if dossier is None or not (dossier / "compteurs.json").is_file():
         return
     c = lire(dossier / "compteurs.json")
-    if entier(c.get("passes_depuis_point"), 0):
+    if entier(c.get("passes_depuis_point"), 0) or entier(c.get("focus_vols"), 0):
         c["passes_depuis_point"] = 0
+        c["focus_vols"] = 0
         c["point"] = maintenant()
         ecrire(dossier / "compteurs.json", c)
 
@@ -355,6 +377,14 @@ def debut(ev):
     if dossier is None:
         return
     morceaux = []
+    modele = ev.get("model")
+    if modele:
+        attendu = "Sonnet (build, passes, script)"
+        ok = "sonnet" in str(modele).lower()
+        morceaux.append("Modèle de cette session : %s. Attendu : %s ; le modèle fort seulement pour concevoir et la critique finale.%s"
+                        % (modele, attendu, "" if ok else " ⚠ Si c'est une session de build ou de script, passer sur Sonnet (/model sonnet) avant de continuer."))
+    else:
+        morceaux.append("Modèle de cette session : non fourni par Claude Code. Build, passes et script : Sonnet (/model sonnet) ; modèle fort seulement pour concevoir et la critique finale.")
     relais = dossier / "relais.md"
     if relais.is_file():
         texte = relais.read_text(encoding="utf-8", errors="replace").strip()
