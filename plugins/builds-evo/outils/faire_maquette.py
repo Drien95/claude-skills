@@ -59,6 +59,7 @@ def donnees(chemin, fiche=None, vues=None, sequence=None, brume=0.00035, titre=N
             continue
         p, b = prop(e, bornes)
         p["couleur"] = scene_couleurs.get((e["note"], e["modele"]))
+        p["note"] = e["note"] or e["modele"].rsplit("/", 1)[-1]
         props.append(p)
         bas.append(b)
     palette = {"dominante": None, "neutres": [], "accent": None}

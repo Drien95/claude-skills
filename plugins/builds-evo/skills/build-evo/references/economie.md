@@ -29,6 +29,9 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 9. **Briques communes d'abord** : bibliothèque de pièces (`pieces-props/references/bibliotheque.md`), générateurs à paramètres (`outils/dunes/`), `bornes_modeles.json`, gravure (`outils/gravure.py`, `gravure_lua/`), addon de l'A2 comme squelette (`creations-evo/a2-sable-du-fond` : commandes, effacement total, diag, état partagé, console). On copie et on adapte ; on ne réécrit pas.
 10. ⚙ **Mesurer** : le hook `budget` compte les jetons de chaque session par scène, pièce et modèle (`conso.json`, 0 jeton) ; `/builds-evo:conso` à la rétro, colonne « Indice » du journal de mesure.
 
+11. **Moins d'appels, pas moins de lecture** (mesuré le 28/11/2026 sur le test « Puits des Mues » : 66 % du coût = le contexte relu à chaque appel, socle ~82 k ; les images < 1 %) : regrouper les commandes (une seule pour plusieurs recherches), une passe = un appel (`maquette_passe`, `banc_passe`), lire le résumé des alertes et pas les sorties complètes.
+12. **Sonnet dès la 4e passe** : jusqu'à 3 passes courtes (1 ou 2 appels chacune), les faire dans la session ; au-delà, ou pour un vrai travail de build, confier les passes à un agent Sonnet (`passe-banc`) avec un ordre écrit, car il recharge ~40 k de contexte à chaque lancement.
+
 ## Ordres de grandeur (26/11/2026)
 - Une image lue : jusqu'à ~1 800 jetons (plein écran) ; une planche 3 × 3 de 640 × 360 : pareil pour 9 vues.
 - Un agent : 10 000 à 30 000 jetons par passage (il relit ses fichiers) ; sur Sonnet, environ 3/5 du coût sur le modèle fort.

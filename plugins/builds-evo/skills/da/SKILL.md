@@ -16,9 +16,9 @@ But : contrôler la DA par des outils, pas en lisant des images. Le hook `budget
 3. `da_fiche` : tant qu'il renvoie « fiche incomplète », compléter. Puis Adrien valide en un message ; écrire `"fiche_da": "<chemin>"` dans `piece.json`.
 
 ## Étape 2 : maquette (étape 7 de build-evo)
-4. `maquette_faire` (scene, fiche, vues, sequence, `capturer=true`) : maquette three.js + PNG par vue en modes gris et rendu, déjà mesurés. Jamais de lecture image par image.
-5. `sequence_controler` sur la timeline (un seul effet primaire, silence avant le sommet, paliers).
-6. `color_script` sur les captures des temps forts : deux temps forts qui se ressemblent = l'un change.
+4. `sequence_controler` sur la timeline (un seul effet primaire, silence avant le sommet, paliers).
+5. **Chaque passe = un seul appel** : `maquette_passe` (scene, fiche, vues, sequence, temps des temps forts) fait maquette, captures, vues bouchées, mesures, grille et color script, et ne renvoie que les alertes. Effets du script dans `"script"` du scene.json, brume par palier dans `"brumes"` de la séquence, `"sans_accent"` sur les vues où l'accent manque exprès. Jamais de lecture image par image.
+6. Deux temps forts qui se ressemblent au color script = l'un change. 5 passes sans point au plus, puis montrer à Adrien.
 
 ## À chaque planche du banc
 7. `banc_passe` mesure déjà ses captures (`da_mesurer`) ; ajouter `da_ressemblance` (image maîtresse contre captures) et `perf_rapport` si des mesures existent.

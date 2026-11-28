@@ -90,6 +90,13 @@ OUTILS = [
      {"scene": {"type": "string", "description": "dupe .txt ou scene.json"}, "fiche": {"type": "string"}, "vues": {"type": "string"},
       "sequence": {"type": "string"}, "sortie": {"type": "string", "description": "dossier de sortie (défaut : dossier de la scène)"},
       "capturer": {"type": "boolean"}, "temps": {"type": "number", "description": "instant de la séquence pour le mode rendu"}}),
+    ("maquette_passe",
+     "Une passe de maquette en un seul appel : maquette, captures gris et rendu aux temps forts, vues bouchées, mesures DA, grille pré-remplie au "
+     "sommet, color script. Renvoie les alertes seulement. À préférer à maquette_faire + color_script + grille_auto (moins d'appels, moins de jetons).",
+     {"scene": {"type": "string"}, "fiche": {"type": "string"}, "vues": {"type": "string"}, "sequence": {"type": "string"},
+      "temps": {"type": "array", "items": {"type": "number"}, "description": "temps forts en s (défaut : 0 et le sommet)"},
+      "vue_cs": {"type": "string", "description": "vue du color script (défaut : la dernière)"},
+      "dossier": {"type": "string", "description": "dossier de sortie (défaut : passe/ à côté de la scène)"}}),
     ("da_calibrer",
      "Calibre la mesure DA sur les notes d'Adrien. action=noter : enregistre les mesures d'un dossier de captures avec la note /10 qu'il a donnée "
      "(à faire à chaque planche notée). action=analyser : dit quelles mesures corrèlent avec ses notes et quel seuil sépare >= 7,5 du reste.",
@@ -484,6 +491,18 @@ def maquette_faire(a):
     return texte
 
 
+def maquette_passe(a):
+    args = [a["scene"], "--dossier", a.get("dossier") or str(Path(a["scene"]).resolve().parent / "passe")]
+    for cle in ("fiche", "vues", "sequence"):
+        if a.get(cle):
+            args += ["--" + cle, a[cle]]
+    if a.get("vue_cs"):
+        args += ["--vue-cs", a["vue_cs"]]
+    if a.get("temps"):
+        args += ["--temps", *[str(t) for t in a["temps"]]]
+    return _lancer_outil("passe_maquette", args, delai=600)
+
+
 def da_calibrer(a):
     act = a.get("action", "analyser")
     args = [act]
@@ -581,7 +600,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire, "da_calibrer": da_calibrer, "da_ressemblance": da_ressemblance}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire, "maquette_passe": maquette_passe, "da_calibrer": da_calibrer, "da_ressemblance": da_ressemblance}
 
 
 def repondre(i, res=None, err=None):

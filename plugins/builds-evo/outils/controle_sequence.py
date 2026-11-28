@@ -7,7 +7,7 @@ Format : {"sommet": 10.0, "courbe": [[0,1],[8,3],[10,5]],
           "ponctuels": {"goutte": [3, 14, 30]}}
 Règles (fiches 06, 08, 14) : un seul effet primaire à la fois ; anticipation avant le pic (>= 1 s) ; silence d'au moins 2 s
 avant le sommet ; une seule nouveauté par palier avant le sommet ; courbe d'intensité croissante jusqu'au sommet ;
-sons ponctuels espacés de 8 à 30 s.
+sons ponctuels espacés de 8 à 30 s. La courbe peut tomber pendant un événement « silence » (debut, fin) : c'est voulu.
 """
 import json
 import sys
@@ -48,7 +48,8 @@ def controler(seq):
         if len(g) > 1:
             attentions.append("%d nouveautés en même temps vers %.1f s : un palier ajoute une seule chose" % (len(g), g[0]))
     courbe = seq.get("courbe") or []
-    montee = [i for t, i in sorted(courbe) if t <= sommet]
+    silences = [(e["debut"], e["fin"]) for e in ev if e.get("type") == "silence" and isinstance(e.get("debut"), (int, float)) and isinstance(e.get("fin"), (int, float))]
+    montee = [i for t, i in sorted(courbe) if t <= sommet and not any(d <= t <= f for d, f in silences)]
     if any(b < a for a, b in zip(montee, montee[1:])):
         attentions.append("la courbe d'intensité redescend avant le sommet (crescendo attendu)")
     for nom, ts in (seq.get("ponctuels") or {}).items():
