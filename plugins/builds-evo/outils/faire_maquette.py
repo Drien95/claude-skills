@@ -5,7 +5,9 @@ Usage : python faire_maquette.py <dupe.txt|scene.json> [--fiche fiche-da.md] [--
                                  [--sortie maquette.html] [--brume 0.00035] [--titre Nom]
 Contenu : chaque prop en boîte d'après `bornes_modeles.json` (gris) ; un humain de 72 u ; les caméras de `vues.json` (format du banc :
 {"vues": [{"nom", "pos", "vise", "fov"?}]}, coordonnées relatives à la pièce de tête) ; mode « rendu » (brume, lumière clé et accent tirés de la palette en hex
-de la fiche DA, courbe d'intensité de la séquence). Sans vues, des caméras par défaut (entrée, 3/4, dessus) sont posées.
+de la fiche DA, courbe d'intensité de la séquence). Effets du script (`"script"` du scene.json : nom, forme boite|cylindre, pos, taille [x, y, h], lacet,
+couleur, debut, fin en s) dessinés en volumes lumineux, en mode rendu seulement, pendant leur fenêtre : 0 posé, juste pour juger la timeline.
+`"brumes": [[t, "#hex"], ...]` dans sequence.json : couleur de brume et de ciel par palier (sinon la dominante), pour que le color script juge les temps forts. Sans vues, des caméras par défaut (entrée, 3/4, dessus) sont posées.
 Ouvrir le .html dans un navigateur, ou `capturer_maquette.py` pour exporter des PNG sans rien ouvrir. Bornes absentes : boîte de 47,4 u.
 """
 import argparse
@@ -71,10 +73,20 @@ def donnees(chemin, fiche=None, vues=None, sequence=None, brume=0.00035, titre=N
         v = [{"nom": "entree", "pos": [-900, 0, 63], "vise": [0, 0, 150]}, {"nom": "trois_quarts", "pos": [-700, -700, 300], "vise": [0, 0, 100]},
              {"nom": "dessus", "pos": [0, -300, 1800], "vise": [0, 0, 0]}]
     seq = json.loads(Path(sequence).read_text(encoding="utf-8")) if sequence else {}
+    script = []
+    if str(chemin).lower().endswith(".json"):
+        d = json.loads(Path(chemin).read_text(encoding="utf-8"))
+        tete = next((e for e in d.get("ents") or [] if e.get("note") == d.get("head")), None)
+        hp = tete["pos"] if tete else (0, 0, 0)
+        for x in d.get("script") or []:
+            r = [x["pos"][j] - hp[j] for j in range(3)]
+            script.append({"nom": x.get("nom", "?"), "forme": x.get("forme", "boite"), "pos": [sum(C3[i][k] * r[k] for k in range(3)) for i in range(3)],
+                           "taille": x.get("taille", [50, 50, 50]), "couleur": x.get("couleur") or palette["accent"] or "#ffffff",
+                           "lacet": x.get("lacet", 0), "debut": x.get("debut", 0), "fin": x.get("fin", 1e9)})
     ev = [{"t": e.get("t", 0), "nom": e.get("nom", "?")} for e in seq.get("evenements") or []]
     return {"titre": titre or Path(chemin).stem, "props": props, "sol": round(min(bas), 2) if bas else 0, "humain": [-250, -120, 0], "palette": palette,
-            "vues": v, "courbe": seq.get("courbe") or [], "evenements": ev, "duree": seq.get("sommet", 10) * 1.3 if seq else 10,
-            "brume": brume, "accent_pos": [0, 0, 150]}
+            "vues": v, "courbe": seq.get("courbe") or [], "brumes": seq.get("brumes") or [], "evenements": ev, "duree": seq.get("sommet", 10) * 1.3 if seq else 10,
+            "brume": brume, "accent_pos": [0, 0, 150], "script": script}
 
 
 def main(argv=None):
