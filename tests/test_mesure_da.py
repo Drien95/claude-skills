@@ -1,4 +1,5 @@
 """Tests de outils/mesure_da.py (mesure d'une capture contre la fiche DA)."""
+import os
 import subprocess
 import sys
 import tempfile
@@ -14,7 +15,8 @@ OUTIL = Path(__file__).resolve().parents[1] / "plugins" / "builds-evo" / "outils
 
 
 def lancer(*args):
-    return subprocess.run([sys.executable, str(OUTIL), *args], capture_output=True, text=True, encoding="utf-8", timeout=60)
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")  # sortie en UTF-8 aussi sous Windows
+    return subprocess.run([sys.executable, str(OUTIL), *args], capture_output=True, text=True, encoding="utf-8", timeout=60, env=env)
 
 
 @unittest.skipIf(Image is None, "Pillow absent")
