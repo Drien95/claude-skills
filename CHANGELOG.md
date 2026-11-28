@@ -6,6 +6,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - Goûts d'Adrien (composition-scene) : arbres en aplat vert, lisière en sucettes, démarcation au sol refusés ; herbe et fleurs en script aimées (Sumii P1, 27/11/2026).
 - Leçon (pieces-props, banc-gmod) : arbres nt absents du PC, cerisier teinté vert ; ajout de contenu au banc éclair sans relance (Sumii P1, 27/11/2026).
 - Leçon (effets-scene-lua, pièges Lua) : cache du test de boîte par image ET par œil ; ciel complet dessiné dans `PreDrawSkyBox` (Sumii P1, 27/11/2026).
+- builds-evo : pièges construction étalée en coroutine, allocations par image (ramasse-miettes), halo pondéré par `util.PixelVisible` (Sumii P1, 27/11/2026).
+
+- builds-evo : pieges-lua, bandes claires sur des sphères Mesh() sans élimination des faces arrière : maillage à part en CullMode CW (Sumii P1 v28, 27/11).
+- builds-evo : pieges-lua, `$color` ne recolore pas une texture verte, partir d'une texture neutre ; tige peinte dans la texture, recadrer les UV (Sumii P1 v23, 27/11).
+- builds-evo : pieges-lua, 5 pièges de Sumii P1 v16 à v18 (texture absente en damier, cache de CreateMaterial, teinte des nuages qui dérivent, modèles client persistants, $color plafonné).
+- builds-evo : catalogue-evo, chercher un modèle absent dans les pakfiles des maps (nt/props_nature dans rp_shinonome_evo) avant de le substituer (Sumii P1, 27/11).
 
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
 La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii : une passation a envoyé la session de build directement au banc.
