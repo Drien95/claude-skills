@@ -55,7 +55,8 @@ class MesureDA(unittest.TestCase):
         self.image("a_vue1.png", (2, 2, 2))
         self.image("b_vue2.png", (20, 25, 30), (200, 50, 40))
         (self.d / "planche_1.jpg").write_bytes(b"pas une image")
-        r = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, %r); import mesure_da; print(mesure_da.mesurer_dossier(%r))" % (str(OUTIL.parent), str(self.d))], capture_output=True, text=True, encoding="utf-8", timeout=60)
+        r = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, %r); import mesure_da; print(mesure_da.mesurer_dossier(%r))" % (str(OUTIL.parent), str(self.d))], capture_output=True, text=True, encoding="utf-8", timeout=60,
+                           env=dict(__import__("os").environ, PYTHONIOENCODING="utf-8"))
         self.assertIn("2 vue(s), 1 avec alerte", r.stdout)
         self.assertIn("a_vue1", r.stdout)
         self.assertNotIn("b_vue2", r.stdout)
