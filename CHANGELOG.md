@@ -3,6 +3,11 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+
+## [builds-evo 0.3.2] - 2026-11-28
+
+### Ajouté
+- Règle de conception (builds-evo 0.3.2, 28/11/2026, validée par Adrien après les 3 tests du Puits des Mues) : `economie.md` règle 14 et `build-evo/SKILL.md` : outillage et fils neufs gardés ; conception sur Opus dans un fil neuf et court dédié ; maquette en boîtes pour valider l'idée (plafond ~5,5, 3 passes DA), vraie note au banc GMod ; critique calé sur les notes d'Adrien (`da_calibrer`). Texte seulement, pas de hook.
 - Maquette (builds-evo, 28/11/2026, demande d'Adrien) : lune visible et nappes de brume basse tirées de la fiche DA (« lune » dans la lumière clé, « brume basse » dans l'ambiance) ou du champ `ambiance` du scene.json ; la lumière clé vient de la lune. Effets du script : forme `sphere` et `ang` [tangage, lacet, roulis]. Tests : `AmbianceDeLaFiche`.
 
 ## [builds-evo 0.3.1] - 2026-11-28

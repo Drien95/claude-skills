@@ -34,6 +34,12 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 
 13. ⚙ **Plafond de dépense par scène** (`plafond_depense` de `piece.json`, indice de `/builds-evo:conso`, défaut 60, fixé au cahier) : passes, banc et agents refusés une fois atteint ; alerte au début de session dès 80 %. Seul Adrien le relève (Sumii, 28/11 : le plan hebdo y est passé).
 
+14. **Règle de conception** (3 tests du Puits des Mues, 27-28/11/2026 : test 1 = 1 080 k, 6,5/10, conception Opus à la main ; test 3 = 275 k, 5,5/10, tout outillé ; ajouter de la conception Opus dans un fil long = +250 k pour 5,25/10). Les économies viennent de moins d'appels, de fils neufs et de contrôles par script, sans perte de qualité ; le point perdu vient du temps de conception d'Opus retiré de la maquette. Donc :
+    1. **Garder l'outillage**, les fils neufs et la passe en un appel (règles 2, 6, 11, 12).
+    2. **La conception** (pièce principale, silhouette, éléments signature) se fait sur **Opus, dans un fil NEUF, court, dédié à ça** (brief + fiche DA en entrée, fiche de pièce et `scene.json` en sortie, puis `/builds-evo:relais`). Jamais en fin d'un fil long : chaque appel y relit tout le contexte et coûte le double.
+    3. **La maquette en boîtes valide l'idée, la lecture et le rythme**, pas le rendu : elle plafonne vers 5,5/10 au critique. Pas de polissage au-delà (plafond de passes DA sur maquette, 3 au plus, puis passage à Adrien) ; la vraie note (7,5) se donne au banc GMod avec les vrais modèles.
+    4. **Caler le critique sur Adrien** (`da_calibrer`, ses notes sur chaque planche) plutôt que payer des critiques supplémentaires d'un juge qui ne connaît pas son goût.
+
 ## Lots de script : un seul banc (Sumii, 27-28/11/2026 : un banc par lot L0 à L8, GMod passé au premier plan)
 - Coder 3 à 5 lots hors jeu (`luajit -bl`, garde_lua), écrire AVANT la **checklist de banc** (une ligne par lot : commande, ce qu'on doit voir, mesure), puis un seul passage au banc qui les teste tous ; nouveau banc seulement pour un défaut trouvé.
 - Prévenir Adrien avant la série que GMod peut passer devant ; chaque « garde-focus » dans la sortie compte (le hook `budget` refuse la passe suivante, voir sorties de secours).

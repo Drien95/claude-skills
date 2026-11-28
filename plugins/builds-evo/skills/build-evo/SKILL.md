@@ -10,12 +10,12 @@ Une page, dans l'ordre ; le détail est dans les autres skills et `references/`.
 ## Avant tout
 - **Étapes 0 à 15 sur la checklist** au début de chaque build ou reprise ; une étape cochée seulement si son fichier existe.
 - **Rien ne démarre sans demande explicite d'Adrien** (une question n'est pas un feu vert). Build accordé et cahier validé = **on enchaîne les étapes sans redemander** ; arrêt seulement sur un point d'Adrien, une maquette à valider ou un accord GMod.
-- Un build = des sessions par étape, autonomes jusqu'au seuil. Une pièce à la fois, jamais la scène complète en image (surprise).
+- Un build = des sessions par étape, autonomes jusqu'au seuil. Une pièce à la fois, jamais la scène complète en image.
 - Répondre d’abord à Adrien.
 
 ## Économie → `references/economie.md`
 - **Cahier puis maquette validés d'abord** ; **une session par étape** (`/builds-evo:relais`).
-- **Modèle fort** : concevoir, `critique-finale`. **Sonnet** : `passe-banc`, `critique-build`, `allegement`, script.
+- **Modèle fort** : concevoir (règle 14), `critique-finale`. **Sonnet** : `passe-banc`, `critique-build`, `allegement`, script.
 - **5 passes au plus sans point avec Adrien** ; ses retours groupés en un message, par numéros.
 - **Gratuit avant payant** : contrôle auto et console avant toute critique, `controle_livraison.py` avant la finale ; une critique par planche ; la planche, pas les captures ; 12 vues au plus (hook `budget`).
 
