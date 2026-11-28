@@ -75,6 +75,15 @@ OUTILS = [
      {"dossier": {"type": "string", "description": "dossier de captures"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"},
       "dupe": {"type": "string"}, "sequence": {"type": "string"}, "mesures": {"type": "string"},
       "sortie": {"type": "array", "items": {"type": "number"}}}),
+    ("palette_extraire",
+     "Extrait dominante, neutres et accent d'images de référence (fiche DA, fiches 02 et 10) et, avec fiche=, écrit la ligne « Palette en hex ». "
+     "Une suggestion à faire valider par Adrien.",
+     {"sources": {"type": "array", "items": {"type": "string"}, "description": "images ou dossiers de références"},
+      "fiche": {"type": "string", "description": "fiche DA à mettre à jour (facultatif)"}}),
+    ("color_script",
+     "Color script d'une séquence : une capture par temps fort, côte à côte (planche écrite dans le dossier), alerte si deux temps forts "
+     "se ressemblent ou si la couleur la plus vive n'est pas au sommet.",
+     {"dossier": {"type": "string"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -421,6 +430,28 @@ def grille_auto(a):
         raise ValueError("Pillow manque (pip install pillow)") from None
 
 
+def palette_extraire(a):
+    args = list(a.get("sources") or [])
+    if not args:
+        raise ValueError("`sources` : au moins une image ou un dossier")
+    if a.get("fiche"):
+        args += ["--ecrire", a["fiche"]]
+    return _lancer_outil("palette_ref", args)
+
+
+def color_script(a):
+    return _lancer_outil("color_script", [a["dossier"], "--sortie", str(Path(a["dossier"]) / "color_script.png")])
+
+
+def _lancer_outil(nom, args):
+    """Lance un outil en ligne de commande et renvoie sa sortie (erreur si code 2)."""
+    r = subprocess.run([sys.executable, str(Path(__file__).resolve().parent.parent / "outils" / (nom + ".py")), *args], capture_output=True,
+                       text=True, encoding="utf-8", errors="replace", timeout=120, env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    if r.returncode:
+        raise ValueError((r.stderr or r.stdout).strip()[:300] or "échec de %s" % nom)
+    return r.stdout.strip()
+
+
 def da_mesurer(a):
     return mesure_da(a["dossier"], a.get("fiche"), a.get("sortie"))
 
@@ -497,7 +528,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script}
 
 
 def repondre(i, res=None, err=None):

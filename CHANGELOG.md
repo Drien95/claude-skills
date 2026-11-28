@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- Outils de couleur (28/11/2026) : `outils/palette_ref.py` (MCP `palette_extraire` : palette de la fiche DA depuis des références) et `outils/color_script.py` (MCP `color_script` : une capture par temps fort, alerte si deux se ressemblent). Tests : `test_couleur.py`.
 - `outils/grille_auto.py` (MCP `grille_auto`) : pré-remplit la grille de contrôle avec toutes les mesures gratuites ([x], [ ] avec les vues, [?] à juger), pour que la critique ne juge que les [?] ; `mesure_da.py` sans avertissement Pillow. Test ajouté.
 - Lecture complète des fiches (28/11/2026) : `mesure_da.py` mesure aussi le noir pur (fiche 10) et le gamut des teintes ; `controle_auto.py` signale les modèles refusés par Adrien ou EVO (`catalogue-evo.md`, « Refusés »). Tests ajoutés.
 - Outils de DA, suite (28/11/2026) : `mesure_da.py` mesure aussi la densité de détail, le bruit, figure/fond et le chemin éclairé (`--sortie`) ; `controle_auto.py` alerte quand plus de 85 % des props sont parfaitement droits (fiche 04) ; `outils/rapport_perf.py` (MCP `perf_rapport`, sonde client à brancher) ; `outils/decor/decor.py` (décor par grappes, graine, budget dur ; fiche 20). Tests : `test_decor.py` et ajouts.
