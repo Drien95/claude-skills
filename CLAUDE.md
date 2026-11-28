@@ -4,7 +4,7 @@ Repo privé d'Adrien : catalogue de plugins Claude Code (`.claude-plugin/marketp
 
 - Ne jamais commit sur `main` : branche + PR, Adrien merge (voir CONTRIBUTING.md).
 - Toute modification d'un plugin : ligne dans `CHANGELOG.md` sous « Non publié ».
-- Versions : `plugin.json` et l'entrée du `marketplace.json` toujours égales.
+- Versions : `plugin.json` et l'entrée du `marketplace.json` toujours égales, et montées (au moins le patch) à chaque PR qui touche un plugin : le cache des plugins est rangé par version, sans montée les fils gardent l'ancien code.
 - `SKILL.md` = une page ; le détail dans `references/`. Ne pas renuméroter les fiches 01 à 21 (elles se citent par numéro).
 - Un hook = un script Python (bibliothèque standard, Windows) + ses tests dans `tests/`.
 - Avant une PR : `python -m unittest discover -s tests` et `claude plugin validate plugins/builds-evo`.

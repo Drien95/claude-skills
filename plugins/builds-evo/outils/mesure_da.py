@@ -18,7 +18,7 @@ HEX = re.compile(r"#([0-9a-fA-F]{6})\b")
 
 def donnees(im):
     """Pixels d'une image (getdata est annoncé comme supprimé dans Pillow 14)."""
-    return list(im.get_flattened_data()) if hasattr(im, "get_flattened_data") else donnees(im)
+    return list(im.get_flattened_data()) if hasattr(im, "get_flattened_data") else list(im.getdata())
 
 
 def hex_rgb(h):
