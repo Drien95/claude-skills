@@ -84,6 +84,12 @@ OUTILS = [
      "Color script d'une séquence : une capture par temps fort, côte à côte (planche écrite dans le dossier), alerte si deux temps forts "
      "se ressemblent ou si la couleur la plus vive n'est pas au sommet.",
      {"dossier": {"type": "string"}}),
+    ("maquette_faire",
+     "Génère la maquette three.js d'une pièce (étape 7) depuis un dupe ou un scene.json, puis, avec capturer=true, exporte des PNG par vue et par "
+     "mode (gris, rendu) et les mesure contre la fiche DA. 0 jeton d'image ; Playwright requis pour capturer.",
+     {"scene": {"type": "string", "description": "dupe .txt ou scene.json"}, "fiche": {"type": "string"}, "vues": {"type": "string"},
+      "sequence": {"type": "string"}, "sortie": {"type": "string", "description": "dossier de sortie (défaut : dossier de la scène)"},
+      "capturer": {"type": "boolean"}, "temps": {"type": "number", "description": "instant de la séquence pour le mode rendu"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -443,13 +449,30 @@ def color_script(a):
     return _lancer_outil("color_script", [a["dossier"], "--sortie", str(Path(a["dossier"]) / "color_script.png")])
 
 
-def _lancer_outil(nom, args):
+def _lancer_outil(nom, args, delai=120):
     """Lance un outil en ligne de commande et renvoie sa sortie (erreur si code 2)."""
     r = subprocess.run([sys.executable, str(Path(__file__).resolve().parent.parent / "outils" / (nom + ".py")), *args], capture_output=True,
-                       text=True, encoding="utf-8", errors="replace", timeout=120, env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+                       text=True, encoding="utf-8", errors="replace", timeout=delai, env=dict(os.environ, PYTHONIOENCODING="utf-8"))
     if r.returncode:
         raise ValueError((r.stderr or r.stdout).strip()[:300] or "échec de %s" % nom)
     return r.stdout.strip()
+
+
+def maquette_faire(a):
+    sortie = Path(a.get("sortie") or Path(a["scene"]).resolve().parent)
+    sortie.mkdir(parents=True, exist_ok=True)
+    html = sortie / "maquette.html"
+    args = [a["scene"], "--sortie", str(html)]
+    for cle in ("fiche", "vues", "sequence"):
+        if a.get(cle):
+            args += ["--" + cle, a[cle]]
+    texte = _lancer_outil("faire_maquette", args)
+    if a.get("capturer"):
+        cap = [str(html), "--sortie", str(sortie / "captures_maquette"), "--temps", str(a.get("temps", 0))]
+        if a.get("fiche"):
+            cap += ["--fiche", a["fiche"]]
+        texte += "\n" + _lancer_outil("capturer_maquette", cap, delai=300)
+    return texte
 
 
 def da_mesurer(a):
@@ -528,7 +551,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire}
 
 
 def repondre(i, res=None, err=None):

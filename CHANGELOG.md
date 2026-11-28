@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- Maquette three.js générée (28/11/2026) : `outils/faire_maquette.py` (+ `maquette/modele.html`) construit la maquette d'une pièce depuis le dupe, `outils/capturer_maquette.py` exporte des PNG par vue et par mode puis les mesure ; MCP `maquette_faire`. Testé de bout en bout en navigateur headless le 28/11 ; la capture n'est pas dans les tests de CI. Pas de bloom.
 - Outils de couleur (28/11/2026) : `outils/palette_ref.py` (MCP `palette_extraire` : palette de la fiche DA depuis des références) et `outils/color_script.py` (MCP `color_script` : une capture par temps fort, alerte si deux se ressemblent). Tests : `test_couleur.py`.
 - `outils/grille_auto.py` (MCP `grille_auto`) : pré-remplit la grille de contrôle avec toutes les mesures gratuites ([x], [ ] avec les vues, [?] à juger), pour que la critique ne juge que les [?] ; `mesure_da.py` sans avertissement Pillow. Test ajouté.
 - Lecture complète des fiches (28/11/2026) : `mesure_da.py` mesure aussi le noir pur (fiche 10) et le gamut des teintes ; `controle_auto.py` signale les modèles refusés par Adrien ou EVO (`catalogue-evo.md`, « Refusés »). Tests ajoutés.

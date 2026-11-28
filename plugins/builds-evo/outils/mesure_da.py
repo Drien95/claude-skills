@@ -28,7 +28,8 @@ def hex_rgb(h):
 
 def lire_fiche(chemin):
     """Palette et accent depuis la ligne « Palette en hex » de la fiche DA."""
-    texte = open(chemin, encoding="utf-8").read()
+    with open(chemin, encoding="utf-8") as f:
+        texte = f.read()
     ligne = next((l for l in texte.splitlines() if "Palette en hex" in l), "")
     if "accent" in ligne.lower():
         avant, _, apres = ligne.lower().rpartition("accent")
