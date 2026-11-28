@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- DA outillée (28/11/2026) : `outils/mesure_da.py` (mesure d'une capture contre la fiche DA, tests `test_mesure_da.py`), fiche `effets-scene-lua/references/ambiance-gmod.md` (brume, étalonnage, bloom côté client, à confirmer au banc), champs « palette en hex » et « ambiance visée » dans `fiche-da.md`.
 - Goûts d'Adrien (composition-scene) : arbres en aplat vert, lisière en sucettes, démarcation au sol refusés ; herbe et fleurs en script aimées (Sumii P1, 27/11/2026).
 - Leçon (pieces-props, banc-gmod) : arbres nt absents du PC, cerisier teinté vert ; ajout de contenu au banc éclair sans relance (Sumii P1, 27/11/2026).
 - Leçon (effets-scene-lua, pièges Lua) : cache du test de boîte par image ET par œil ; ciel complet dessiné dans `PreDrawSkyBox` (Sumii P1, 27/11/2026).

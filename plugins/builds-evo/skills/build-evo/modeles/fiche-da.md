@@ -4,6 +4,8 @@
 - **3 mots-images** :
 - **Image maîtresse** (chemin) + planche de 20-30 références (chemin) :
 - **Palette** : dominante … ; neutres … ; accent … (1 ou 2 endroits seulement : …)
+- **Palette en hex** (pour `outils/mesure_da.py`) : dominante `#……` ; neutres `#……` `#……` ; accent `#……`
+- **Ambiance visée** (brume : couleur et distance ; étalonnage : saturation, contraste, teinte ; bloom oui/non ; voir `effets-scene-lua/references/ambiance-gmod.md`) :
 - **Langage de formes** (pointu / rond / brisé… et pourquoi) :
 - **Ancrage** (l'élément autour duquel tout se construit) :
 - **Que s'est-il passé ici ?** (3 indices : évident, discret, caché) :
