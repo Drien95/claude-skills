@@ -87,6 +87,7 @@ class CheminsSansCwd(unittest.TestCase):
     def test_absolu_sans_getcwd(self):
         import capturer_maquette
         from unittest import mock
-        with mock.patch("os.getcwd", side_effect=FileNotFoundError), mock.patch.dict(os.environ, {"PWD": "/racine"}):
-            self.assertEqual(str(capturer_maquette.absolu("passe/m.html")), "/racine/passe/m.html")
-        self.assertEqual(str(capturer_maquette.absolu("/a/b")), "/a/b")
+        racine = Path(tempfile.gettempdir()).resolve()
+        with mock.patch("os.getcwd", side_effect=FileNotFoundError), mock.patch.dict(os.environ, {"PWD": str(racine)}):
+            self.assertEqual(capturer_maquette.absolu("passe/m.html"), racine / "passe" / "m.html")
+        self.assertEqual(capturer_maquette.absolu(racine / "b"), racine / "b")
