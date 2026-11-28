@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- Maquette (builds-evo, 28/11/2026, demande d'Adrien) : lune visible et nappes de brume basse tirées de la fiche DA (« lune » dans la lumière clé, « brume basse » dans l'ambiance) ou du champ `ambiance` du scene.json ; la lumière clé vient de la lune. Effets du script : forme `sphere` et `ang` [tangage, lacet, roulis]. Tests : `AmbianceDeLaFiche`.
 
 ## [builds-evo 0.3.1] - 2026-11-28
 
