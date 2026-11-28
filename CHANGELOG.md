@@ -17,10 +17,33 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - Contrôles gratuits supplémentaires (28/11/2026) : `outils/controle_fiche.py` (fiche DA complète avant la maquette) et `outils/controle_sequence.py` (règles de rythme des fiches 06, 08 et 14 sur la timeline), exposés par le MCP en `da_fiche` et `sequence_controler`. Tests : `test_controles_da.py`.
 - Mesure DA branchée sur le MCP (28/11/2026, demande d'Adrien : tout contrôler par outil, sans lire d'image) : outil `da_mesurer`, et `banc_passe` mesure ses captures contre `fiche_da` de `piece.json` (une ligne, vues avec alerte seulement) ; `mesure_da.py` ajoute le test yeux plissés (16 x 9) et le cadre sombre. Tests : 2 de plus.
 - DA outillée (28/11/2026) : `outils/mesure_da.py` (mesure d'une capture contre la fiche DA, tests `test_mesure_da.py`), fiche `effets-scene-lua/references/ambiance-gmod.md` (brume, étalonnage, bloom côté client, à confirmer au banc), champs « palette en hex » et « ambiance visée » dans `fiche-da.md`.
+### Audit après Sumii (28/11/2026, demande d'Adrien)
+- Hook `budget` : chaque « garde-focus : GMod a pris le premier plan » de la sortie du banc est compté (`focus_vols`) ; la passe suivante est refusée jusqu'au message d'Adrien (sortie de secours `focus_ok`). Tests `Focus` (4).
+- Hook `budget` au démarrage : ligne « modèle de cette session / attendu » (champ `model` de SessionStart, facultatif ; sinon rappel fixe). Tests `ModeleDeSession` (2).
+- `build-evo/SKILL.md` : build accordé et cahier validé = enchaîner sans redemander ; étape 13 « mesures et test de fin » (wipe, visibilité MJ/joueur à 2 places) dès la 1re pièce jouable. `/builds-evo:relais` : la session neuve enchaîne.
+- Nouveau modèle `build-evo/modeles/test-de-fin.md` ; section « Test de fin standard » dans `assemblage-livraison.md`.
+- Cahier : wipe attendu (13), caché au joueur (16), format du dépôt comme le Lac noir (18), sans renumérotation.
+- `assemblage-livraison.md` : un `cl_<module>.lua` par pièce au lieu d'un seul `cl_scene.lua`.
+- `economie.md` : règle « lots de script, un seul banc » avec checklist écrite d'avance.
+- `capitaliser.md` : renvoi corrigé (`regles-banc.md` n'existait pas).
+- Reprend les PR 24, 25 et 26 (leçons de Sumii) dont les conflits de CHANGELOG et de `pieges-lua.md` sont résolus.
 - Goûts d'Adrien (composition-scene) : arbres en aplat vert, lisière en sucettes, démarcation au sol refusés ; herbe et fleurs en script aimées (Sumii P1, 27/11/2026).
 - Leçon (pieces-props, banc-gmod) : arbres nt absents du PC, cerisier teinté vert ; ajout de contenu au banc éclair sans relance (Sumii P1, 27/11/2026).
 - Leçon (effets-scene-lua, pièges Lua) : cache du test de boîte par image ET par œil ; ciel complet dessiné dans `PreDrawSkyBox` (Sumii P1, 27/11/2026).
+- builds-evo : pièges construction étalée en coroutine, allocations par image (ramasse-miettes), halo pondéré par `util.PixelVisible` (Sumii P1, 27/11/2026).
 
+- builds-evo : pieges-lua, bandes claires sur des sphères Mesh() sans élimination des faces arrière : maillage à part en CullMode CW (Sumii P1 v28, 27/11).
+- builds-evo : pieges-lua, `$color` ne recolore pas une texture verte, partir d'une texture neutre ; tige peinte dans la texture, recadrer les UV (Sumii P1 v23, 27/11).
+- builds-evo : pieges-lua, 5 pièges de Sumii P1 v16 à v18 (texture absente en damier, cache de CreateMaterial, teinte des nuages qui dérivent, modèles client persistants, $color plafonné).
+- builds-evo : catalogue-evo, chercher un modèle absent dans les pakfiles des maps (nt/props_nature dans rp_shinonome_evo) avant de le substituer (Sumii P1, 27/11).
+
+### Leçons du script de Sumii et de son banc (27/11/2026, demande d'Adrien)
+- `pieges-lua.md` : relais après effacement, état « déjà construit » au recollage, repère confondu avec une voisine, rechargement à chaud partiel.
+- `procedure-banc.md` : GMod au premier plan pendant une série.
+- `economie.md` : relire les réponses avant de questionner ; 400 posés est la seule limite.
+
+- effets-scene-lua : profondeur du matériau couleur, `OverrideDepthEnable` répété et `cam.IgnoreZ` par caméra (banc Sumii, 27/11/2026).
+- effets-scene-lua : un mur de fermeture en script cache le ciel et les halos dessinés plus loin (Sumii, 27/11/2026).
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
 La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii : une passation a envoyé la session de build directement au banc.
 - Hook `budget` : `banc_passe` et `banc_tester` refusés tant que `piece.json` n'a pas `maquette_validee` (date ou `dispense` sur la parole d'Adrien) ; l'état au début de session dit si la maquette est validée. Tests : `Maquette` (4).

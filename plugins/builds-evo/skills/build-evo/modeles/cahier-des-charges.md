@@ -21,12 +21,12 @@ console seulement sont arrivés après coup et ont coûté une série chacun). C
 
 ## C. Livraison (cochée par `outils/controle_livraison.py`)
 12. Détection du build par gravure d'usine (`outils/gravure.py`) + ancre par motif en secours : oui / dispense d'Adrien
-13. Effacement total `<nom>_tout_effacer` (double confirmation 10 s, props du build seulement, gravure, état, timers, hooks, effets et sons chez tous) : oui
+13. Effacement total `<nom>_tout_effacer` (double confirmation 10 s, props du build seulement, gravure, état, timers, hooks, effets et sons chez tous) : oui. **Wipe attendu** : ce qui disparaît, ce qui reste, comment on le vérifie (effacer puis recoller, `diag` « rien d'actif »), testé dès la 1re pièce jouable (étape 13), pas à la livraison :
 14. Aucune notification à l'écran, console seulement : oui
 15. Liste complète des commandes : README + `COMMANDES.md` + note OPTIMUS : oui
-16. Boîte de scène (h × L × l relative au prop repère), aucune coordonnée de map, seuls les joueurs dedans voient et entendent : dimensions
+16. Boîte de scène (h × L × l relative au prop repère), aucune coordonnée de map, seuls les joueurs dedans voient et entendent : dimensions. **Caché au joueur** (commandes et repères réservés au MJ, rôle du joueur de la scène : ni admin ni MJ ?), vérifié à 2 places (MJ + joueur) :
 17. Touches jamais en dur (bind suggérés dans le README) ; joueurs qui arrivent en cours rattrapés : oui
-18. Où ça part : creations-evo/<dossier>, dupe dans advdupe2\<projet>\, test final par le staff sur EVO :
+18. Où ça part : creations-evo/<dossier> (dépôt public), dupe dans advdupe2\<projet>\, test final par le staff sur EVO. **Format du dépôt** : comme le Lac noir (README, `COMMANDES.md`, addon découpé `sv_` / `sh_` / un `cl_<module>.lua` par pièce) :
 
 ## D. Le budget de travail (ce qui coûte des jetons)
 19. Plafond de dépense de la scène (`plafond_depense` dans piece.json, indice de /builds-evo:conso, défaut 60) ; plafond de passes sans point avec Adrien (défaut 5) ; versions visées par pièce (≤ 10) ; planches (3 + 1 finition) :

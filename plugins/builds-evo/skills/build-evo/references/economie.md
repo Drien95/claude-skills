@@ -34,6 +34,10 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 
 13. ⚙ **Plafond de dépense par scène** (`plafond_depense` de `piece.json`, indice de `/builds-evo:conso`, défaut 60, fixé au cahier) : passes, banc et agents refusés une fois atteint ; alerte au début de session dès 80 %. Seul Adrien le relève (Sumii, 28/11 : le plan hebdo y est passé).
 
+## Lots de script : un seul banc (Sumii, 27-28/11/2026 : un banc par lot L0 à L8, GMod passé au premier plan)
+- Coder 3 à 5 lots hors jeu (`luajit -bl`, garde_lua), écrire AVANT la **checklist de banc** (une ligne par lot : commande, ce qu'on doit voir, mesure), puis un seul passage au banc qui les teste tous ; nouveau banc seulement pour un défaut trouvé.
+- Prévenir Adrien avant la série que GMod peut passer devant ; chaque « garde-focus » dans la sortie compte (le hook `budget` refuse la passe suivante, voir sorties de secours).
+
 ## Ordres de grandeur (26/11/2026)
 - Une image lue : jusqu'à ~1 800 jetons (plein écran) ; une planche 3 × 3 de 640 × 360 : pareil pour 9 vues.
 - Un agent : 10 000 à 30 000 jetons par passage (il relit ses fichiers) ; sur Sonnet, environ 3/5 du coût sur le modèle fort.
@@ -41,6 +45,10 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 - L'indice de `/builds-evo:conso` pondère les jetons par les prix API relatifs (Opus 5, Sonnet 3, Haiku 1 ; cache lu 0,1, écrit 1,25, sortie 5) : il compare deux builds, ce n'est pas un pourcentage du forfait.
 
 ## Sorties de secours (seulement sur la parole d'Adrien, dans le fil)
-- `"plafond_passes": 0` (pas de plafond), `"plafond_depense": 0` (pas de plafond de dépense), `"modele_banc": "dispense"`, `"max_vues": N`, `"cahier_valide": "dispense"`, `"maquette_validee": "dispense"` dans `piece.json`.
+- `"plafond_passes": 0` (pas de plafond), `"plafond_depense": 0` (pas de plafond de dépense), `"modele_banc": "dispense"`, `"max_vues": N`, `"cahier_valide": "dispense"`, `"maquette_validee": "dispense"`, `"focus_ok": "dispense"` (passes autorisées malgré un passage de GMod au premier plan) dans `piece.json`.
 - `BUILDS_EVO_HOOKS_OFF=budget` coupe le hook entier (comptage compris).
 - Le compteur de passes repart à 0 à chaque message reçu dans la session : dans une session pilotée par un autre fil (Remote Control), ce fil doit relayer le point d'Adrien, pas le simuler.
+
+## Questions à Adrien et budget (Sumii, 27/11/2026)
+- Des questions reposées alors qu'Adrien avait déjà répondu (accord sur l'aperçu, forme de la boîte) : ses messages courts arrivent pendant qu'on travaille et parfois en retard. Règle : relire ses derniers messages du fil juste avant de poster une question, et retirer ce qui est déjà répondu.
+- Un choix présenté comme « dépasse la limite de 110 » : 110 n'était qu'un plafond de travail du cahier. Adrien : « On a 400 props de limite ». Règle : la limite est 400 posés ; un plafond de travail se présente comme tel et ne sert jamais à écarter une option.

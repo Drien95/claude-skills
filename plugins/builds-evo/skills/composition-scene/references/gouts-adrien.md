@@ -25,6 +25,9 @@ Relevé de ses retours, du 14/11 au 26/11/2026. À relire avant toute propositio
 - Le bleu clair des cristaux arid, le velours rouge, le cuivre hm40.
 - (27/11/2026, Sumii P1 v8) Les arbres en **aplat de couleur** (prop teinté d'un seul vert : il veut des valeurs, ombre, lumière, or côté soleil ; teinter le feuillage seul par sous-matériau) ; les arbres de lisière en **« sucettes »** (un pique et une boule : masses irrégulières en rangs serrés) ; une **démarcation visible au sol** (marche de densité de l'herbe, joints de plaques).
 
+## Végétation
+- Feuillage : quelques arbres aux feuilles d'une autre couleur (rose, jaune, orangé) parmi les verts « font la différence » (Sumii P1, 27/11/2026) ; jamais un aplat d'un seul vert.
+
 ## Façon de juger
 - Juger la forme en plein jour, les effets de nuit (« on voit rien » dans la salle noire).
 - Images seulement pendant le maquettage, jamais de film ni de MP4.

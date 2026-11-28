@@ -31,3 +31,6 @@
 
 ## Solo seulement (pas sur EVO)
 Limites de base : `sbox_maxprops 300; sbox_maxlights 20; sbox_maxlamps 10; sbox_maxemitters 20; sbox_maxeffects 50`. `MakeLight`/`MakeLamp` inversent `Toggle` : écrire `Toggle = false`.
+
+## Focus pendant une série
+- Sumii L0, 27/11/2026 : « garde-focus : GMod a pris le premier plan » 1 fois sur une tâche, puis 5 fois sur une autre (après des copies à chaud ; cause non prouvée), alors qu'Adrien n'avait accepté aucun passage devant. La garde rend la fenêtre, mais le vol a eu lieu. Règle : avant la série, prévenir Adrien que GMod peut passer devant ; lire les lignes `garde-focus` de chaque sortie ; au-delà d'une fois, arrêter la série et le lui dire avec le nombre.
