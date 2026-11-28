@@ -3,6 +3,16 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+### Audit après Sumii (28/11/2026, demande d'Adrien)
+- Hook `budget` : chaque « garde-focus : GMod a pris le premier plan » de la sortie du banc est compté (`focus_vols`) ; la passe suivante est refusée jusqu'au message d'Adrien (sortie de secours `focus_ok`). Tests `Focus` (4).
+- Hook `budget` au démarrage : ligne « modèle de cette session / attendu » (champ `model` de SessionStart, facultatif ; sinon rappel fixe). Tests `ModeleDeSession` (2).
+- `build-evo/SKILL.md` : build accordé et cahier validé = enchaîner sans redemander ; étape 13 « mesures et test de fin » (wipe, visibilité MJ/joueur à 2 places) dès la 1re pièce jouable. `/builds-evo:relais` : la session neuve enchaîne.
+- Nouveau modèle `build-evo/modeles/test-de-fin.md` ; section « Test de fin standard » dans `assemblage-livraison.md`.
+- Cahier : wipe attendu (13), caché au joueur (16), format du dépôt comme le Lac noir (18), sans renumérotation.
+- `assemblage-livraison.md` : un `cl_<module>.lua` par pièce au lieu d'un seul `cl_scene.lua`.
+- `economie.md` : règle « lots de script, un seul banc » avec checklist écrite d'avance.
+- `capitaliser.md` : renvoi corrigé (`regles-banc.md` n'existait pas).
+- Reprend les PR 24, 25 et 26 (leçons de Sumii) dont les conflits de CHANGELOG et de `pieges-lua.md` sont résolus.
 - Goûts d'Adrien (composition-scene) : arbres en aplat vert, lisière en sucettes, démarcation au sol refusés ; herbe et fleurs en script aimées (Sumii P1, 27/11/2026).
 - Leçon (pieces-props, banc-gmod) : arbres nt absents du PC, cerisier teinté vert ; ajout de contenu au banc éclair sans relance (Sumii P1, 27/11/2026).
 - Leçon (effets-scene-lua, pièges Lua) : cache du test de boîte par image ET par œil ; ciel complet dessiné dans `PreDrawSkyBox` (Sumii P1, 27/11/2026).
