@@ -42,7 +42,8 @@ def lum(p):
     return 0.2126 * p[0] + 0.7152 * p[1] + 0.0722 * p[2]
 
 
-def mesurer(chemin, palette=(), accent=None):
+def mesurer(chemin, palette=(), accent=None, sortie=None):
+    """`sortie` : zone [x0, y0, x1, y1] en fractions de l'image (où se trouve la suite du chemin), facultative."""
     from PIL import Image
     im = Image.open(chemin).convert("RGB")
     im.thumbnail((320, 320))
@@ -70,12 +71,32 @@ def mesurer(chemin, palette=(), accent=None):
     bord = [gris[y * 16 + x] for y in range(9) for x in range(16) if x in (0, 1, 14, 15) or y in (0, 8)]
     centre = [gris[y * 16 + x] for y in range(2, 7) for x in range(4, 12)]
     cadre = (sum(bord) / len(bord)) / max(1.0, sum(centre) / len(centre))
+    # densité de détail (fiches 01 et 16) : part de l'énergie de gradient dans les 10 % de cases les plus riches
+    fin = im.convert("L").resize((64, 36), Image.Resampling.BOX)
+    g = list(fin.getdata())
+    grad = [[abs(g[y * 64 + x] - g[y * 64 + min(x + 1, 63)]) + abs(g[y * 64 + x] - g[min(y + 1, 35) * 64 + x]) for x in range(64)] for y in range(36)]
+    cell = []
+    for gy in range(9):
+        for gx in range(16):
+            cell.append(sum(grad[y][x] for y in range(gy * 4, gy * 4 + 4) for x in range(gx * 4, gx * 4 + 4)))
+    total = sum(cell) or 1
+    top = sum(sorted(cell, reverse=True)[:max(1, len(cell) // 10)]) / total
+    bruit = sum(cell) / (64 * 36 * 255.0)
+    # figure/fond (fiche 11) : la case la plus claire contre ses voisines
+    lc = [lum(p) for p in petit.convert("RGB").getdata()]
+    ib = max(range(len(lc)), key=lambda i: lc[i])
+    bx, by = ib % 16, ib // 16
+    voisins = [lc[y * 16 + x] for y in range(max(0, by - 1), min(9, by + 2)) for x in range(max(0, bx - 1), min(16, bx + 2)) if (x, y) != (bx, by)]
+    figure = abs(lc[ib] - sum(voisins) / len(voisins)) / 255 if voisins else 0.0
     res = {
         "dominantes": dom,
         "luminance": round(sum(lums) / n / 255, 3),
         "saturation": round(sum(sats) / n, 3),
         "contraste_focal": round((max(cases) - med) / 255, 3),
         "yeux_plisses": round(plissé, 2),
+        "detail_concentre": round(top, 2),
+        "bruit": round(bruit, 3),
+        "figure_fond": round(figure, 3),
         "bords_sur_centre": round(cadre, 2),
         "alertes": [],
     }
@@ -95,6 +116,18 @@ def mesurer(chemin, palette=(), accent=None):
         al.append("pas de point focal net (la zone la plus claire ressemble au reste)")
     if res["yeux_plisses"] < 1.8 and res["luminance"] >= 0.04:
         al.append("yeux plissés : aucun sommet net en 16 x 9, le sujet ne ressort pas en moins de 2 s")
+    if res["luminance"] >= 0.04 and res["detail_concentre"] < 0.25:
+        al.append("détail réparti partout (10 %% des cases portent %d %% du détail, 25 %%+ attendus) : le détail doit se concentrer au point focal" % round(100 * res["detail_concentre"]))
+    if res["bruit"] > 0.10:
+        al.append("image chargée (bruit %.2f) : trop d'information hors du point focal" % res["bruit"])
+    if res["luminance"] >= 0.04 and res["figure_fond"] < 0.04:
+        al.append("figure/fond : la zone la plus claire ne se détache pas de ses voisines")
+    if sortie:
+        x0, y0, x1, y1 = sortie
+        zone = [lc[y * 16 + x] for y in range(int(y0 * 9), max(int(y0 * 9) + 1, int(y1 * 9 + 0.999))) for x in range(int(x0 * 16), max(int(x0 * 16) + 1, int(x1 * 16 + 0.999)))]
+        res["sortie_lum"] = round(sum(zone) / len(zone) / 255, 3)
+        if sum(zone) / len(zone) < 0.6 * max(lc):
+            al.append("chemin non éclairé : la sortie est bien moins claire que la zone la plus claire de la vue")
     if res["bords_sur_centre"] > 1.15:
         al.append("bords plus clairs que le centre : pas de premier plan sombre qui cadre")
     if res["saturation"] > 0.55:
@@ -108,7 +141,7 @@ def mesurer(chemin, palette=(), accent=None):
     return res
 
 
-def mesurer_dossier(dossier, fiche=None, palette=(), accent=None):
+def mesurer_dossier(dossier, fiche=None, palette=(), accent=None, sortie=None):
     """Mesure toutes les captures d'un dossier ; renvoie un texte court (une ligne par vue, alertes seulement)."""
     from pathlib import Path
     if fiche:
@@ -120,7 +153,7 @@ def mesurer_dossier(dossier, fiche=None, palette=(), accent=None):
         return "aucune capture dans %s" % dossier
     lignes, nb = [], 0
     for f in images:
-        r = mesurer(str(f), palette, accent)
+        r = mesurer(str(f), palette, accent, sortie)
         nb += bool(r["alertes"])
         lignes.append("%s : lum %.2f sat %.2f focal %.2f plissé %.1f%s" % (
             f.stem, r["luminance"], r["saturation"], r["contraste_focal"], r["yeux_plisses"],
@@ -136,6 +169,7 @@ def main(argv=None):
     ap.add_argument("--fiche")
     ap.add_argument("--palette", nargs="*", default=[])
     ap.add_argument("--accent")
+    ap.add_argument("--sortie", nargs=4, type=float, metavar=("X0", "Y0", "X1", "Y1"), help="zone de la suite du chemin (fractions de l'image)")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     pal, acc = list(a.palette), a.accent
@@ -143,7 +177,7 @@ def main(argv=None):
         p2, a2 = lire_fiche(a.fiche)
         pal, acc = pal or p2, acc or a2
     try:
-        res = mesurer(a.capture, pal, acc)
+        res = mesurer(a.capture, pal, acc, a.sortie)
     except ImportError:
         print("Pillow manque : pip install pillow", file=sys.stderr)
         return 2

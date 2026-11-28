@@ -18,7 +18,7 @@
 
 Deux usages, très différents en coût :
 
-**A. Générer des posés (dupe)** : un script hors jeu (Python, comme les outils du banc) produit un dupe AdvDupe2 à partir de règles.
+**A. Générer des posés (dupe)** (outil : `outils/decor/decor.py`, grappes de 3, graine, budget dur) : un script hors jeu (Python, comme les outils du banc) produit un dupe AdvDupe2 à partir de règles.
 - Bon pour : colonnades, escaliers, enceintes de rochers, champs de piques, ruines répétitives.
 - Règles : un vocabulaire de 3-6 props EVO, une graine (pour refaire exactement le même résultat), distribution de Poisson, « barnacling » gros → moyens → petits, rotations et échelles dans des plages bornées, **budget de posés comme limite dure**.
 - Sortie : 6 à 9 variantes en planche (graines différentes), on garde les 1 à 3 meilleures (liste blanche, comme *Spore*).

@@ -55,7 +55,8 @@ OUTILS = [
     ("da_mesurer",
      "Mesure gratuite (0 token d'image) des captures d'un dossier contre la fiche DA : luminance, saturation, contraste du point "
      "focal, test yeux plissés, cadre sombre, palette hex et accent. Ne renvoie que les vues avec alerte. À lancer avant de lire une planche.",
-     {"dossier": {"type": "string"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"}}),
+     {"dossier": {"type": "string"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"},
+      "sortie": {"type": "array", "items": {"type": "number"}, "description": "zone de la suite du chemin [x0, y0, x1, y1] en fractions de l'image : doit être des plus claires"}}),
     ("da_fiche",
      "Contrôle gratuit d'une fiche DA (modèle build-evo/modeles/fiche-da.md) : champs remplis, palette en hex, 3 mots-images, 3 indices. "
      "À lancer avant la maquette ; erreurs = fiche à compléter.",
@@ -64,6 +65,10 @@ OUTILS = [
      "Contrôle gratuit d'une séquence (JSON de la maquette) : un seul effet primaire à la fois, anticipation avant le pic, silence "
      "avant le sommet, une nouveauté par palier, crescendo, sons ponctuels espacés de 8 à 30 s. Format : outils/controle_sequence.py.",
      {"sequence": {"type": "string", "description": "chemin du sequence.json"}}),
+    ("perf_rapport",
+     "Rapport de profilage gratuit : lit un JSON de mesures (une par version : posés, ms du script, dessins, fps, lumières dynamiques, "
+     "quads) et dit ce qui coûte et quoi corriger. Format : outils/rapport_perf.py.",
+     {"mesures": {"type": "string", "description": "chemin du mesures.json"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -316,7 +321,7 @@ def controle_dupe(dupe):
     return ("ERREUR : passe refusée par le contrôle auto, rien n'a été collé :\n" + texte) if erreurs else None, texte
 
 
-def mesure_da(dossier, fiche=None):
+def mesure_da(dossier, fiche=None, sortie=None):
     """Mesure DA des captures (0 token). Renvoie le texte court, ou une ligne d'explication si impossible."""
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "outils"))
     import mesure_da as m
@@ -332,7 +337,7 @@ def mesure_da(dossier, fiche=None):
     if fiche and not Path(fiche).is_file():
         return "mesure DA : fiche introuvable (%s)" % fiche
     try:
-        return m.mesurer_dossier(dossier, fiche)
+        return m.mesurer_dossier(dossier, fiche, sortie=sortie)
     except ImportError:
         return "mesure DA : sautée (Pillow manque)"
     except OSError as e:
@@ -379,8 +384,20 @@ def sequence_controler(a):
     return _rapport(erreurs, att, "séquence conforme aux règles de rythme") if not erreurs else "séquence à corriger :\n" + _rapport(erreurs, att, "")
 
 
+def perf_rapport(a):
+    chemin = Path(a["mesures"])
+    if not chemin.is_file():
+        raise ValueError("mesures introuvables : %s" % chemin)
+    try:
+        mesures = json.loads(chemin.read_text(encoding="utf-8"))
+    except ValueError as e:
+        raise ValueError("mesures illisibles : %s" % e) from None
+    lignes, alertes = _outil("rapport_perf").controler(mesures)
+    return "\n".join(lignes + ["ATTENTION : " + t for t in alertes] or ["aucune mesure"]) if alertes or lignes else "aucune mesure"
+
+
 def da_mesurer(a):
-    return mesure_da(a["dossier"], a.get("fiche"))
+    return mesure_da(a["dossier"], a.get("fiche"), a.get("sortie"))
 
 
 def passe(a):
@@ -455,7 +472,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport}
 
 
 def repondre(i, res=None, err=None):

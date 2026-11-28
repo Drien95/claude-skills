@@ -70,6 +70,24 @@ class MesureDA(unittest.TestCase):
         texte = json.loads(r.stdout.decode().splitlines()[0])["result"]["content"][0]["text"]
         self.assertIn("1 avec alerte", texte)
 
+    def test_bruit_et_detail_reparti(self):
+        import random
+        random.seed(1)
+        im = Image.new("RGB", (160, 120))
+        im.putdata([(v, v, v) for v in (random.randint(60, 200) for _ in range(160 * 120))])
+        chemin = self.d / "bruit.png"
+        im.save(chemin)
+        r = lancer(str(chemin))
+        self.assertIn("image chargée", r.stdout)
+        self.assertIn("détail réparti", r.stdout)
+
+    def test_sortie_non_eclairee(self):
+        c = self.image("s.png", (20, 25, 30), (230, 230, 230))   # tache claire au centre
+        r = lancer(c, "--sortie", "0", "0", "0.2", "0.2")          # sortie dans un coin sombre
+        self.assertIn("chemin non éclairé", r.stdout)
+        r = lancer(c, "--sortie", "0.4", "0.3", "0.6", "0.7")      # sortie sur la tache claire
+        self.assertNotIn("chemin non éclairé", r.stdout)
+
     def test_fichier_absent(self):
         self.assertEqual(lancer(str(self.d / "rien.png")).returncode, 2)
 

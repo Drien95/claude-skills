@@ -234,6 +234,12 @@ def controler(chemin, budget=None, boite=None, autorises=None, bornes=None):
     if f:
         attentions.append("%d prop(s) semblent flotter (ni sol ni contact) : %s"
                           % (len(f), ", ".join(ents[i]["note"] or ents[i]["modele"].rsplit("/", 1)[-1] for i in f[:4])))
+    # fiche 04 : dernière passe « de travers » (décor non porteur tourné de 2 à 8°)
+    modeles = [e for e in ents if e["modele"]]
+    droits = [e for e in modeles if all(abs(a - 90 * round(a / 90)) < 0.5 for a in e["ang"])]
+    if len(modeles) >= 20 and len(droits) / len(modeles) > 0.85:
+        attentions.append("%d %% des props sont parfaitement droits : une dernière passe « de travers » (2 à 8° sur le décor non porteur) "
+                          "évite l'effet boîte" % round(100 * len(droits) / len(modeles)))
     return erreurs, attentions, "%d posés (plafond %d)" % (n, plafond)
 
 
