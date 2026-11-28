@@ -34,7 +34,7 @@ class Protocole(unittest.TestCase):
                         {"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
         self.assertEqual(reps[0]["result"]["serverInfo"]["name"], "banc")
         noms = {t["name"] for t in reps[1]["result"]["tools"]}
-        self.assertEqual(noms, {"banc_etat", "banc_tester", "banc_nettoyer", "banc_planche", "banc_montrer", "banc_passe", "da_mesurer", "da_fiche", "sequence_controler", "perf_rapport", "grille_auto", "palette_extraire", "color_script", "maquette_faire", "da_calibrer"})
+        self.assertEqual(noms, {"banc_etat", "banc_tester", "banc_nettoyer", "banc_planche", "banc_montrer", "banc_passe", "da_mesurer", "da_fiche", "sequence_controler", "perf_rapport", "grille_auto", "palette_extraire", "color_script", "maquette_faire", "da_calibrer", "da_ressemblance"})
 
 
 class Regles(unittest.TestCase):

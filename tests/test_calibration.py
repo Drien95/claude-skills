@@ -56,5 +56,24 @@ class Journal(unittest.TestCase):
             calibration.noter(self.planche("z", (1, 1, 1), (9, 9, 9)), 11, journal=self.j)
 
 
+@unittest.skipIf(Image is None, "Pillow absent")
+class Ressemblance(unittest.TestCase):
+    def test_meme_ambiance_et_ambiance_opposee(self):
+        import ressemblance
+        sombre = Image.new("RGB", (160, 90), (20, 30, 50))
+        sombre2 = Image.new("RGB", (160, 90), (22, 32, 54))
+        clair = Image.new("RGB", (160, 90), (240, 200, 90))
+        for im in (sombre, sombre2, clair):
+            for x in range(60, 100):
+                for y in range(30, 60):
+                    im.putpixel((x, y), (200, 200, 220) if im is not clair else (20, 20, 20))
+        proche = ressemblance.comparer(sombre, sombre2)
+        loin = ressemblance.comparer(sombre, clair)
+        self.assertEqual(proche["alertes"], [])
+        self.assertGreater(proche["couleurs"], loin["couleurs"])
+        self.assertTrue(any("couleurs éloignées" in a for a in loin["alertes"]), loin)
+        self.assertTrue(any("tonalité" in a for a in loin["alertes"]), loin)
+
+
 if __name__ == "__main__":
     unittest.main()

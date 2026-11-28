@@ -95,6 +95,10 @@ OUTILS = [
      "(à faire à chaque planche notée). action=analyser : dit quelles mesures corrèlent avec ses notes et quel seuil sépare >= 7,5 du reste.",
      {"action": {"type": "string", "description": "noter ou analyser"}, "dossier": {"type": "string"}, "note": {"type": "number"},
       "version": {"type": "string"}, "piece": {"type": "string"}, "journal": {"type": "string", "description": "défaut .claude/builds-evo/calibration.jsonl"}}),
+    ("da_ressemblance",
+     "Compare des captures à l'image maîtresse de la fiche DA (couleurs, répartition clair/sombre, tonalité) : repère une scène qui s'éloigne "
+     "de l'ambiance visée. 0 jeton d'image ; une alerte est un signal, pas un jugement.",
+     {"reference": {"type": "string", "description": "image maîtresse"}, "captures": {"type": "string", "description": "capture ou dossier de captures"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -497,6 +501,10 @@ def da_calibrer(a):
     return _lancer_outil("calibration", args)
 
 
+def da_ressemblance(a):
+    return _lancer_outil("ressemblance", [a["reference"], a["captures"]])
+
+
 def da_mesurer(a):
     return mesure_da(a["dossier"], a.get("fiche"), a.get("sortie"))
 
@@ -573,7 +581,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire, "da_calibrer": da_calibrer}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire, "da_calibrer": da_calibrer, "da_ressemblance": da_ressemblance}
 
 
 def repondre(i, res=None, err=None):
