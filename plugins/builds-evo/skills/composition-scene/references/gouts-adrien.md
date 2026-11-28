@@ -13,6 +13,8 @@ Relevé de ses retours, du 14/11 au 26/11/2026. À relire avant toute propositio
 - Une **contrainte retournée en jeu RP** : les pierres de l'A2 jouées en `/me`, le visuel comme verdict du MJ, le sable et la dune autour (« tu as fait mieux », 27/11).
 - Le cinéma pour les personnages mythiques : voir le skill `mise-en-scene`.
 
+- (27/11/2026, Sumii P1) L'herbe haute qui ondule et les taches de fleurs roses et blanches en script (« plutôt bien faites »).
+
 ## Il refuse
 - Les étincelles, les lampes visibles, les effets HL2 de base (« cheap »), les grands murs blancs plats, le vide sous un escalier.
 - Ce qui ressemble à un immeuble, à du « debug », à un bocal de labo (s_40), à des « capsules scientifiques ».
@@ -21,6 +23,7 @@ Relevé de ses retours, du 14/11 au 26/11/2026. À relire avant toute propositio
 - Les Hollows, Menos et playermodels en décor (impossibles sur EVO de toute façon).
 - La musique dans les scripts (les MJ la gèrent).
 - Le bleu clair des cristaux arid, le velours rouge, le cuivre hm40.
+- (27/11/2026, Sumii P1 v8) Les arbres en **aplat de couleur** (prop teinté d'un seul vert : il veut des valeurs, ombre, lumière, or côté soleil ; teinter le feuillage seul par sous-matériau) ; les arbres de lisière en **« sucettes »** (un pique et une boule : masses irrégulières en rangs serrés) ; une **démarcation visible au sol** (marche de densité de l'herbe, joints de plaques).
 
 ## Façon de juger
 - Juger la forme en plein jour, les effets de nuit (« on voit rien » dans la salle noire).
