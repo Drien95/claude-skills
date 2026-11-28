@@ -6,7 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-HOOK = Path(__file__).resolve().parents[1] / "plugins" / "builds-evo" / "hooks" / "budget.py"
+RACINE_PLUGIN = Path(__file__).resolve().parents[1] / "plugins" / "builds-evo"
+HOOK = RACINE_PLUGIN / "hooks" / "budget.py"
 PASSE = "mcp__plugin_builds-evo_banc__banc_passe"
 
 
@@ -31,7 +32,8 @@ class Base(unittest.TestCase):
         self._tmp.cleanup()
 
     def piece(self, **k):
-        d = {"scene": "A3", "piece": "Arche", "version": 2, "cahier_valide": "2026-11-27", "maquette_validee": "2026-11-27"}
+        d = {"scene": "A3", "piece": "Arche", "version": 2, "cahier_valide": "2026-11-27", "maquette_validee": "2026-11-27",
+             "fiche_da": "dispense"}
         d.update(k)
         (self.etat / "piece.json").write_text(json.dumps(d), encoding="utf-8")
 
@@ -85,6 +87,33 @@ class Maquette(Base):
         self.piece(maquette_validee=None)
         res = lancer("debut", {"cwd": str(self.sous)})
         self.assertIn("maquette NON validée", res["additionalContext"])
+
+
+class FicheDA(Base):
+    def test_passe_refusee_sans_fiche(self):
+        self.piece(fiche_da=None)
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("/builds-evo:da", raison)
+
+    def test_fiche_introuvable_et_incomplete(self):
+        self.piece(fiche_da="fiche.md")
+        self.assertIn("introuvable", self.pre(PASSE, {"dupe": "a.txt"})[1])
+        modele = (RACINE_PLUGIN / "skills" / "build-evo" / "modeles" / "fiche-da.md").read_text(encoding="utf-8")
+        (self.racine / "fiche.md").write_text(modele, encoding="utf-8")
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("incomplète", raison)
+
+    def test_dispense_et_planche_libre(self):
+        self.piece(fiche_da="dispense")
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+        self.piece(fiche_da=None)
+        self.assertEqual(self.pre("mcp__plugin_builds-evo_banc__banc_planche", {"dossier": "x"})[0], None)
+
+    def test_debut_signale_fiche(self):
+        self.piece(fiche_da=None)
+        self.assertIn("Fiche DA : NON déclarée", lancer("debut", {"cwd": str(self.sous)})["additionalContext"])
 
 
 class Focus(Base):

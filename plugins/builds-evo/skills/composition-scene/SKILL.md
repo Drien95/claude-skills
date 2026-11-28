@@ -29,6 +29,7 @@ Ce skill décide **ce que l'œil voit et dans quel ordre**. Il ne pose aucun pro
 | D'où vient la lumière ? | `references/03-eclairage.md` |
 | Que s'est-il passé ici ? | `references/05-narration-environnementale.md` |
 | Quelle teinte domine, où est l'accent ? | `references/10-couleur.md` |
+| Brume, étalonnage, bloom sur EVO ? | `effets-scene-lua/references/ambiance-gmod.md` |
 | Que complète le cerveau tout seul ? | `references/11-perception-gestalt.md` |
 | Comment faire grand avec peu ? | `references/12-architecture-scenographie.md` |
 | Comment faire infini dans une boîte ? | `references/13-concept-art-matte-painting.md` |

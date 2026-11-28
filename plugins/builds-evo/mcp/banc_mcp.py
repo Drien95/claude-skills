@@ -52,6 +52,53 @@ OUTILS = [
      "Ouvre des images ou un dossier sur l'écran d'Adrien (visionneuse + explorateur). Règle : les planches s'ouvrent sur son écran, "
      "donner un chemin ne suffit pas.",
      {"chemins": {"type": "array", "items": {"type": "string"}}}),
+    ("da_mesurer",
+     "Mesure gratuite (0 token d'image) des captures d'un dossier contre la fiche DA : luminance, saturation, contraste du point "
+     "focal, test yeux plissés, cadre sombre, palette hex et accent. Ne renvoie que les vues avec alerte. À lancer avant de lire une planche.",
+     {"dossier": {"type": "string"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"},
+      "sortie": {"type": "array", "items": {"type": "number"}, "description": "zone de la suite du chemin [x0, y0, x1, y1] en fractions de l'image : doit être des plus claires"}}),
+    ("da_fiche",
+     "Contrôle gratuit d'une fiche DA (modèle build-evo/modeles/fiche-da.md) : champs remplis, palette en hex, 3 mots-images, 3 indices. "
+     "À lancer avant la maquette ; erreurs = fiche à compléter.",
+     {"fiche": {"type": "string", "description": "chemin de la fiche DA (.md) ; défaut : fiche_da de piece.json"}}),
+    ("sequence_controler",
+     "Contrôle gratuit d'une séquence (JSON de la maquette) : un seul effet primaire à la fois, anticipation avant le pic, silence "
+     "avant le sommet, une nouveauté par palier, crescendo, sons ponctuels espacés de 8 à 30 s. Format : outils/controle_sequence.py.",
+     {"sequence": {"type": "string", "description": "chemin du sequence.json"}}),
+    ("perf_rapport",
+     "Rapport de profilage gratuit : lit un JSON de mesures (une par version : posés, ms du script, dessins, fps, lumières dynamiques, "
+     "quads) et dit ce qui coûte et quoi corriger. Format : outils/rapport_perf.py.",
+     {"mesures": {"type": "string", "description": "chemin du mesures.json"}}),
+    ("grille_auto",
+     "Pré-remplit la grille de contrôle (grille-controle.md) avec toutes les mesures gratuites : [x] respecté, [ ] à corriger "
+     "(avec les vues), [?] à juger par un humain. Ne note jamais. À lancer avant la critique : elle ne juge que les [?].",
+     {"dossier": {"type": "string", "description": "dossier de captures"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"},
+      "dupe": {"type": "string"}, "sequence": {"type": "string"}, "mesures": {"type": "string"},
+      "sortie": {"type": "array", "items": {"type": "number"}}}),
+    ("palette_extraire",
+     "Extrait dominante, neutres et accent d'images de référence (fiche DA, fiches 02 et 10) et, avec fiche=, écrit la ligne « Palette en hex ». "
+     "Une suggestion à faire valider par Adrien.",
+     {"sources": {"type": "array", "items": {"type": "string"}, "description": "images ou dossiers de références"},
+      "fiche": {"type": "string", "description": "fiche DA à mettre à jour (facultatif)"}}),
+    ("color_script",
+     "Color script d'une séquence : une capture par temps fort, côte à côte (planche écrite dans le dossier), alerte si deux temps forts "
+     "se ressemblent ou si la couleur la plus vive n'est pas au sommet.",
+     {"dossier": {"type": "string"}}),
+    ("maquette_faire",
+     "Génère la maquette three.js d'une pièce (étape 7) depuis un dupe ou un scene.json, puis, avec capturer=true, exporte des PNG par vue et par "
+     "mode (gris, rendu) et les mesure contre la fiche DA. 0 jeton d'image ; Playwright requis pour capturer.",
+     {"scene": {"type": "string", "description": "dupe .txt ou scene.json"}, "fiche": {"type": "string"}, "vues": {"type": "string"},
+      "sequence": {"type": "string"}, "sortie": {"type": "string", "description": "dossier de sortie (défaut : dossier de la scène)"},
+      "capturer": {"type": "boolean"}, "temps": {"type": "number", "description": "instant de la séquence pour le mode rendu"}}),
+    ("da_calibrer",
+     "Calibre la mesure DA sur les notes d'Adrien. action=noter : enregistre les mesures d'un dossier de captures avec la note /10 qu'il a donnée "
+     "(à faire à chaque planche notée). action=analyser : dit quelles mesures corrèlent avec ses notes et quel seuil sépare >= 7,5 du reste.",
+     {"action": {"type": "string", "description": "noter ou analyser"}, "dossier": {"type": "string"}, "note": {"type": "number"},
+      "version": {"type": "string"}, "piece": {"type": "string"}, "journal": {"type": "string", "description": "défaut .claude/builds-evo/calibration.jsonl"}}),
+    ("da_ressemblance",
+     "Compare des captures à l'image maîtresse de la fiche DA (couleurs, répartition clair/sombre, tonalité) : repère une scène qui s'éloigne "
+     "de l'ambiance visée. 0 jeton d'image ; une alerte est un signal, pas un jugement.",
+     {"reference": {"type": "string", "description": "image maîtresse"}, "captures": {"type": "string", "description": "capture ou dossier de captures"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -65,7 +112,7 @@ OUTILS = [
       "dupe": {"type": "string"}, "vues": {"type": "string"}, "x": V2, "y": V2, "type": {"type": "string"},
       "avant": {"type": "string", "description": "dossier de captures de la passe précédente (planche avant/après)"},
       "attente_rechargement": {"type": "integer", "description": "secondes après copie des scripts (défaut 25)"},
-      "montrer": {"type": "boolean", "description": "défaut true"}, "nettoyer": {"type": "boolean", "description": "défaut true"},
+      "montrer": {"type": "boolean", "description": "défaut true"}, "da": {"type": "boolean", "description": "défaut true : mesure DA des captures (outils/mesure_da.py, fiche_da de piece.json)"}, "nettoyer": {"type": "boolean", "description": "défaut true"},
       "controle": {"type": "boolean", "description": "défaut true : contrôle auto du dupe avant collage (outils/controle_auto.py)"}}),
 ]
 
@@ -304,6 +351,164 @@ def controle_dupe(dupe):
     return ("ERREUR : passe refusée par le contrôle auto, rien n'a été collé :\n" + texte) if erreurs else None, texte
 
 
+def mesure_da(dossier, fiche=None, sortie=None):
+    """Mesure DA des captures (0 token). Renvoie le texte court, ou une ligne d'explication si impossible."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "outils"))
+    import mesure_da as m
+    if not fiche:
+        for d in [Path.cwd(), *Path.cwd().parents]:
+            f = d / ".claude" / "builds-evo" / "piece.json"
+            if f.is_file():
+                try:
+                    fiche = json.loads(f.read_text(encoding="utf-8")).get("fiche_da")
+                except ValueError:
+                    pass
+                break
+    if fiche and not Path(fiche).is_file():
+        return "mesure DA : fiche introuvable (%s)" % fiche
+    try:
+        return m.mesurer_dossier(dossier, fiche, sortie=sortie)
+    except ImportError:
+        return "mesure DA : sautée (Pillow manque)"
+    except OSError as e:
+        return "mesure DA : sautée (%s)" % str(e)[:80]
+
+
+def _outil(nom):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "outils"))
+    return __import__(nom)
+
+
+def _rapport(erreurs, attentions, ok):
+    lignes = ["ERREUR : " + e for e in erreurs] if erreurs else []
+    return "\n".join(lignes + ["ATTENTION : " + t for t in attentions]) or ok
+
+
+def da_fiche(a):
+    fiche = a.get("fiche")
+    if not fiche:
+        for d in [Path.cwd(), *Path.cwd().parents]:
+            f = d / ".claude" / "builds-evo" / "piece.json"
+            if f.is_file():
+                try:
+                    fiche = json.loads(f.read_text(encoding="utf-8")).get("fiche_da")
+                except ValueError:
+                    pass
+                break
+    if not fiche or not Path(fiche).is_file():
+        raise ValueError("fiche DA introuvable (donner `fiche` ou le champ fiche_da de piece.json)")
+    erreurs, att = _outil("controle_fiche").controler(Path(fiche).read_text(encoding="utf-8"))
+    # une fiche à compléter n'est pas une erreur du serveur : le texte commence par « fiche incomplète »
+    return _rapport(erreurs, att, "fiche DA complète") if not erreurs else "fiche incomplète :\n" + _rapport(erreurs, att, "")
+
+
+def sequence_controler(a):
+    chemin = Path(a["sequence"])
+    if not chemin.is_file():
+        raise ValueError("séquence introuvable : %s" % chemin)
+    try:
+        seq = json.loads(chemin.read_text(encoding="utf-8"))
+    except ValueError as e:
+        raise ValueError("séquence illisible : %s" % e) from None
+    erreurs, att = _outil("controle_sequence").controler(seq)
+    return _rapport(erreurs, att, "séquence conforme aux règles de rythme") if not erreurs else "séquence à corriger :\n" + _rapport(erreurs, att, "")
+
+
+def perf_rapport(a):
+    chemin = Path(a["mesures"])
+    if not chemin.is_file():
+        raise ValueError("mesures introuvables : %s" % chemin)
+    try:
+        mesures = json.loads(chemin.read_text(encoding="utf-8"))
+    except ValueError as e:
+        raise ValueError("mesures illisibles : %s" % e) from None
+    lignes, alertes = _outil("rapport_perf").controler(mesures)
+    return "\n".join(lignes + ["ATTENTION : " + t for t in alertes] or ["aucune mesure"]) if alertes or lignes else "aucune mesure"
+
+
+def grille_auto(a):
+    fiche = a.get("fiche")
+    if not fiche:
+        for d in [Path.cwd(), *Path.cwd().parents]:
+            f = d / ".claude" / "builds-evo" / "piece.json"
+            if f.is_file():
+                try:
+                    fiche = json.loads(f.read_text(encoding="utf-8")).get("fiche_da")
+                except ValueError:
+                    pass
+                break
+    if fiche and not Path(fiche).is_file():
+        fiche = None
+    try:
+        return _outil("grille_auto").grille(a.get("dossier"), fiche, a.get("dupe"), a.get("sequence"), a.get("mesures"), a.get("sortie"))
+    except ImportError:
+        raise ValueError("Pillow manque (pip install pillow)") from None
+
+
+def palette_extraire(a):
+    args = list(a.get("sources") or [])
+    if not args:
+        raise ValueError("`sources` : au moins une image ou un dossier")
+    if a.get("fiche"):
+        args += ["--ecrire", a["fiche"]]
+    return _lancer_outil("palette_ref", args)
+
+
+def color_script(a):
+    return _lancer_outil("color_script", [a["dossier"], "--sortie", str(Path(a["dossier"]) / "color_script.png")])
+
+
+def _lancer_outil(nom, args, delai=120):
+    """Lance un outil en ligne de commande et renvoie sa sortie (erreur si code 2)."""
+    r = subprocess.run([sys.executable, str(Path(__file__).resolve().parent.parent / "outils" / (nom + ".py")), *args], capture_output=True,
+                       text=True, encoding="utf-8", errors="replace", timeout=delai, env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    if r.returncode:
+        raise ValueError((r.stderr or r.stdout).strip()[:300] or "échec de %s" % nom)
+    return r.stdout.strip()
+
+
+def maquette_faire(a):
+    sortie = Path(a.get("sortie") or Path(a["scene"]).resolve().parent)
+    sortie.mkdir(parents=True, exist_ok=True)
+    html = sortie / "maquette.html"
+    args = [a["scene"], "--sortie", str(html)]
+    for cle in ("fiche", "vues", "sequence"):
+        if a.get(cle):
+            args += ["--" + cle, a[cle]]
+    texte = _lancer_outil("faire_maquette", args)
+    if a.get("capturer"):
+        cap = [str(html), "--sortie", str(sortie / "captures_maquette"), "--temps", str(a.get("temps", 0))]
+        if a.get("fiche"):
+            cap += ["--fiche", a["fiche"]]
+        texte += "\n" + _lancer_outil("capturer_maquette", cap, delai=300)
+    return texte
+
+
+def da_calibrer(a):
+    act = a.get("action", "analyser")
+    args = [act]
+    if act == "noter":
+        if "dossier" not in a or "note" not in a:
+            raise ValueError("`dossier` et `note` obligatoires pour noter")
+        args += [a["dossier"], str(a["note"])]
+        for cle in ("version", "piece"):
+            if a.get(cle):
+                args += ["--" + cle, a[cle]]
+    elif act != "analyser":
+        raise ValueError("action : noter ou analyser")
+    if a.get("journal"):
+        args += ["--journal", a["journal"]]
+    return _lancer_outil("calibration", args)
+
+
+def da_ressemblance(a):
+    return _lancer_outil("ressemblance", [a["reference"], a["captures"]])
+
+
+def da_mesurer(a):
+    return mesure_da(a["dossier"], a.get("fiche"), a.get("sortie"))
+
+
 def passe(a):
     banc = charger_banc()
     if not banc.gmod_tourne():
@@ -361,6 +566,7 @@ def passe(a):
             nettoyer({})
         return ("ERREUR : planche refusée, erreur Lua dans la console pendant la passe (un script a pu ne rien dessiner) :\n"
                 + "\n".join(erreurs) + "\ncaptures (à ne pas juger) : " + captures)
+    mesure = mesure_da(captures) if a.get("da", True) else ""
     res = planche({"dossier": captures, "avant": a["avant"]} if a.get("avant") else {"dossier": captures})
     etape("planche")
     if res.startswith("ERREUR"):
@@ -371,11 +577,11 @@ def passe(a):
     if a.get("nettoyer", True):
         nettoyer({})
         etape("nettoyer")
-    return "\n".join(lignes + ([controle] if controle else []) + ["console : aucune erreur Lua", "scripts : " + (", ".join(poses) or "aucun")]
+    return "\n".join(lignes + ([controle] if controle else []) + ([mesure] if mesure else []) + ["console : aucune erreur Lua", "scripts : " + (", ".join(poses) or "aucun")]
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire, "da_calibrer": da_calibrer, "da_ressemblance": da_ressemblance}
 
 
 def repondre(i, res=None, err=None):

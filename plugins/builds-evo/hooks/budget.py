@@ -12,7 +12,7 @@ Un seul script, cinq modes (voir hooks.json) :
 CLI : python budget.py rapport [scène]  -> consommation par scène et par pièce (pour /builds-evo:conso et la rétro).
 
 Fichiers, dans `.claude/builds-evo/` cherché depuis le dossier de la session vers le haut (comme la ligne d'état) :
-  piece.json      (écrit par les fils) : scene, piece, version, cahier_valide, maquette_validee, plafond_passes (défaut 5, 0 = sans
+  piece.json      (écrit par les fils) : scene, piece, version, cahier_valide, maquette_validee, fiche_da (chemin de la fiche DA complète, ou "dispense"), plafond_passes (défaut 5, 0 = sans
                   plafond, sur ordre d'Adrien seulement), max_vues (défaut 12)
   compteurs.json  (hooks seuls) : passes_depuis_point, passes_total, critique_passe, finale_passe, focus_vols, point
   conso.json      (hooks seuls) : jetons par scène / pièce / modèle, position lue dans chaque transcript
@@ -81,6 +81,32 @@ def nb_vues(chemin, cwd):
     return len(d) if isinstance(d, list) else None
 
 
+def verifier_fiche_da(piece, dossier):
+    """Fiche DA complète avant toute passe (outils/controle_fiche.py) ; `fiche_da: "dispense"` sur la parole d'Adrien."""
+    fiche = piece.get("fiche_da")
+    if fiche == "dispense":
+        return None
+    scene = piece.get("scene") or "?"
+    if not fiche:
+        return ("Pas de fiche DA pour « %s » : /builds-evo:da (palette en hex, mots-images, 3 indices, ambiance), faire valider par Adrien, "
+                "puis \"fiche_da\": \"<chemin de la fiche>\" dans piece.json. Aucune passe du banc avant (A2 : image maîtresse jugée trop tard)." % scene)
+    f = Path(fiche)
+    if not f.is_absolute():
+        f = dossier.parent.parent / f
+    if not f.is_file():
+        return "Fiche DA introuvable pour « %s » : %s (champ fiche_da de piece.json)." % (scene, f)
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "outils"))
+    try:
+        import controle_fiche
+        erreurs, _ = controle_fiche.controler(f.read_text(encoding="utf-8"))
+    except (ImportError, OSError):
+        return None      # contrôle impossible : on ne bloque pas
+    if erreurs:
+        return ("Fiche DA incomplète pour « %s » (%d point(s)) : %s. Compléter la fiche (/builds-evo:da) avant toute passe." % (
+            scene, len(erreurs), " ; ".join(erreurs[:3])))
+    return None
+
+
 def verifier_passe(outil_entree, dossier, cwd):
     piece = lire(dossier / "piece.json")
     if not piece:
@@ -93,6 +119,9 @@ def verifier_passe(outil_entree, dossier, cwd):
         return ("Pas de maquette three.js validée pour « %s » : étape 7 du skill build-evo (décor + timeline en gris, "
                 "humain de 72 u, caméras réelles), montrée à Adrien, puis \"maquette_validee\": \"AAAA-MM-JJ\" dans "
                 "piece.json. Aucun GMod avant (Sumii, 27/11 : étape sautée par une passation)." % (piece.get("scene") or "?"))
+    refus = verifier_fiche_da(piece, dossier)
+    if refus:
+        return refus
     vues = outil_entree.get("vues")
     max_vues = entier(piece.get("max_vues"), VUES_DEFAUT)
     if vues:
@@ -372,6 +401,8 @@ def debut(ev):
             else "NON validé (/builds-evo:cahier avant toute passe)",
             "validée le %s" % piece["maquette_validee"] if piece.get("maquette_validee")
             else "NON validée (three.js, étape 7, avant tout GMod)")
+        if not piece.get("fiche_da"):
+            etat += " Fiche DA : NON déclarée (/builds-evo:da ; champ fiche_da de piece.json, sinon aucune passe)."
         morceaux.append(etat + " Règles d'économie : skill build-evo, `references/economie.md`.")
     if morceaux:
         commun.contexte("SessionStart", "\n\n".join(morceaux))
