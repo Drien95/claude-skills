@@ -16,6 +16,11 @@ import sys
 HEX = re.compile(r"#([0-9a-fA-F]{6})\b")
 
 
+def donnees(im):
+    """Pixels d'une image (getdata est annoncé comme supprimé dans Pillow 14)."""
+    return list(im.get_flattened_data()) if hasattr(im, "get_flattened_data") else donnees(im)
+
+
 def hex_rgb(h):
     h = h.lstrip("#")
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
@@ -47,7 +52,7 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
     from PIL import Image
     im = Image.open(chemin).convert("RGB")
     im.thumbnail((320, 320))
-    px = list(im.getdata())
+    px = donnees(im)
     n = len(px)
     lums = [lum(p) for p in px]
     sats = [colorsys.rgb_to_hsv(*(c / 255 for c in p))[1] for p in px]
@@ -63,7 +68,7 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
     med = sorted(cases)[len(cases) // 2]
     # test « yeux plissés » : image réduite à 16 x 9 en gris, le sommet doit se détacher de la moyenne
     petit = im.convert("L").resize((16, 9), Image.Resampling.BOX)
-    gris = list(petit.getdata())
+    gris = donnees(petit)
     moy = sum(gris) / len(gris)
     sigma = (sum((g - moy) ** 2 for g in gris) / len(gris)) ** 0.5
     plissé = (max(gris) - moy) / sigma if sigma > 1 else 0.0
@@ -73,7 +78,7 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
     cadre = (sum(bord) / len(bord)) / max(1.0, sum(centre) / len(centre))
     # densité de détail (fiches 01 et 16) : part de l'énergie de gradient dans les 10 % de cases les plus riches
     fin = im.convert("L").resize((64, 36), Image.Resampling.BOX)
-    g = list(fin.getdata())
+    g = donnees(fin)
     grad = [[abs(g[y * 64 + x] - g[y * 64 + min(x + 1, 63)]) + abs(g[y * 64 + x] - g[min(y + 1, 35) * 64 + x]) for x in range(64)] for y in range(36)]
     cell = []
     for gy in range(9):
@@ -83,7 +88,7 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
     top = sum(sorted(cell, reverse=True)[:max(1, len(cell) // 10)]) / total
     bruit = sum(cell) / (64 * 36 * 255.0)
     # figure/fond (fiche 11) : la case la plus claire contre ses voisines
-    lc = [lum(p) for p in petit.convert("RGB").getdata()]
+    lc = [lum(p) for p in donnees(petit.convert("RGB"))]
     ib = max(range(len(lc)), key=lambda i: lc[i])
     bx, by = ib % 16, ib // 16
     voisins = [lc[y * 16 + x] for y in range(max(0, by - 1), min(9, by + 2)) for x in range(max(0, bx - 1), min(16, bx + 2)) if (x, y) != (bx, by)]

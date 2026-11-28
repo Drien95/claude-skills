@@ -69,6 +69,12 @@ OUTILS = [
      "Rapport de profilage gratuit : lit un JSON de mesures (une par version : posés, ms du script, dessins, fps, lumières dynamiques, "
      "quads) et dit ce qui coûte et quoi corriger. Format : outils/rapport_perf.py.",
      {"mesures": {"type": "string", "description": "chemin du mesures.json"}}),
+    ("grille_auto",
+     "Pré-remplit la grille de contrôle (grille-controle.md) avec toutes les mesures gratuites : [x] respecté, [ ] à corriger "
+     "(avec les vues), [?] à juger par un humain. Ne note jamais. À lancer avant la critique : elle ne juge que les [?].",
+     {"dossier": {"type": "string", "description": "dossier de captures"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"},
+      "dupe": {"type": "string"}, "sequence": {"type": "string"}, "mesures": {"type": "string"},
+      "sortie": {"type": "array", "items": {"type": "number"}}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -396,6 +402,25 @@ def perf_rapport(a):
     return "\n".join(lignes + ["ATTENTION : " + t for t in alertes] or ["aucune mesure"]) if alertes or lignes else "aucune mesure"
 
 
+def grille_auto(a):
+    fiche = a.get("fiche")
+    if not fiche:
+        for d in [Path.cwd(), *Path.cwd().parents]:
+            f = d / ".claude" / "builds-evo" / "piece.json"
+            if f.is_file():
+                try:
+                    fiche = json.loads(f.read_text(encoding="utf-8")).get("fiche_da")
+                except ValueError:
+                    pass
+                break
+    if fiche and not Path(fiche).is_file():
+        fiche = None
+    try:
+        return _outil("grille_auto").grille(a.get("dossier"), fiche, a.get("dupe"), a.get("sequence"), a.get("mesures"), a.get("sortie"))
+    except ImportError:
+        raise ValueError("Pillow manque (pip install pillow)") from None
+
+
 def da_mesurer(a):
     return mesure_da(a["dossier"], a.get("fiche"), a.get("sortie"))
 
@@ -472,7 +497,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto}
 
 
 def repondre(i, res=None, err=None):

@@ -62,5 +62,33 @@ class Perf(unittest.TestCase):
         self.assertEqual(a, [])
 
 
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover
+    Image = None
+
+
+@unittest.skipIf(Image is None, "Pillow absent")
+class Grille(unittest.TestCase):
+    def test_grille_prerempie(self):
+        sys.path.insert(0, str(DECOR.parents[1]))
+        import grille_auto
+        d = Path(tempfile.mkdtemp())
+        bonne = Image.new("RGB", (160, 120), (20, 25, 30))
+        for x in range(60, 100):
+            for y in range(40, 80):
+                bonne.putpixel((x, y), (200, 50, 40))
+        bonne.save(d / "vue1.png")
+        Image.new("RGB", (160, 120), (2, 2, 2)).save(d / "vue2.png")
+        seq = d / "s.json"
+        seq.write_text(json.dumps({"sommet": 10, "evenements": [{"t": 9.5, "type": "son", "nom": "x"}]}), encoding="utf-8")
+        t = grille_auto.grille(str(d), None, None, str(seq), None, None)
+        self.assertIn("## Grille", t)
+        self.assertIn("- [x] point focal", t)
+        self.assertIn("[?] chaque usure", t)
+        self.assertIn("[ ] rythme", t)
+        self.assertIn("[?] coût du script", t)
+
+
 if __name__ == "__main__":
     unittest.main()
