@@ -10,6 +10,15 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - Règle de conception (builds-evo 0.3.2, 28/11/2026, validée par Adrien après les 3 tests du Puits des Mues) : `economie.md` règle 14 et `build-evo/SKILL.md` : outillage et fils neufs gardés ; conception sur Opus dans un fil neuf et court dédié ; maquette en boîtes pour valider l'idée (plafond ~5,5, 3 passes DA), vraie note au banc GMod ; critique calé sur les notes d'Adrien (`da_calibrer`). Texte seulement, pas de hook.
 - Maquette (builds-evo, 28/11/2026, demande d'Adrien) : lune visible et nappes de brume basse tirées de la fiche DA (« lune » dans la lumière clé, « brume basse » dans l'ambiance) ou du champ `ambiance` du scene.json ; la lumière clé vient de la lune. Effets du script : forme `sphere` et `ang` [tangage, lacet, roulis]. Tests : `AmbianceDeLaFiche`.
 
+## [builds-evo 0.3.3] - 2026-11-28
+
+### Alléger le coût de chaque appel (demande d'Adrien, mesure d'abord)
+- Mesure : socle d'un fil neuf ≈ 95 k jetons au 1er appel (≈ 49 k déjà en cache partagé, ≈ 46 k écrits), dont le plugin pèse moins de 2 k (descriptions des skills et agents) ; l'essentiel est la base de l'outil, les schémas MCP, la mémoire et les consignes du projet. Le gros du coût reste le contexte relu à chaque appel (≈ 66 %).
+- `skills/build-evo/references/index-lecture.md` : quelle fiche lire à quelle étape, par extrait au-delà de 5 Ko ; `economie.md` règles 15 à 17 (fiches à la demande, contexte stable en ajoutant à la fin, sorties courtes).
+- Hook `budget` : la première passe du banc est refusée tant que le skill `banc-gmod` n'a pas été lu (session ou agent) ; jamais de refus si le transcript est illisible. Tests : `FicheBancLue`.
+- Agent `lecteur` (Sonnet, lecture seule) : rend 15 lignes citées mot pour mot pour une question précise, au lieu de gonfler le fil d'une grosse fiche.
+- `outils/conso_fil.py` : socle, croissance par appel, indice pondéré d'un fil (0 jeton). Tests : `test_conso_fil.py`.
+
 ## [builds-evo 0.3.1] - 2026-11-28
 
 ### Corrigé (3e test « Puits des Mues », demande d'Adrien)

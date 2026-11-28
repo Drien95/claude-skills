@@ -161,11 +161,45 @@ def verifier_modele(piece, ev):
     return None
 
 
+def fiche_lue(ev, motif):
+    """True si un transcript (agent ou session) montre une lecture ou un appel de skill contenant `motif` ;
+    None si aucun transcript n'est lisible (on ne refuse jamais sur une donnée absente)."""
+    lisibles = False
+    for chemin in (ev.get("agent_transcript_path"), ev.get("transcript_path")):
+        if not chemin or not Path(chemin).is_file():
+            continue
+        lisibles = True
+        try:
+            with open(chemin, "r", encoding="utf-8", errors="replace") as f:
+                for l in f:
+                    if motif not in l or '"tool_use"' not in l:
+                        continue
+                    try:
+                        blocs = (json.loads(l).get("message") or {}).get("content") or []
+                    except ValueError:
+                        continue
+                    for b in blocs if isinstance(blocs, list) else []:
+                        if b.get("type") == "tool_use" and b.get("name") in ("Read", "Skill") and motif in json.dumps(b.get("input") or {}):
+                            return True
+        except OSError:
+            continue
+    return False if lisibles else None
+
+
+def verifier_fiche_lue(ev):
+    """Le skill banc-gmod (interdits : mode éclair, focus, un seul GMod) doit avoir été lu avant la 1re passe."""
+    if fiche_lue(ev or {}, "banc-gmod") is False:
+        return ("Lire le skill banc-gmod (Skill `builds-evo:banc-gmod` ou skills/banc-gmod/SKILL.md, 5 Ko, en entier) avant la première passe du banc : "
+                "mode éclair, focus jamais volé, un seul GMod, accord d'Adrien. Les fiches longues se lisent à la demande, celle-ci avant le banc "
+                "(references/index-lecture.md). Puis relancer la passe.")
+    return None
+
+
 def verifier_passe(outil_entree, dossier, cwd, ev=None):
     piece = lire(dossier / "piece.json")
     if not piece:
         return None
-    for refus in (verifier_depense(piece, dossier), verifier_modele(piece, ev)):
+    for refus in (verifier_depense(piece, dossier), verifier_modele(piece, ev), verifier_fiche_lue(ev)):
         if refus:
             return refus
     if not piece.get("cahier_valide"):

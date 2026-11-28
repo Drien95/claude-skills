@@ -12,7 +12,7 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 | Planches fausses | 2 planches notées avec le sable absent (erreur Lua) | console lue par `banc_passe`, planche refusée |
 | Mesures à la main | bornes des modèles mesurées pièce par pièce | `bornes_modeles.json`, générateurs à paramètres |
 
-## Les 10 règles (les hooks du plugin font respecter celles marquées ⚙)
+## Les 17 règles (les hooks du plugin font respecter celles marquées ⚙)
 1. ⚙ **Cahier des charges puis maquette three.js validés avant toute passe** (`/builds-evo:cahier`, étape 7) : `banc_passe` et `banc_tester` sont refusés tant que `piece.json` n'a pas `cahier_valide` et `maquette_validee`.
 2. ⚙ **Une session (ou un fil) par étape** : conception, build d'une pièce, script, livraison. Fin d'étape ou ligne d'état « → /relais » (contexte ≥ 60 %) : `/builds-evo:relais`, puis session neuve. Le hook relit le relais au démarrage.
 3. **Le bon modèle à chaque étape** (les agents portent leur modèle dans leur en-tête) :
@@ -39,6 +39,9 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
     2. **La conception** (pièce principale, silhouette, éléments signature) se fait sur **Opus, dans un fil NEUF, court, dédié à ça** (brief + fiche DA en entrée, fiche de pièce et `scene.json` en sortie, puis `/builds-evo:relais`). Jamais en fin d'un fil long : chaque appel y relit tout le contexte et coûte le double.
     3. **La maquette en boîtes valide l'idée, la lecture et le rythme**, pas le rendu : elle plafonne vers 5,5/10 au critique. Pas de polissage au-delà (plafond de passes DA sur maquette, 3 au plus, puis passage à Adrien) ; la vraie note (7,5) se donne au banc GMod avec les vrais modèles.
     4. **Caler le critique sur Adrien** (`da_calibrer`, ses notes sur chaque planche) plutôt que payer des critiques supplémentaires d'un juge qui ne connaît pas son goût.
+15. **Fiches à la demande** : on lit la fiche de l'étape (`index-lecture.md`), par extrait si elle dépasse 5 Ko, et on ne relit pas une fiche déjà lue. ⚙ Le hook refuse la première passe du banc tant que le skill `banc-gmod` n'a pas été lu (session ou agent). Grosse lecture pour une question étroite : agent `lecteur` (Sonnet, citations exactes, 15 lignes).
+16. **Contexte stable, on ajoute à la fin** (le cache lit 0,1 ce qui n'a pas bougé, écrit 1,25 ce qui change) : ne pas rééditer CLAUDE.md, la mémoire ni un skill en cours de fil, ne pas recoller ce qui est déjà dans le fil, un brief d'agent est écrit une fois, en entier.
+17. **Sorties courtes** : un outil rend ses alertes, pas son rapport (`maquette_passe`, `banc_passe`) ; pas de `cat` d'un fichier, `grep -n` puis `Read` avec `offset`/`limit` ; résultat d'un grep large borné (`head`). Mesurer un fil : `python outils/conso_fil.py <journal.jsonl>` (socle, croissance par appel, indice).
 
 ## Lots de script : un seul banc (Sumii, 27-28/11/2026 : un banc par lot L0 à L8, GMod passé au premier plan)
 - Coder 3 à 5 lots hors jeu (`luajit -bl`, garde_lua), écrire AVANT la **checklist de banc** (une ligne par lot : commande, ce qu'on doit voir, mesure), puis un seul passage au banc qui les teste tous ; nouveau banc seulement pour un défaut trouvé.

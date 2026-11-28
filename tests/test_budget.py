@@ -324,10 +324,14 @@ if __name__ == "__main__":
 
 
 class ModeleEtDepense(Base):
-    def transcript(self, modele):
+    def transcript(self, modele, lu_banc=True):
         f = self.racine / "t.jsonl"
-        f.write_text(json.dumps({"type": "user", "message": {}}) + "\n" +
-                     json.dumps({"type": "assistant", "message": {"model": modele, "id": "m1", "usage": {}}}) + "\n", encoding="utf-8")
+        lignes = [json.dumps({"type": "user", "message": {}})]
+        if lu_banc:
+            lignes.append(json.dumps({"type": "assistant", "message": {"model": modele, "id": "m0", "usage": {}, "content": [
+                {"type": "tool_use", "name": "Read", "input": {"file_path": "/x/skills/banc-gmod/SKILL.md"}}]}}))
+        lignes.append(json.dumps({"type": "assistant", "message": {"model": modele, "id": "m1", "usage": {}}}))
+        f.write_text("\n".join(lignes) + "\n", encoding="utf-8")
         return str(f)
 
     def pre_t(self, modele):
@@ -359,3 +363,24 @@ class ModeleEtDepense(Base):
         ctx = lancer("debut", {"cwd": str(self.sous), "model": "claude-opus-5-5"})["additionalContext"]
         self.assertIn("Dépense de la scène", ctx)
         self.assertIn("refusées hors Sonnet", ctx)
+
+
+class FicheBancLue(ModeleEtDepense):
+    def test_refus_sans_lecture_du_skill_banc(self):
+        self.piece()
+        t = self.transcript("claude-sonnet-5-5", lu_banc=False)
+        res = lancer("pre", {"tool_name": PASSE, "tool_input": {"dupe": "a.txt"}, "cwd": str(self.sous), "transcript_path": t})
+        self.assertEqual(res["permissionDecision"], "deny")
+        self.assertIn("banc-gmod", res["permissionDecisionReason"])
+
+    def test_skill_appele_compte(self):
+        self.piece()
+        t = self.racine / "t2.jsonl"
+        t.write_text(json.dumps({"type": "assistant", "message": {"model": "claude-sonnet-5-5", "id": "a", "usage": {}, "content": [
+            {"type": "tool_use", "name": "Skill", "input": {"skill": "builds-evo:banc-gmod"}}]}}) + "\n", encoding="utf-8")
+        res = lancer("pre", {"tool_name": PASSE, "tool_input": {"dupe": "a.txt"}, "cwd": str(self.sous), "transcript_path": str(t)})
+        self.assertIsNone(res)
+
+    def test_transcript_absent_ne_refuse_pas(self):
+        self.piece()
+        self.assertIsNone(self.pre(PASSE, {"dupe": "a.txt"})[0])
