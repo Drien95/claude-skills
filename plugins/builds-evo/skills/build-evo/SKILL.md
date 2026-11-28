@@ -5,16 +5,16 @@ description: Chef d'orchestre d'un build GMod pour le serveur EVO (dupe AdvDupe2
 
 # Build EVO : la checklist d'un build
 
-Une page, dans l'ordre. Le détail est dans les autres skills et `references/`, à charger quand l'étape en a besoin.
+Une page, dans l'ordre ; le détail est dans les autres skills et `references/`.
 
 ## Avant tout
 - **Étapes 0 à 15 sur la checklist** au début de chaque build ou reprise ; une étape cochée seulement si son fichier existe.
-- **Rien ne démarre sans demande explicite d'Adrien.** Une question (« quels assets ? ») n'est pas un feu vert.
-- Un build = des sessions par étape, chacune autonome jusqu'au seuil. Une pièce à la fois, jamais la scène complète en image (surprise).
-- Répondre d’abord à Adrien ; un point toutes les 5 min.
+- **Rien ne démarre sans demande explicite d'Adrien** (une question n'est pas un feu vert). Build accordé et cahier validé = **on enchaîne les étapes sans redemander** ; arrêt seulement sur un point d'Adrien, une maquette à valider ou un accord GMod.
+- Un build = des sessions par étape, autonomes jusqu'au seuil. Une pièce à la fois, jamais la scène complète en image (surprise).
+- Répondre d’abord à Adrien.
 
-## Économie (l'A2 a pris ~10 % de la semaine Max) → `references/economie.md`
-- **Cahier puis maquette validés d'abord** ; **une session par étape**, `/builds-evo:relais` entre deux ou dès « → /relais ».
+## Économie → `references/economie.md`
+- **Cahier puis maquette validés d'abord** ; **une session par étape** (`/builds-evo:relais`).
 - **Modèle fort** : concevoir, `critique-finale`. **Sonnet** : `passe-banc`, `critique-build`, `allegement`, script.
 - **5 passes au plus sans point avec Adrien** ; ses retours groupés en un message, par numéros.
 - **Gratuit avant payant** : contrôle auto et console avant toute critique, `controle_livraison.py` avant la finale ; une critique par planche ; la planche, pas les captures ; 12 vues au plus (hook `budget`).
@@ -38,7 +38,7 @@ Une page, dans l'ordre. Le détail est dans les autres skills et `references/`, 
 
 ## 3. Contrôler
 12. **Allègement** : même rendu, moins de posés ; agent `allegement` si la pièce dépasse son budget. → `pieces-props` (`16-allegement.md`)
-13. **Mesures** : contrôle auto (`outils/controle_auto.py`, aussi dans `banc_passe`), ms script, dessins/image, rien hors de la boîte.
+13. **Mesures et test de fin** : contrôle auto (`outils/controle_auto.py`, aussi dans `banc_passe`), ms script, dessins/image, rien hors de la boîte ; **wipe et visibilité MJ/joueur à 2 places dès la 1re pièce jouable** (`modeles/test-de-fin.md`).
 14. **Grille** `references/grille-controle.md` (agent `critique-build` à chaque planche), dans la scène complète : **7,5/10 minimum, forme ET effets**, avant la pièce suivante. Jamais de note sur des images pas faites. Fonction de base d'abord (un siège a une assise, un dossier, deux accoudoirs).
 15. **Planches ouvertes sur l'écran d'Adrien** (visionneuse + explorateur), pas seulement un chemin.
 
@@ -48,13 +48,13 @@ Une page, dans l'ordre. Le détail est dans les autres skills et `references/`, 
 - Quand Adrien dit « forme finale », on ne touche plus à la forme.
 - Clôture de pièce : ligne du journal complétée ; pièce validée → **bibliothèque** (`pieces-props`, `bibliotheque.md`).
 - **Chaque erreur corrigée devient une ligne dans le bon skill**, tout de suite : `/builds-evo:lecon`.
-- Fin d'étape → `/builds-evo:relais`, session neuve. Fin de build → **rétro** (`/builds-evo:retro`, jetons par `/builds-evo:conso`).
+- Fin d'étape → `/builds-evo:relais`, session neuve qui enchaîne. Fin de build → **rétro** (`/builds-evo:retro`, jetons par `/builds-evo:conso`).
 
-## Règles EVO permanentes (les hooks du plugin en bloquent une partie)
+## Règles EVO permanentes
 Rien hors de la boîte de scène, aucune coordonnée serveur en dur (boîte relative au prop repère du dupe) ; effets non-props en script ; jamais de musique dans un script (les MJ la gèrent) ; jamais de playermodel, Hollow ou Menos en décor ; touches jamais en dur (commandes + `bind` au choix dans le README) ; GMod ne vole jamais le focus ; mode éclair sans les addons d'Adrien ; nettoyer la map après les tests ; ne jamais contourner la protection d'une map vendeur.
 
 ## Où sont les fiches de recherche
-Les 21 fiches sourcées gardent leur numéro d'origine ; une fiche qui en cite une autre par son numéro la trouve ici :
+Les 21 fiches gardent leur numéro d'origine :
 
 | N° | Skill | N° | Skill | N° | Skill |
 |---|---|---|---|---|---|

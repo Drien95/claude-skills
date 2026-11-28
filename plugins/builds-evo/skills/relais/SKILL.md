@@ -14,4 +14,4 @@ Pourquoi : chaque message d'une longue session relit tout son historique ; l'A2 
 2. Mettre à jour la note OPTIMUS du chantier (bloc « Pour le prochain fil », État, Passation) si le coffre est là (`OPTIMUS_DIR`, sinon `C:\Project\optimus`) ; sinon le dire.
 3. `piece.json` à jour (version, posés, planche, note).
 4. Dire à Adrien, en 2 lignes : l'étape finie et sa note, puis « ouvre une nouvelle session (ou un nouveau fil) pour <étape suivante> : elle lira le relais ». Modèle conseillé : Sonnet pour le build et le script (`/model sonnet`), le modèle fort pour la conception et la critique finale.
-5. Ne rien commencer de l'étape suivante dans cette session.
+5. Ne rien commencer de l'étape suivante dans cette session ; la session neuve la commence sans redemander (sauf point d'Adrien, maquette ou accord GMod).

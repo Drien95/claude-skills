@@ -21,7 +21,7 @@ Règle du repo : si une erreur a coûté une version, une capture ratée ou une 
 | un prop, le dupe, le collage, le budget, un matériau | pieces-props | `references/regles-dupe-evo.md` ou `recettes-pieces.md` |
 | le Lua, un effet, la perf, la livraison serveur | effets-scene-lua | `references/pieges-lua.md` ou `recettes-effets.md` |
 | le rythme, les séquences, la caméra, le son, la fiche MJ | mise-en-scene | la fiche du domaine |
-| GMod, banc.py, l'Atelier, les captures, le focus | banc-gmod | `references/regles-banc.md` ou `procedure-banc.md` |
+| GMod, banc.py, l'Atelier, les captures, le focus | banc-gmod | `references/procedure-banc.md` |
 | la méthode, l'ordre des étapes, la note | build-evo | `SKILL.md` ou `boucle-piece.md` |
 | un gaspillage de jetons (passe inutile, session trop longue, image en trop, exigence oubliée au cahier) | build-evo | `references/economie.md` ou `modeles/cahier-des-charges.md` (contrôle gratuit possible : `outils/controle_auto.py`, `controle_livraison.py`) |
 

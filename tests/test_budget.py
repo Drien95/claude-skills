@@ -87,6 +87,53 @@ class Maquette(Base):
         self.assertIn("maquette NON validée", res["additionalContext"])
 
 
+class Focus(Base):
+    VOL = [{"type": "text", "text": "garde-focus : GMod a pris le premier plan, rendu à la fenêtre d'avant\nplanche : x"}]
+
+    def passe_avec(self, rep):
+        lancer("post", {"tool_name": PASSE, "tool_input": {}, "tool_response": rep, "cwd": str(self.sous)})
+
+    def test_vol_de_focus_bloque_la_passe_suivante(self):
+        self.piece()
+        self.passe_avec(self.VOL)
+        self.assertEqual(self.compteurs()["focus_vols"], 1)
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("premier plan 1 fois", raison)
+
+    def test_message_d_adrien_remet_a_zero(self):
+        self.piece()
+        self.passe_avec(self.VOL)
+        lancer("prompt", {"cwd": str(self.sous)})
+        self.assertEqual(self.compteurs()["focus_vols"], 0)
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+    def test_dispense(self):
+        self.piece(focus_ok="dispense")
+        self.passe_avec(self.VOL)
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+    def test_sans_vol_rien_ne_change(self):
+        self.piece()
+        self.passe_avec([{"type": "text", "text": "planche : x"}])
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+
+class ModeleDeSession(Base):
+    def test_modele_signale_au_debut(self):
+        self.piece()
+        res = lancer("debut", {"cwd": str(self.sous), "model": "claude-opus-5-5"})
+        self.assertIn("claude-opus-5-5", res["additionalContext"])
+        self.assertIn("/model sonnet", res["additionalContext"])
+        res = lancer("debut", {"cwd": str(self.sous), "model": "claude-sonnet-5-5"})
+        self.assertNotIn("⚠", res["additionalContext"])
+
+    def test_modele_absent(self):
+        self.piece()
+        res = lancer("debut", {"cwd": str(self.sous)})
+        self.assertIn("non fourni", res["additionalContext"])
+
+
 class Vues(Base):
     def test_trop_de_vues(self):
         self.piece()
