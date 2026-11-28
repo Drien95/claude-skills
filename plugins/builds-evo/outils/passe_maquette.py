@@ -49,6 +49,9 @@ def main(argv=None):
     import capturer_maquette
     import faire_maquette
     import grille_auto
+    for k in ("scene", "fiche", "vues", "sequence", "dossier"):
+        if getattr(a, k):
+            setattr(a, k, str(capturer_maquette.absolu(getattr(a, k))))
     d = Path(a.dossier)
     d.mkdir(parents=True, exist_ok=True)
     opt = sum((["--" + k, v] for k, v in (("fiche", a.fiche), ("vues", a.vues), ("sequence", a.sequence), ("titre", a.titre)) if v), [])

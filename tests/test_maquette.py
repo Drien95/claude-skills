@@ -69,3 +69,25 @@ class Maquette(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CouleurDesProps(unittest.TestCase):
+    """« color » du scene.json : [r, g, b] ou "#rrggbb" ; tout autre format refusé (un hex lu comme liste donnait du vert, 28/11/2026)."""
+
+    def test_formats(self):
+        self.assertEqual(faire_maquette.rgb("#c9c2b0"), [201, 194, 176])
+        self.assertEqual(faire_maquette.rgb([90, 95.4, 110]), [90, 95, 110])
+        self.assertIsNone(faire_maquette.rgb(None))
+        for mauvais in ("osblanc", "#c9c2", [300, 0, 0], ["a", "b", "c"]):
+            with self.assertRaises(ValueError):
+                faire_maquette.rgb(mauvais, "p")
+
+
+class CheminsSansCwd(unittest.TestCase):
+    def test_absolu_sans_getcwd(self):
+        import capturer_maquette
+        from unittest import mock
+        racine = Path(tempfile.gettempdir()).resolve()
+        with mock.patch("os.getcwd", side_effect=FileNotFoundError), mock.patch.dict(os.environ, {"PWD": str(racine)}):
+            self.assertEqual(capturer_maquette.absolu("passe/m.html"), racine / "passe" / "m.html")
+        self.assertEqual(capturer_maquette.absolu(racine / "b"), racine / "b")

@@ -19,6 +19,35 @@ sys.path.insert(0, str(ICI))
 CDN = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
 
 
+def absolu(chemin):
+    """Chemin absolu sans dépendre de os.getcwd() : sur un dossier réseau (/mnt/project-files des fils cloud), getcwd lève FileNotFoundError."""
+    c = Path(chemin)
+    if c.is_absolute():
+        return c
+    try:
+        base = Path(os.getcwd())
+    except OSError:
+        base = Path(os.environ.get("PWD") or Path.home())
+    return base / c
+
+
+def charger_playwright():
+    """Playwright Python, installé par pip s'il manque (sessions cloud : seul le Playwright Node y est préinstallé)."""
+    try:
+        from playwright.sync_api import sync_playwright
+        return sync_playwright
+    except ImportError:
+        pass
+    import subprocess
+    import tempfile
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "playwright"], capture_output=True, timeout=300, cwd=tempfile.gettempdir())
+    try:
+        from playwright.sync_api import sync_playwright
+        return sync_playwright
+    except ImportError:
+        return None
+
+
 def trouver_chrome():
     """MAQUETTE_CHROME, sinon le Chromium préinstallé des sessions cloud (/opt/pw-browsers), sinon celui de Playwright."""
     if os.environ.get("MAQUETTE_CHROME"):
@@ -54,7 +83,7 @@ def trouver_three():
     if shutil.which("npm"):
         import subprocess
         cache.mkdir(parents=True, exist_ok=True)
-        subprocess.run(["npm", "install", "--silent", "--prefix", str(cache), "three@0.128.0"], capture_output=True, timeout=180)
+        subprocess.run(["npm", "install", "--silent", "--prefix", str(cache), "three@0.128.0"], capture_output=True, timeout=180, cwd=str(cache))
         if (cache / "node_modules" / "three" / "build" / "three.min.js").exists():
             return str(cache / "node_modules" / "three")
     print("three.js injoignable (CDN bloqué, pas de npm) : définir MAQUETTE_THREE", file=sys.stderr)
@@ -75,12 +104,11 @@ def main(argv=None):
     ap.add_argument("--fiche")
     ap.add_argument("--temps", type=float, default=0.0, help="instant de la séquence (s) pour le mode rendu")
     a = ap.parse_args(argv)
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        print("Playwright manque : pip install playwright && playwright install chromium", file=sys.stderr)
+    sync_playwright = charger_playwright()
+    if sync_playwright is None:
+        print("Playwright manque et pip n'a pas pu l'installer : pip install playwright && playwright install chromium", file=sys.stderr)
         return 2
-    sortie = Path(a.sortie)
+    sortie = absolu(a.sortie)
     sortie.mkdir(parents=True, exist_ok=True)
     three = trouver_three()
     bouchees, sans_accent = [], []
@@ -94,7 +122,7 @@ def main(argv=None):
             local = {"three.min.js": Path(three) / "build" / "three.min.js", "OrbitControls.js": Path(three) / "examples" / "js" / "controls" / "OrbitControls.js"}
             page.route("**/*", lambda r: r.fulfill(path=str(local[r.request.url.rsplit("/", 1)[-1]]), content_type="text/javascript")
                        if r.request.url.rsplit("/", 1)[-1] in local else r.continue_())
-        page.goto(Path(a.maquette).resolve().as_uri())
+        page.goto(absolu(a.maquette).as_uri())
         page.wait_for_function("window.maquette && window.maquette.pret", timeout=30000)
         nb = page.evaluate("maquette.vues.length")
         sans_accent = page.evaluate("maquette.vues.filter((v) => v.sans_accent).map((v) => v.nom)")

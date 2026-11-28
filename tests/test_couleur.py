@@ -65,3 +65,28 @@ class Couleur(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipIf(Image is None, "Pillow absent")
+class ColorScriptNuit(unittest.TestCase):
+    """Scènes de nuit (Puits des Mues, 28/11/2026) : deux brumes de teintes différentes mais sombres doivent se distinguer."""
+
+    def test_brumes_sombres_de_teintes_differentes(self):
+        import color_script
+        bleu = color_script.empreinte(Image.new("RGB", (64, 36), (18, 22, 40)))
+        violet = color_script.empreinte(Image.new("RGB", (64, 36), (30, 14, 44)))
+        self.assertGreaterEqual(color_script.distance(bleu[0], violet[0]), color_script.PROCHE)
+
+    def test_deux_gris_sombres_se_ressemblent(self):
+        import color_script
+        a = color_script.empreinte(Image.new("RGB", (64, 36), (20, 21, 24)))
+        b = color_script.empreinte(Image.new("RGB", (64, 36), (21, 22, 25)))
+        self.assertLess(color_script.distance(a[0], b[0]), color_script.PROCHE)
+
+    def test_saturation_ignore_le_bruit_du_noir(self):
+        import color_script
+        im = Image.new("RGB", (64, 36), (120, 120, 120))
+        for x in range(32):
+            for y in range(36):
+                im.putpixel((x, y), (2, 0, 0))   # presque noir mais « saturé » à 100 % en HSV
+        self.assertLess(color_script.empreinte(im)[1], 0.1)
