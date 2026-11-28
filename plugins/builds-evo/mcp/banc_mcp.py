@@ -90,6 +90,11 @@ OUTILS = [
      {"scene": {"type": "string", "description": "dupe .txt ou scene.json"}, "fiche": {"type": "string"}, "vues": {"type": "string"},
       "sequence": {"type": "string"}, "sortie": {"type": "string", "description": "dossier de sortie (défaut : dossier de la scène)"},
       "capturer": {"type": "boolean"}, "temps": {"type": "number", "description": "instant de la séquence pour le mode rendu"}}),
+    ("da_calibrer",
+     "Calibre la mesure DA sur les notes d'Adrien. action=noter : enregistre les mesures d'un dossier de captures avec la note /10 qu'il a donnée "
+     "(à faire à chaque planche notée). action=analyser : dit quelles mesures corrèlent avec ses notes et quel seuil sépare >= 7,5 du reste.",
+     {"action": {"type": "string", "description": "noter ou analyser"}, "dossier": {"type": "string"}, "note": {"type": "number"},
+      "version": {"type": "string"}, "piece": {"type": "string"}, "journal": {"type": "string", "description": "défaut .claude/builds-evo/calibration.jsonl"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -475,6 +480,23 @@ def maquette_faire(a):
     return texte
 
 
+def da_calibrer(a):
+    act = a.get("action", "analyser")
+    args = [act]
+    if act == "noter":
+        if "dossier" not in a or "note" not in a:
+            raise ValueError("`dossier` et `note` obligatoires pour noter")
+        args += [a["dossier"], str(a["note"])]
+        for cle in ("version", "piece"):
+            if a.get(cle):
+                args += ["--" + cle, a[cle]]
+    elif act != "analyser":
+        raise ValueError("action : noter ou analyser")
+    if a.get("journal"):
+        args += ["--journal", a["journal"]]
+    return _lancer_outil("calibration", args)
+
+
 def da_mesurer(a):
     return mesure_da(a["dossier"], a.get("fiche"), a.get("sortie"))
 
@@ -551,7 +573,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler, "perf_rapport": perf_rapport, "grille_auto": grille_auto, "palette_extraire": palette_extraire, "color_script": color_script, "maquette_faire": maquette_faire, "da_calibrer": da_calibrer}
 
 
 def repondre(i, res=None, err=None):
