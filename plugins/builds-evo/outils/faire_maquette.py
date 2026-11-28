@@ -62,6 +62,22 @@ def rgb(c, quoi="?"):
     raise ValueError("couleur invalide pour « %s » : %r (attendu [r, g, b] de 0 à 255 ou \"#rrggbb\")" % (quoi, c))
 
 
+def ambiance(fiche=None, scene=None):
+    """Lune et brume basse : champ « ambiance » du scene.json, sinon déduites de la fiche DA (« lune » dans la lumière clé, « brume basse » dans l'ambiance)."""
+    amb = dict((scene or {}).get("ambiance") or {})
+    if fiche:
+        texte = Path(fiche).read_text(encoding="utf-8").lower()
+        cle = next((l for l in texte.splitlines() if "lumière clé" in l), "")
+        amb_l = next((l for l in texte.splitlines() if "ambiance visée" in l), "")
+        if "lune" in cle and "lune" not in amb:
+            amb["lune"] = True
+        if "brume basse" in amb_l and "brume_basse" not in amb:
+            amb["brume_basse"] = 140
+    if amb.get("lune") is True:
+        amb["lune"] = [-6000, 0, 3800]
+    return {"lune": amb.get("lune"), "brume_basse": float(amb.get("brume_basse") or 0)}
+
+
 def donnees(chemin, fiche=None, vues=None, sequence=None, brume=0.00035, titre=None):
     ents = controle_auto.lire_scene(chemin) if str(chemin).lower().endswith(".json") else controle_auto.lire_dupe(chemin)
     bornes = controle_auto.charger_bornes()
@@ -99,11 +115,18 @@ def donnees(chemin, fiche=None, vues=None, sequence=None, brume=0.00035, titre=N
             r = [x["pos"][j] - hp[j] for j in range(3)]
             script.append({"nom": x.get("nom", "?"), "forme": x.get("forme", "boite"), "pos": [sum(C3[i][k] * r[k] for k in range(3)) for i in range(3)],
                            "taille": x.get("taille", [50, 50, 50]), "couleur": x.get("couleur") or palette["accent"] or "#ffffff",
-                           "lacet": x.get("lacet", 0), "debut": x.get("debut", 0), "fin": x.get("fin", 1e9)})
+                           "lacet": x.get("lacet", 0), "ang": x.get("ang"), "debut": x.get("debut", 0), "fin": x.get("fin", 1e9)})
+    sc = json.loads(Path(chemin).read_text(encoding="utf-8")) if str(chemin).lower().endswith(".json") else {}
+    amb = ambiance(fiche, sc)
+    if amb["lune"]:
+        tete = next((e for e in sc.get("ents") or [] if e.get("note") == sc.get("head")), None)
+        hp = tete["pos"] if tete else (0, 0, 0)
+        r = [amb["lune"][j] - hp[j] for j in range(3)]
+        amb["lune"] = [sum(C3[i][k] * r[k] for k in range(3)) for i in range(3)]
     ev = [{"t": e.get("t", 0), "nom": e.get("nom", "?")} for e in seq.get("evenements") or []]
     return {"titre": titre or Path(chemin).stem, "props": props, "sol": round(min(bas), 2) if bas else 0, "humain": [-250, -120, 0], "palette": palette,
             "vues": v, "courbe": seq.get("courbe") or [], "brumes": seq.get("brumes") or [], "evenements": ev, "duree": seq.get("sommet", 10) * 1.3 if seq else 10,
-            "brume": brume, "accent_pos": [0, 0, 150], "script": script}
+            "brume": brume, "accent_pos": [0, 0, 150], "script": script, "ambiance": amb}
 
 
 def main(argv=None):

@@ -67,6 +67,22 @@ class Maquette(unittest.TestCase):
         self.assertNotIn("__DONNEES__", t)
 
 
+class AmbianceDeLaFiche(unittest.TestCase):
+    def test_lune_et_brume_basse_depuis_la_fiche(self):
+        import tempfile, os
+        d = tempfile.mkdtemp(); f = os.path.join(d, "fiche.md")
+        open(f, "w", encoding="utf-8").write("- **Lumière clé** : lune unique, blanc froid\n- **Ambiance visée** : brume basse ardoise\n")
+        a = faire_maquette.ambiance(f, {})
+        self.assertTrue(a["lune"]); self.assertGreater(a["brume_basse"], 0)
+
+    def test_ambiance_du_scene_json_prime(self):
+        a = faire_maquette.ambiance(None, {"ambiance": {"lune": [1, 2, 3], "brume_basse": 50}})
+        self.assertEqual(a, {"lune": [1, 2, 3], "brume_basse": 50.0})
+
+    def test_sans_ambiance(self):
+        self.assertEqual(faire_maquette.ambiance(None, {}), {"lune": None, "brume_basse": 0.0})
+
+
 if __name__ == "__main__":
     unittest.main()
 

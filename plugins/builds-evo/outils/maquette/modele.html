@@ -34,11 +34,22 @@ const meshes = D.props.map((p) => {
 });
 const hex = (h) => new THREE.Color(h);
 const effets = (D.script || []).map((e) => {
-  const g = e.forme === 'cylindre' ? new THREE.CylinderGeometry(e.taille[0] / 2, e.taille[1] / 2, e.taille[2], 24) : new THREE.BoxGeometry(e.taille[0], e.taille[2], e.taille[1]);
+  const g = e.forme === 'cylindre' ? new THREE.CylinderGeometry(e.taille[0] / 2, e.taille[1] / 2, e.taille[2], 24) : e.forme === 'sphere' ? new THREE.SphereGeometry(e.taille[0] / 2, 20, 14) : new THREE.BoxGeometry(e.taille[0], e.taille[2], e.taille[1]);
   const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: e.couleur, transparent: true, opacity: 0.85, fog: false }));
   if (new THREE.Color(e.couleur).getHSL({}).l < 0.15) m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({ color: 0x6a6e78, fog: false }))); // effet sombre : silhouette lisible dans la brume
-  m.position.set(e.pos[0], e.pos[1] + e.taille[2] / 2, e.pos[2]); m.rotation.y = (e.lacet || 0) * Math.PI / 180; m.userData = e; m.visible = false; scene.add(m); return m;
+  m.position.set(e.pos[0], e.pos[1] + e.taille[2] / 2, e.pos[2]); m.rotation.y = (e.lacet || 0) * Math.PI / 180;
+  if (e.ang) m.rotation.set(e.ang[2] * Math.PI / 180, e.ang[1] * Math.PI / 180, e.ang[0] * Math.PI / 180, 'YXZ'); m.userData = e; m.visible = false; scene.add(m); return m;
 });
+// Ambiance de la fiche DA : lune visible (et lumière clé qui en vient), nappes de brume basse
+const A = D.ambiance || {};
+const lune = new THREE.Mesh(new THREE.SphereGeometry(260, 24, 16), new THREE.MeshBasicMaterial({ color: 0xe8ecf2, fog: false }));
+lune.visible = false; scene.add(lune);
+if (A.lune) { lune.position.set(A.lune[0], A.lune[1], A.lune[2]); }
+const nappes = [];
+for (let k = 0; k < (A.brume_basse ? 5 : 0); k++) {
+  const n = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000), new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.13, depthWrite: false, side: THREE.DoubleSide }));
+  n.rotation.x = -Math.PI / 2; n.position.y = D.sol + A.brume_basse * (k + 0.5) / 5; n.visible = false; scene.add(n); nappes.push(n);
+}
 let mode = 'gris', t = 0, vueCourante = 0, controls = null;
 try { controls = new THREE.OrbitControls(camera, renderer.domElement); } catch (e) { controls = null; }
 function intensite(t) {
@@ -60,6 +71,10 @@ function appliquer() {
   accent.intensity = rendu && D.palette.accent ? 1.2 * Math.min(I, 2) : 0;
   if (D.palette.accent) accent.color.set(D.palette.accent);
   accent.position.copy(C(D.accent_pos));
+  lune.visible = rendu && !!A.lune;
+  if (A.lune) cle.position.copy(lune.position); // la lumière clé vient de la lune : contre-jour depuis le côté opposé
+  cle.intensity = rendu && A.lune ? 0.6 + 0.5 * Math.min(I, 2) : 0.9;
+  nappes.forEach((n) => { n.visible = rendu; n.material.color.copy(ciel).multiplyScalar(1.6); });
   effets.forEach((m) => { m.visible = rendu && t >= m.userData.debut && t <= m.userData.fin; });
   sol.material.color.set(rendu ? ciel.clone().multiplyScalar(0.7) : 0x555555);
   meshes.forEach((m) => { m.material.color.set(rendu ? (m.userData.couleur ? new THREE.Color(m.userData.couleur[0] / 255, m.userData.couleur[1] / 255, m.userData.couleur[2] / 255).lerp(ciel, 0.5) : ciel) : 0x8a8a8a); });
