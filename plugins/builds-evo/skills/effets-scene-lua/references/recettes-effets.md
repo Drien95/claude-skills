@@ -3,6 +3,7 @@
 | Effet | Technique |
 |---|---|
 | Veines / fissures (effet signature) | marche au hasard tirée vers une cible, ramifiée (fourches, brins), qui suit les joints ; couche floue au fond + cœur net ; tête de braise qui court (650 u/s) ; largeur qui décroît avec la distance |
+| Fissures du ciel (Sumii, 27/11/2026) : des rubans blancs à longs segments ont été jugés « grossiers, pas beaux » | repartir de la recette veines ci-dessus : points tous les ~1,3 degré, fourches puis brins, affinées vers la pointe ; 4 couches (halo fondu, bord sombre, braise carmin, cœur orangé) et tête de braise |
 | Fissures sur un .mdl | chaque point posé par rayon contre les triangles (`util.GetModelMeshes`, rangés par tranche de hauteur) |
 | Allumage par onde | arrivée = boum + distance au centre / 900 u/s, fondu 0,5 s, flash à l'arrivée ; rien ne s'allume avant le boum |
 | Onde de choc | 3 vagues amorties, anneaux irréguliers d'épaisseur variable, mur d'eau + crête d'écume, gerbes de gouttes, anneau d'air (sprites/heatwave), brume chassée qui revient |
