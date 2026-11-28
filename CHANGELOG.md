@@ -13,6 +13,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [sem
 - builds-evo : pieges-lua, 5 pièges de Sumii P1 v16 à v18 (texture absente en damier, cache de CreateMaterial, teinte des nuages qui dérivent, modèles client persistants, $color plafonné).
 - builds-evo : catalogue-evo, chercher un modèle absent dans les pakfiles des maps (nt/props_nature dans rp_shinonome_evo) avant de le substituer (Sumii P1, 27/11).
 
+### Leçons du script de Sumii et de son banc (27/11/2026, demande d'Adrien)
+- `pieges-lua.md` : relais après effacement, état « déjà construit » au recollage, repère confondu avec une voisine, rechargement à chaud partiel.
+- `procedure-banc.md` : GMod au premier plan pendant une série.
+- `economie.md` : relire les réponses avant de questionner ; 400 posés est la seule limite.
+
 ### Garde-fous après Sumii (27/11/2026, demande d'Adrien)
 La maquette three.js (étape 7) a été sautée sur le monde intérieur de Sumii : une passation a envoyé la session de build directement au banc.
 - Hook `budget` : `banc_passe` et `banc_tester` refusés tant que `piece.json` n'a pas `maquette_validee` (date ou `dispense` sur la parole d'Adrien) ; l'état au début de session dit si la maquette est validée. Tests : `Maquette` (4).
