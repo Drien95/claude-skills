@@ -23,7 +23,7 @@ const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 1, 6000
 const murs = new THREE.Group(); scene.add(murs);
 const hemi = new THREE.HemisphereLight(0xffffff, 0x222222, 0.7); scene.add(hemi);
 const cle = new THREE.DirectionalLight(0xffffff, 0.9); cle.position.set(-1200, 1800, 900); scene.add(cle);
-const accent = new THREE.PointLight(0xffffff, 0, 2500, 1.5); scene.add(accent);
+const accent = new THREE.PointLight(0xffffff, 0, 520, 2); // accent court : le coeur, pas toute la scene scene.add(accent);
 const sol = new THREE.Mesh(new THREE.PlaneGeometry(40000, 40000), new THREE.MeshStandardMaterial({ color: 0x555555 }));
 sol.rotation.x = -Math.PI / 2; sol.position.y = D.sol; scene.add(sol);
 const humain = new THREE.Mesh(new THREE.CylinderGeometry(16, 16, 72, 12), new THREE.MeshStandardMaterial({ color: 0xd94b3a }));
@@ -36,6 +36,7 @@ const hex = (h) => new THREE.Color(h);
 const effets = (D.script || []).map((e) => {
   const g = e.forme === 'cylindre' ? new THREE.CylinderGeometry(e.taille[0] / 2, e.taille[1] / 2, e.taille[2], 24) : new THREE.BoxGeometry(e.taille[0], e.taille[2], e.taille[1]);
   const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: e.couleur, transparent: true, opacity: 0.85, fog: false }));
+  if (new THREE.Color(e.couleur).getHSL({}).l < 0.15) m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({ color: 0x6a6e78, fog: false }))); // effet sombre : silhouette lisible dans la brume
   m.position.set(e.pos[0], e.pos[1] + e.taille[2] / 2, e.pos[2]); m.rotation.y = (e.lacet || 0) * Math.PI / 180; m.userData = e; m.visible = false; scene.add(m); return m;
 });
 let mode = 'gris', t = 0, vueCourante = 0, controls = null;
@@ -56,7 +57,7 @@ function appliquer() {
   scene.fog = rendu ? new THREE.FogExp2(ciel.clone().multiplyScalar(0.5 + 0.4 * I).getHex(), D.brume * (1.4 - 0.7 * I)) : null;
   hemi.intensity = rendu ? 0.45 + 0.35 * I : 0.7;
   cle.color.set(rendu ? (D.palette.neutres[0] || '#cccccc') : '#ffffff');
-  accent.intensity = rendu && D.palette.accent ? 2.5 * I : 0;
+  accent.intensity = rendu && D.palette.accent ? 1.2 * Math.min(I, 2) : 0;
   if (D.palette.accent) accent.color.set(D.palette.accent);
   accent.position.copy(C(D.accent_pos));
   effets.forEach((m) => { m.visible = rendu && t >= m.userData.debut && t <= m.userData.fin; });
