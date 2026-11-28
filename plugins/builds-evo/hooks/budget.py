@@ -12,7 +12,9 @@ Un seul script, cinq modes (voir hooks.json) :
 CLI : python budget.py rapport [scène]  -> consommation par scène et par pièce (pour /builds-evo:conso et la rétro).
 
 Fichiers, dans `.claude/builds-evo/` cherché depuis le dossier de la session vers le haut (comme la ligne d'état) :
-  piece.json      (écrit par les fils) : scene, piece, version, cahier_valide, maquette_validee, fiche_da (chemin de la fiche DA complète, ou "dispense"), plafond_passes (défaut 5, 0 = sans
+  piece.json      (écrit par les fils) : scene, piece, version, cahier_valide, maquette_validee, fiche_da (chemin de la fiche DA complète, ou "dispense"),
+                  plafond_depense (indice de conso de la scène, défaut 60, 0 = sans plafond, sur ordre d'Adrien seulement), modele_banc ("dispense" pour
+                  autoriser une passe hors Sonnet, sur ordre d'Adrien seulement), plafond_passes (défaut 5, 0 = sans
                   plafond, sur ordre d'Adrien seulement), max_vues (défaut 12)
   compteurs.json  (hooks seuls) : passes_depuis_point, passes_total, critique_passe, finale_passe, point
   conso.json      (hooks seuls) : jetons par scène / pièce / modèle, position lue dans chaque transcript
@@ -32,6 +34,7 @@ import commun  # noqa: E402
 DOSSIER = Path(".claude") / "builds-evo"
 GERES = ("compteurs.json", "conso.json")
 PLAFOND_DEFAUT, VUES_DEFAUT = 5, 12
+DEPENSE_DEFAUT, MODELES_BANC = 60.0, ("sonnet", "haiku")   # indice de conso par scène ; familles admises au banc
 OUTIL_PASSE = re.compile(r"(^|__)banc_(passe|tester)$")
 IMAGES = (".jpg", ".jpeg", ".png")
 RELAIS_MAX = 2500
@@ -107,10 +110,64 @@ def verifier_fiche_da(piece, dossier):
     return None
 
 
-def verifier_passe(outil_entree, dossier, cwd):
+def modele_courant(ev):
+    """Modèle du dernier message de l'assistant, lu à la fin du transcript (agent d'abord) ; None si inconnu."""
+    for chemin in (ev.get("agent_transcript_path"), ev.get("transcript_path")):
+        if not chemin or not Path(chemin).is_file():
+            continue
+        try:
+            with open(chemin, "rb") as f:
+                f.seek(0, 2)
+                f.seek(max(0, f.tell() - 400000))
+                lignes = f.read().decode("utf-8", errors="replace").splitlines()
+        except OSError:
+            continue
+        for l in reversed(lignes):
+            if '"assistant"' not in l:
+                continue
+            try:
+                m = (json.loads(l).get("message") or {}).get("model")
+            except ValueError:
+                continue
+            if m:
+                return m
+    return None
+
+
+def verifier_depense(piece, dossier):
+    plafond = piece.get("plafond_depense", DEPENSE_DEFAUT)
+    try:
+        plafond = float(plafond)
+    except (TypeError, ValueError):
+        plafond = DEPENSE_DEFAUT
+    if plafond <= 0:
+        return None
+    depense = total_scene(dossier, piece.get("scene") or "?")
+    if depense >= plafond:
+        return ("Plafond de dépense atteint pour « %s » : indice %.1f sur %.0f (`/builds-evo:conso`). Arrêter et faire le point avec Adrien en un "
+                "message : ce qui est fait, ce qui reste, combien il faudrait encore. Lui seul relève \"plafond_depense\" dans piece.json."
+                % (piece.get("scene") or "?", depense, plafond))
+    return None
+
+
+def verifier_modele(piece, ev):
+    if piece.get("modele_banc") == "dispense":
+        return None
+    m = modele_courant(ev or {})
+    if m and famille(m) not in MODELES_BANC:
+        return ("Passe du banc sur %s : les passes se font sur Sonnet (agent `passe-banc` avec un ordre écrit, ou `/model sonnet` dans la session "
+                "de build ; economie.md règles 3 et 12). Le modèle fort sert à concevoir et à la critique finale. Exception : "
+                "\"modele_banc\": \"dispense\" dans piece.json, sur la parole d'Adrien." % m)
+    return None
+
+
+def verifier_passe(outil_entree, dossier, cwd, ev=None):
     piece = lire(dossier / "piece.json")
     if not piece:
         return None
+    for refus in (verifier_depense(piece, dossier), verifier_modele(piece, ev)):
+        if refus:
+            return refus
     if not piece.get("cahier_valide"):
         return ("Pas de cahier des charges validé pour « %s » : lancer /builds-evo:cahier, faire valider la checklist par "
                 "Adrien en un message, puis écrire \"cahier_valide\": \"AAAA-MM-JJ\" dans piece.json. Aucune passe du banc "
@@ -186,10 +243,15 @@ def pre(ev):
         raison = verifier_lecture(entree.get("file_path"))
         return commun.decision("PreToolUse", "deny", raison) if raison else None
     if OUTIL_PASSE.search(outil):
-        raison = verifier_passe(entree, dossier, cwd)
+        raison = verifier_passe(entree, dossier, cwd, ev)
         return commun.decision("PreToolUse", "deny", raison) if raison else None
     if outil in ("Agent", "Task"):
         sorte = str(entree.get("subagent_type") or "")
+        piece = lire(dossier / "piece.json")
+        if piece and (piece.get("cahier_valide") or piece.get("maquette_validee")):
+            raison = verifier_depense(piece, dossier)
+            if raison:
+                return commun.decision("PreToolUse", "deny", raison)
         if sorte.endswith("critique-build") or sorte.endswith("critique-finale"):
             raison = verifier_critique("finale" if sorte.endswith("finale") else "build", dossier)
             return commun.decision("PreToolUse", "deny", raison) if raison else None
@@ -371,6 +433,15 @@ def debut(ev):
             else "NON validé (/builds-evo:cahier avant toute passe)",
             "validée le %s" % piece["maquette_validee"] if piece.get("maquette_validee")
             else "NON validée (three.js, étape 7, avant tout GMod)")
+        try:
+            plafond_d = float(piece.get("plafond_depense", DEPENSE_DEFAUT))
+        except (TypeError, ValueError):
+            plafond_d = DEPENSE_DEFAUT
+        depense = total_scene(dossier, piece.get("scene") or "?")
+        etat += " Dépense de la scène : indice %.1f%s." % (depense, " sur %.0f%s" % (plafond_d, " (ATTENTION : plus de 80 %%, prévenir Adrien)" if depense >= 0.8 * plafond_d else "") if plafond_d > 0 else " (sans plafond)")
+        m = ev.get("model") or ""
+        if m and famille(m) not in MODELES_BANC:
+            etat += " Modèle de cette session : %s ; les passes du banc seront refusées hors Sonnet (concevoir ou critique finale seulement)." % m
         if not piece.get("fiche_da"):
             etat += " Fiche DA : NON déclarée (/builds-evo:da ; champ fiche_da de piece.json, sinon aucune passe)."
         morceaux.append(etat + " Règles d'économie : skill build-evo, `references/economie.md`.")

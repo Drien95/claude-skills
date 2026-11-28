@@ -29,7 +29,7 @@ console seulement sont arrivés après coup et ont coûté une série chacun). C
 18. Où ça part : creations-evo/<dossier>, dupe dans advdupe2\<projet>\, test final par le staff sur EVO :
 
 ## D. Le budget de travail (ce qui coûte des jetons)
-19. Plafond de passes sans point avec Adrien (défaut 5) ; versions visées par pièce (≤ 10) ; planches (3 + 1 finition) :
+19. Plafond de dépense de la scène (`plafond_depense` dans piece.json, indice de /builds-evo:conso, défaut 60) ; plafond de passes sans point avec Adrien (défaut 5) ; versions visées par pièce (≤ 10) ; planches (3 + 1 finition) :
 20. Découpage en sessions : conception (modèle fort) → build (Sonnet, agent passe-banc) → script (Sonnet) → critique finale (agent critique-finale) ; un relais court entre chaque (`/builds-evo:relais`).
 21. Moments où Adrien juge lui-même (en jeu ou film de 30 s) plutôt qu'une critique de plus :
 

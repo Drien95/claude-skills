@@ -274,3 +274,41 @@ class Debut(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ModeleEtDepense(Base):
+    def transcript(self, modele):
+        f = self.racine / "t.jsonl"
+        f.write_text(json.dumps({"type": "user", "message": {}}) + "\n" +
+                     json.dumps({"type": "assistant", "message": {"model": modele, "id": "m1", "usage": {}}}) + "\n", encoding="utf-8")
+        return str(f)
+
+    def pre_t(self, modele):
+        res = lancer("pre", {"tool_name": PASSE, "tool_input": {"dupe": "a.txt"}, "cwd": str(self.sous), "transcript_path": self.transcript(modele)})
+        return res and res["permissionDecision"], res and res.get("permissionDecisionReason", "")
+
+    def test_passe_refusee_sur_opus(self):
+        self.piece()
+        choix, raison = self.pre_t("claude-opus-5-5")
+        self.assertEqual(choix, "deny")
+        self.assertIn("Sonnet", raison)
+        self.assertEqual(self.pre_t("claude-sonnet-5-5")[0], None)
+
+    def test_dispense_de_modele(self):
+        self.piece(modele_banc="dispense")
+        self.assertEqual(self.pre_t("claude-opus-5-5")[0], None)
+
+    def test_plafond_de_depense(self):
+        self.piece(plafond_depense=10)
+        (self.etat / "conso.json").write_text(json.dumps({"scenes": {"A3": {"Arche": {"opus": [0, 0, 0, 3000000]}}}}), encoding="utf-8")
+        choix, raison = self.pre(PASSE, {"dupe": "a.txt"})
+        self.assertEqual(choix, "deny")
+        self.assertIn("Plafond de dépense", raison)
+        self.piece(plafond_depense=0)
+        self.assertEqual(self.pre(PASSE, {"dupe": "a.txt"})[0], None)
+
+    def test_debut_affiche_depense_et_modele(self):
+        self.piece()
+        ctx = lancer("debut", {"cwd": str(self.sous), "model": "claude-opus-5-5"})["additionalContext"]
+        self.assertIn("Dépense de la scène", ctx)
+        self.assertIn("refusées hors Sonnet", ctx)
