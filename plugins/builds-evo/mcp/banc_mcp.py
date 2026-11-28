@@ -52,6 +52,10 @@ OUTILS = [
      "Ouvre des images ou un dossier sur l'écran d'Adrien (visionneuse + explorateur). Règle : les planches s'ouvrent sur son écran, "
      "donner un chemin ne suffit pas.",
      {"chemins": {"type": "array", "items": {"type": "string"}}}),
+    ("da_mesurer",
+     "Mesure gratuite (0 token d'image) des captures d'un dossier contre la fiche DA : luminance, saturation, contraste du point "
+     "focal, test yeux plissés, cadre sombre, palette hex et accent. Ne renvoie que les vues avec alerte. À lancer avant de lire une planche.",
+     {"dossier": {"type": "string"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -65,7 +69,7 @@ OUTILS = [
       "dupe": {"type": "string"}, "vues": {"type": "string"}, "x": V2, "y": V2, "type": {"type": "string"},
       "avant": {"type": "string", "description": "dossier de captures de la passe précédente (planche avant/après)"},
       "attente_rechargement": {"type": "integer", "description": "secondes après copie des scripts (défaut 25)"},
-      "montrer": {"type": "boolean", "description": "défaut true"}, "nettoyer": {"type": "boolean", "description": "défaut true"},
+      "montrer": {"type": "boolean", "description": "défaut true"}, "da": {"type": "boolean", "description": "défaut true : mesure DA des captures (outils/mesure_da.py, fiche_da de piece.json)"}, "nettoyer": {"type": "boolean", "description": "défaut true"},
       "controle": {"type": "boolean", "description": "défaut true : contrôle auto du dupe avant collage (outils/controle_auto.py)"}}),
 ]
 
@@ -304,6 +308,33 @@ def controle_dupe(dupe):
     return ("ERREUR : passe refusée par le contrôle auto, rien n'a été collé :\n" + texte) if erreurs else None, texte
 
 
+def mesure_da(dossier, fiche=None):
+    """Mesure DA des captures (0 token). Renvoie le texte court, ou une ligne d'explication si impossible."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "outils"))
+    import mesure_da as m
+    if not fiche:
+        for d in [Path.cwd(), *Path.cwd().parents]:
+            f = d / ".claude" / "builds-evo" / "piece.json"
+            if f.is_file():
+                try:
+                    fiche = json.loads(f.read_text(encoding="utf-8")).get("fiche_da")
+                except ValueError:
+                    pass
+                break
+    if fiche and not Path(fiche).is_file():
+        return "mesure DA : fiche introuvable (%s)" % fiche
+    try:
+        return m.mesurer_dossier(dossier, fiche)
+    except ImportError:
+        return "mesure DA : sautée (Pillow manque)"
+    except OSError as e:
+        return "mesure DA : sautée (%s)" % str(e)[:80]
+
+
+def da_mesurer(a):
+    return mesure_da(a["dossier"], a.get("fiche"))
+
+
 def passe(a):
     banc = charger_banc()
     if not banc.gmod_tourne():
@@ -361,6 +392,7 @@ def passe(a):
             nettoyer({})
         return ("ERREUR : planche refusée, erreur Lua dans la console pendant la passe (un script a pu ne rien dessiner) :\n"
                 + "\n".join(erreurs) + "\ncaptures (à ne pas juger) : " + captures)
+    mesure = mesure_da(captures) if a.get("da", True) else ""
     res = planche({"dossier": captures, "avant": a["avant"]} if a.get("avant") else {"dossier": captures})
     etape("planche")
     if res.startswith("ERREUR"):
@@ -371,11 +403,11 @@ def passe(a):
     if a.get("nettoyer", True):
         nettoyer({})
         etape("nettoyer")
-    return "\n".join(lignes + ([controle] if controle else []) + ["console : aucune erreur Lua", "scripts : " + (", ".join(poses) or "aucun")]
+    return "\n".join(lignes + ([controle] if controle else []) + ([mesure] if mesure else []) + ["console : aucune erreur Lua", "scripts : " + (", ".join(poses) or "aucun")]
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer}
 
 
 def repondre(i, res=None, err=None):

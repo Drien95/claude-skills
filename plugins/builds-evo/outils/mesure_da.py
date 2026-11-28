@@ -60,11 +60,23 @@ def mesurer(chemin, palette=(), accent=None):
             c = [lums[y * w + x] for y in range(gy * h // 6, (gy + 1) * h // 6) for x in range(gx * w // 8, (gx + 1) * w // 8)]
             cases.append(sum(c) / len(c))
     med = sorted(cases)[len(cases) // 2]
+    # test « yeux plissés » : image réduite à 16 x 9 en gris, le sommet doit se détacher de la moyenne
+    petit = im.convert("L").resize((16, 9), Image.Resampling.BOX)
+    gris = list(petit.getdata())
+    moy = sum(gris) / len(gris)
+    sigma = (sum((g - moy) ** 2 for g in gris) / len(gris)) ** 0.5
+    plissé = (max(gris) - moy) / sigma if sigma > 1 else 0.0
+    # cadre : les bords doivent être plus sombres que le centre (premier plan qui cadre)
+    bord = [gris[y * 16 + x] for y in range(9) for x in range(16) if x in (0, 1, 14, 15) or y in (0, 8)]
+    centre = [gris[y * 16 + x] for y in range(2, 7) for x in range(4, 12)]
+    cadre = (sum(bord) / len(bord)) / max(1.0, sum(centre) / len(centre))
     res = {
         "dominantes": dom,
         "luminance": round(sum(lums) / n / 255, 3),
         "saturation": round(sum(sats) / n, 3),
         "contraste_focal": round((max(cases) - med) / 255, 3),
+        "yeux_plisses": round(plissé, 2),
+        "bords_sur_centre": round(cadre, 2),
         "alertes": [],
     }
     if accent:
@@ -81,6 +93,10 @@ def mesurer(chemin, palette=(), accent=None):
         al.append("image très claire pour un monde sombre")
     if res["contraste_focal"] < 0.08:
         al.append("pas de point focal net (la zone la plus claire ressemble au reste)")
+    if res["yeux_plisses"] < 1.8 and res["luminance"] >= 0.04:
+        al.append("yeux plissés : aucun sommet net en 16 x 9, le sujet ne ressort pas en moins de 2 s")
+    if res["bords_sur_centre"] > 1.15:
+        al.append("bords plus clairs que le centre : pas de premier plan sombre qui cadre")
     if res["saturation"] > 0.55:
         al.append("saturation moyenne forte : l'accent ne sera pas seul à ressortir")
     if accent and res["part_accent"] > 0.08:
@@ -90,6 +106,28 @@ def mesurer(chemin, palette=(), accent=None):
     if palette and res["ecart_palette"] > 0.25:
         al.append("couleurs éloignées de la palette de la fiche DA")
     return res
+
+
+def mesurer_dossier(dossier, fiche=None, palette=(), accent=None):
+    """Mesure toutes les captures d'un dossier ; renvoie un texte court (une ligne par vue, alertes seulement)."""
+    from pathlib import Path
+    if fiche:
+        p2, a2 = lire_fiche(fiche)
+        palette, accent = list(palette) or p2, accent or a2
+    images = sorted(f for f in Path(dossier).iterdir()
+                    if f.suffix.lower() in (".jpg", ".jpeg", ".png") and not f.name.startswith("planche"))
+    if not images:
+        return "aucune capture dans %s" % dossier
+    lignes, nb = [], 0
+    for f in images:
+        r = mesurer(str(f), palette, accent)
+        nb += bool(r["alertes"])
+        lignes.append("%s : lum %.2f sat %.2f focal %.2f plissé %.1f%s" % (
+            f.stem, r["luminance"], r["saturation"], r["contraste_focal"], r["yeux_plisses"],
+            (" | " + " ; ".join(r["alertes"])) if r["alertes"] else ""))
+    entete = "mesure DA : %d vue(s), %d avec alerte%s" % (
+        len(images), nb, "" if (palette or accent) else " (sans palette : ni écart ni accent mesurés)")
+    return "\n".join([entete] + [l for l in lignes if "|" in l] if nb else [entete])
 
 
 def main(argv=None):

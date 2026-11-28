@@ -51,6 +51,24 @@ class MesureDA(unittest.TestCase):
         self.assertIn("part_accent", r.stdout)
         self.assertIn("ecart_palette", r.stdout)
 
+    def test_dossier_ne_garde_que_les_alertes(self):
+        self.image("a_vue1.png", (2, 2, 2))
+        self.image("b_vue2.png", (20, 25, 30), (200, 50, 40))
+        (self.d / "planche_1.jpg").write_bytes(b"pas une image")
+        r = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, %r); import mesure_da; print(mesure_da.mesurer_dossier(%r))" % (str(OUTIL.parent), str(self.d))], capture_output=True, text=True, encoding="utf-8", timeout=60)
+        self.assertIn("2 vue(s), 1 avec alerte", r.stdout)
+        self.assertIn("a_vue1", r.stdout)
+        self.assertNotIn("b_vue2", r.stdout)
+
+    def test_mcp_da_mesurer(self):
+        import json
+        self.image("v1.png", (2, 2, 2))
+        msg = {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "da_mesurer", "arguments": {"dossier": str(self.d)}}}
+        serveur = OUTIL.parents[1] / "mcp" / "banc_mcp.py"
+        r = subprocess.run([sys.executable, str(serveur)], input=(json.dumps(msg) + "\n").encode(), capture_output=True, timeout=60)
+        texte = json.loads(r.stdout.decode().splitlines()[0])["result"]["content"][0]["text"]
+        self.assertIn("1 avec alerte", texte)
+
     def test_fichier_absent(self):
         self.assertEqual(lancer(str(self.d / "rien.png")).returncode, 2)
 
