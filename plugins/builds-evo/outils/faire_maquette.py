@@ -46,6 +46,22 @@ def prop(e, bornes):
     return {"taille": [round(x, 2) for x in taille], "m": [round(x, 4) for x in flat]}, t[1] - haut
 
 
+def rgb(c, quoi="?"):
+    """Couleur d'un prop : [r, g, b] de 0 à 255, ou "#rrggbb" converti. Tout autre format est refusé : un hex lu comme liste donnait des NaN (vert) sans alerte (Puits des Mues v2, 28/11)."""
+    if c is None:
+        return None
+    if isinstance(c, str):
+        h = c.strip().lstrip("#")
+        if len(h) == 6:
+            try:
+                return [int(h[i:i + 2], 16) for i in (0, 2, 4)]
+            except ValueError:
+                pass
+    elif isinstance(c, (list, tuple)) and len(c) >= 3 and all(isinstance(x, (int, float)) and 0 <= x <= 255 for x in c[:3]):
+        return [int(round(x)) for x in c[:3]]
+    raise ValueError("couleur invalide pour « %s » : %r (attendu [r, g, b] de 0 à 255 ou \"#rrggbb\")" % (quoi, c))
+
+
 def donnees(chemin, fiche=None, vues=None, sequence=None, brume=0.00035, titre=None):
     ents = controle_auto.lire_scene(chemin) if str(chemin).lower().endswith(".json") else controle_auto.lire_dupe(chemin)
     bornes = controle_auto.charger_bornes()
@@ -53,7 +69,7 @@ def donnees(chemin, fiche=None, vues=None, sequence=None, brume=0.00035, titre=N
     scene_couleurs = {}
     if str(chemin).lower().endswith(".json"):
         for e in json.loads(Path(chemin).read_text(encoding="utf-8")).get("ents") or []:
-            scene_couleurs[(e.get("note"), str(e.get("model", "")).lower())] = e.get("color")
+            scene_couleurs[(e.get("note"), str(e.get("model", "")).lower())] = rgb(e.get("color"), e.get("note"))
     for e in ents:
         if not e["modele"]:
             continue

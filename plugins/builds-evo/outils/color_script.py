@@ -15,17 +15,27 @@ PROCHE = 0.12     # distance moyenne (0 à 1) sous laquelle deux temps forts « 
 
 
 def empreinte(im):
+    """Couleur moyenne et saturation pondérée par la valeur (le bruit des pixels presque noirs ne compte plus)."""
     p = im.copy()
     p.thumbnail((64, 64))
     px = list(p.get_flattened_data()) if hasattr(p, "get_flattened_data") else list(p.getdata())
     n = len(px)
     m = [sum(c[i] for c in px) / n / 255 for i in range(3)]
-    sat = sum(colorsys.rgb_to_hsv(*(x / 255 for x in c))[1] for c in px) / n
+    hsv = [colorsys.rgb_to_hsv(*(x / 255 for x in c)) for c in px]
+    poids = sum(v for _, _, v in hsv) or 1e-9
+    sat = sum(s * v for _, s, v in hsv) / poids
     return m, sat
 
 
 def distance(a, b):
-    return (sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5) / 3 ** 0.5
+    """Écart de deux temps forts, 0 à 1 : le plus grand de l'écart de couleur absolu, de l'écart de teinte relatif à la luminance
+    et de l'écart de clarté relatif. Une scène de nuit garde des moyennes proches de 0 : avec l'écart absolu seul, une brume
+    bleue et une brume violette passaient pour identiques (Puits des Mues, 28/11)."""
+    absolu = (sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5) / 3 ** 0.5
+    la, lb = sum(a) or 1e-9, sum(b) or 1e-9
+    teinte = sum(abs(x / la - y / lb) for x, y in zip(a, b)) / 2
+    clarte = abs(la - lb) / max(la, lb)
+    return max(absolu, teinte * 2, clarte * 0.5)
 
 
 def analyser(noms, empreintes):
