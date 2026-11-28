@@ -1,5 +1,6 @@
 """Tests du générateur de décor par grappes (outils/decor/decor.py)."""
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -37,7 +38,8 @@ class Decor(unittest.TestCase):
     def test_cli(self):
         d = Path(tempfile.mkdtemp())
         (d / "p.json").write_text(json.dumps(PAR), encoding="utf-8")
-        r = subprocess.run([sys.executable, str(DECOR), "p.json"], cwd=d, capture_output=True, text=True, encoding="utf-8", timeout=60)
+        r = subprocess.run([sys.executable, str(DECOR), "p.json"], cwd=d, capture_output=True, text=True, encoding="utf-8", timeout=60,
+                           env=dict(os.environ, PYTHONIOENCODING="utf-8"))
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertTrue((d / "decor_t_3.json").is_file() and (d / "decor_t_4.json").is_file())
 
