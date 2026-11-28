@@ -29,6 +29,11 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 9. **Briques communes d'abord** : bibliothèque de pièces (`pieces-props/references/bibliotheque.md`), générateurs à paramètres (`outils/dunes/`), `bornes_modeles.json`, gravure (`outils/gravure.py`, `gravure_lua/`), addon de l'A2 comme squelette (`creations-evo/a2-sable-du-fond` : commandes, effacement total, diag, état partagé, console). On copie et on adapte ; on ne réécrit pas.
 10. ⚙ **Mesurer** : le hook `budget` compte les jetons de chaque session par scène, pièce et modèle (`conso.json`, 0 jeton) ; `/builds-evo:conso` à la rétro, colonne « Indice » du journal de mesure.
 
+11. **Moins d'appels, pas moins de lecture** (mesuré le 28/11/2026 sur le test « Puits des Mues » : 66 % du coût = le contexte relu à chaque appel, socle ~82 k ; les images < 1 %) : regrouper les commandes (une seule pour plusieurs recherches), une passe = un appel (`maquette_passe`, `banc_passe`), lire le résumé des alertes et pas les sorties complètes.
+12. ⚙ **Passes du banc sur Sonnet** (hook : `banc_passe`/`banc_tester` refusés si la session ou l'agent tourne sur un autre modèle ; `"modele_banc": "dispense"` sur la parole d'Adrien). **Sonnet dès la 4e passe** : jusqu'à 3 passes courtes (1 ou 2 appels chacune), les faire dans la session ; au-delà, ou pour un vrai travail de build, confier les passes à un agent Sonnet (`passe-banc`) avec un ordre écrit, car il recharge ~40 k de contexte à chaque lancement.
+
+13. ⚙ **Plafond de dépense par scène** (`plafond_depense` de `piece.json`, indice de `/builds-evo:conso`, défaut 60, fixé au cahier) : passes, banc et agents refusés une fois atteint ; alerte au début de session dès 80 %. Seul Adrien le relève (Sumii, 28/11 : le plan hebdo y est passé).
+
 ## Lots de script : un seul banc (Sumii, 27-28/11/2026 : un banc par lot L0 à L8, GMod passé au premier plan)
 - Coder 3 à 5 lots hors jeu (`luajit -bl`, garde_lua), écrire AVANT la **checklist de banc** (une ligne par lot : commande, ce qu'on doit voir, mesure), puis un seul passage au banc qui les teste tous ; nouveau banc seulement pour un défaut trouvé.
 - Prévenir Adrien avant la série que GMod peut passer devant ; chaque « garde-focus » dans la sortie compte (le hook `budget` refuse la passe suivante, voir sorties de secours).
@@ -40,7 +45,7 @@ Adrien paie un forfait Max, remis à zéro le jeudi à 00 h 00. L'A2 « Le Sable
 - L'indice de `/builds-evo:conso` pondère les jetons par les prix API relatifs (Opus 5, Sonnet 3, Haiku 1 ; cache lu 0,1, écrit 1,25, sortie 5) : il compare deux builds, ce n'est pas un pourcentage du forfait.
 
 ## Sorties de secours (seulement sur la parole d'Adrien, dans le fil)
-- `"plafond_passes": 0` (pas de plafond), `"max_vues": N`, `"cahier_valide": "dispense"`, `"maquette_validee": "dispense"`, `"focus_ok": "dispense"` (passes autorisées malgré un passage de GMod au premier plan) dans `piece.json`.
+- `"plafond_passes": 0` (pas de plafond), `"plafond_depense": 0` (pas de plafond de dépense), `"modele_banc": "dispense"`, `"max_vues": N`, `"cahier_valide": "dispense"`, `"maquette_validee": "dispense"`, `"focus_ok": "dispense"` (passes autorisées malgré un passage de GMod au premier plan) dans `piece.json`.
 - `BUILDS_EVO_HOOKS_OFF=budget` coupe le hook entier (comptage compris).
 - Le compteur de passes repart à 0 à chaque message reçu dans la session : dans une session pilotée par un autre fil (Remote Control), ce fil doit relayer le point d'Adrien, pas le simuler.
 

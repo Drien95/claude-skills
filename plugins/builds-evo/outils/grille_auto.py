@@ -16,12 +16,14 @@ ICI = Path(__file__).resolve().parent
 sys.path.insert(0, str(ICI))
 
 
-def _vues(dossier, palette, accent, sortie):
+def _vues(dossier, palette, accent, sortie, sans_accent=()):
     import mesure_da
     res = {}
     for f in sorted(Path(dossier).iterdir()):
-        if f.suffix.lower() in (".jpg", ".jpeg", ".png") and not f.name.startswith("planche"):
-            res[f.stem] = mesure_da.mesurer(str(f), palette, accent, sortie)
+        if f.suffix.lower() in (".jpg", ".jpeg", ".png") and not f.name.startswith(("planche", "color_script")):
+            attendu = mesure_da.accent_attendu(f.stem, sans_accent)
+            res[f.stem] = mesure_da.mesurer(str(f), palette, accent if attendu else None, sortie)
+            res[f.stem]["accent_attendu"] = attendu
     return res
 
 
@@ -33,7 +35,7 @@ def _critere(libelle, res, ok):
     return "- [ ] %s : %d vue(s) sur %d en défaut (%s)" % (libelle, len(mauvaises), len(res), ", ".join(mauvaises[:5]))
 
 
-def grille(dossier=None, fiche=None, dupe=None, sequence=None, mesures=None, sortie=None):
+def grille(dossier=None, fiche=None, dupe=None, sequence=None, mesures=None, sortie=None, sans_accent=()):
     import mesure_da
     palette, accent = [], None
     if fiche:
@@ -41,13 +43,13 @@ def grille(dossier=None, fiche=None, dupe=None, sequence=None, mesures=None, sor
     out = ["## Grille pré-remplie (mesures gratuites ; la note et le jugement restent à la critique)"]
     out.append("### 1. Image")
     if dossier:
-        res = _vues(dossier, palette, accent, sortie)
+        res = _vues(dossier, palette, accent, sortie, sans_accent)
         if res:
             out.append(_critere("point focal en moins de 2 s (yeux plissés)", res, lambda r: r["yeux_plisses"] >= 1.8 or r["luminance"] < 0.04))
             out.append(_critere("3 plans : bords plus sombres que le centre", res, lambda r: r["bords_sur_centre"] <= 1.15))
             out.append(_critere("une couleur domine (gamut), pas de noir pur", res, lambda r: r["gamut"] >= 0.5 and r["noir_pur"] <= 0.25))
             if accent:
-                out.append(_critere("l'accent est présent et rare (moins de 8 %)", res, lambda r: 0 < r.get("part_accent", 0) <= 0.08))
+                out.append(_critere("l'accent est présent et rare (moins de 8 %)", res, lambda r: r.get("accent_attendu") is False or 0 < r.get("part_accent", 0) <= 0.08))
             if palette:
                 out.append(_critere("couleurs proches de la palette de la fiche DA", res, lambda r: r.get("ecart_palette", 0) <= 0.25))
             out.append(_critere("silhouettes lisibles (figure/fond) et détail concentré", res, lambda r: r["figure_fond"] >= 0.04 and r["detail_concentre"] >= 0.25))
@@ -104,9 +106,10 @@ def main(argv=None):
     ap.add_argument("--sequence")
     ap.add_argument("--mesures")
     ap.add_argument("--sortie", nargs=4, type=float)
+    ap.add_argument("--sans-accent", nargs="*", default=[], help="vues où l'accent est absent exprès (ex. canyon d'arrivée)")
     a = ap.parse_args(argv)
     try:
-        print(grille(a.dossier, a.fiche, a.dupe, a.sequence, a.mesures, a.sortie))
+        print(grille(a.dossier, a.fiche, a.dupe, a.sequence, a.mesures, a.sortie, a.sans_accent))
     except ImportError:
         print("Pillow manque : pip install pillow", file=sys.stderr)
         return 2

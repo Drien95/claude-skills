@@ -26,6 +26,17 @@ class Maquette(unittest.TestCase):
     def setUp(self):
         self.d = tempfile.mkdtemp()
 
+    def test_effets_du_script_relatifs_au_repere(self):
+        f = scene(self.d)
+        d = json.loads(f.read_text(encoding="utf-8"))
+        d["ents"][0]["pos"] = [100, 200, 0]
+        d["script"] = [{"nom": "colonne", "forme": "cylindre", "pos": [100, 300, 0], "taille": [80, 80, 900], "debut": 10, "fin": 20}]
+        f.write_text(json.dumps(d), encoding="utf-8")
+        e = faire_maquette.donnees(f)["script"][0]
+        self.assertEqual(e["pos"], [0, 0, -100])
+        self.assertEqual((e["debut"], e["fin"], e["forme"]), (10, 20, "cylindre"))
+        self.assertEqual(faire_maquette.donnees(scene(self.d))["script"], [])
+
     def test_donnees_et_repere(self):
         d = faire_maquette.donnees(scene(self.d))
         self.assertEqual(len(d["props"]), 5)

@@ -163,7 +163,12 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
     return res
 
 
-def mesurer_dossier(dossier, fiche=None, palette=(), accent=None, sortie=None):
+def accent_attendu(stem, sans_accent=()):
+    """Faux pour une capture en mode gris (pas de couleur) ou d'une vue où l'accent est absent exprès (`sans_accent` des vues)."""
+    return not stem.startswith("gris_") and not any(stem == n or stem.endswith("_" + n) for n in sans_accent)
+
+
+def mesurer_dossier(dossier, fiche=None, palette=(), accent=None, sortie=None, sans_accent=()):
     """Mesure toutes les captures d'un dossier ; renvoie un texte court (une ligne par vue, alertes seulement)."""
     from pathlib import Path
     if fiche:
@@ -175,7 +180,7 @@ def mesurer_dossier(dossier, fiche=None, palette=(), accent=None, sortie=None):
         return "aucune capture dans %s" % dossier
     lignes, nb = [], 0
     for f in images:
-        r = mesurer(str(f), palette, accent, sortie)
+        r = mesurer(str(f), palette, accent if accent_attendu(f.stem, sans_accent) else None, sortie)
         nb += bool(r["alertes"])
         lignes.append("%s : lum %.2f sat %.2f focal %.2f plissé %.1f%s" % (
             f.stem, r["luminance"], r["saturation"], r["contraste_focal"], r["yeux_plisses"],
