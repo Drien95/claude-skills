@@ -88,6 +88,16 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
     bx, by = ib % 16, ib // 16
     voisins = [lc[y * 16 + x] for y in range(max(0, by - 1), min(9, by + 2)) for x in range(max(0, bx - 1), min(16, bx + 2)) if (x, y) != (bx, by)]
     figure = abs(lc[ib] - sum(voisins) / len(voisins)) / 255 if voisins else 0.0
+    # fiche 10 : les noirs gardent une teinte (jamais de noir pur) ; gamut limité (une zone restreinte du cercle chromatique)
+    noir_pur = sum(1 for p in px if max(p) < 6) / n
+    teintes = [colorsys.rgb_to_hsv(*(c / 255 for c in p)) for p in px]
+    colores = [h for h, sa, v in teintes if sa > 0.25 and v > 0.15]
+    gamut = 1.0
+    if len(colores) > n * 0.05:
+        hist = [0] * 12
+        for h in colores:
+            hist[int(h * 12) % 12] += 1
+        gamut = max(hist[i] + hist[(i + 1) % 12] for i in range(12)) / len(colores)   # part dans 2 secteurs voisins de 30 degrés
     res = {
         "dominantes": dom,
         "luminance": round(sum(lums) / n / 255, 3),
@@ -97,6 +107,8 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
         "detail_concentre": round(top, 2),
         "bruit": round(bruit, 3),
         "figure_fond": round(figure, 3),
+        "noir_pur": round(noir_pur, 3),
+        "gamut": round(gamut, 2),
         "bords_sur_centre": round(cadre, 2),
         "alertes": [],
     }
@@ -128,6 +140,10 @@ def mesurer(chemin, palette=(), accent=None, sortie=None):
         res["sortie_lum"] = round(sum(zone) / len(zone) / 255, 3)
         if sum(zone) / len(zone) < 0.6 * max(lc):
             al.append("chemin non éclairé : la sortie est bien moins claire que la zone la plus claire de la vue")
+    if res["noir_pur"] > 0.25:
+        al.append("%d %% de noir pur : remonter les noirs vers ~95 %% pour qu'ils gardent une teinte (fiche 10)" % round(100 * res["noir_pur"]))
+    if res["gamut"] < 0.5:
+        al.append("couleurs dispersées sur le cercle chromatique (%d %% dans une zone de 60 degrés) : une teinte domine, le reste en accents" % round(100 * res["gamut"]))
     if res["bords_sur_centre"] > 1.15:
         al.append("bords plus clairs que le centre : pas de premier plan sombre qui cadre")
     if res["saturation"] > 0.55:

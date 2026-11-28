@@ -71,6 +71,15 @@ class ControleAuto(unittest.TestCase):
         _, attentions, _ = self.ctrl(scene(self.d, torts))
         self.assertFalse(any("parfaitement droits" in a for a in attentions), attentions)
 
+    def test_modeles_refuses(self):
+        ents = [prop("a", (0, 0, 23.7)), prop("b", (60, 0, 23.7), modele="models/propper/hueco_mundo_v1/s_40.mdl"),
+                prop("c", (120, 0, 23.7), modele="models/propper/hueco_mundo_v1/s_400.mdl")]
+        _, attentions, _ = self.ctrl(scene(self.d, ents))
+        refus = [a for a in attentions if "refusé" in a]
+        self.assertEqual(len(refus), 1, attentions)
+        self.assertIn("s_40.mdl", refus[0])
+        self.assertNotIn("s_400", refus[0])
+
     def test_budget_boite_et_liste(self):
         ents = [prop("tete", (0, 0, 23.7))] + [prop("p%d" % i, (60 * i, 0, 23.7)) for i in range(1, 6)]
         ents.append(prop("intrus", (0, 60, 23.7), modele="models/props_c17/oildrum001.mdl"))

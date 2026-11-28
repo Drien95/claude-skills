@@ -90,6 +90,20 @@ class MesureDA(unittest.TestCase):
         r = lancer(c, "--sortie", "0.4", "0.3", "0.6", "0.7")      # sortie sur la tache claire
         self.assertNotIn("chemin non éclairé", r.stdout)
 
+    def test_noir_pur_et_gamut(self):
+        im = Image.new("RGB", (160, 120), (0, 0, 0))
+        for x in range(160):                       # bandes de toutes les teintes sur la moitié basse
+            for y in range(60, 120):
+                h = x / 160
+                import colorsys
+                r, g, b = colorsys.hsv_to_rgb(h, 0.9, 0.9)
+                im.putpixel((x, y), (int(r * 255), int(g * 255), int(b * 255)))
+        chemin = self.d / "arc.png"
+        im.save(chemin)
+        r = lancer(str(chemin))
+        self.assertIn("noir pur", r.stdout)
+        self.assertIn("cercle chromatique", r.stdout)
+
     def test_fichier_absent(self):
         self.assertEqual(lancer(str(self.d / "rien.png")).returncode, 2)
 
