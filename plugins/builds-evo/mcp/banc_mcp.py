@@ -56,6 +56,14 @@ OUTILS = [
      "Mesure gratuite (0 token d'image) des captures d'un dossier contre la fiche DA : luminance, saturation, contraste du point "
      "focal, test yeux plissés, cadre sombre, palette hex et accent. Ne renvoie que les vues avec alerte. À lancer avant de lire une planche.",
      {"dossier": {"type": "string"}, "fiche": {"type": "string", "description": "fiche DA (.md) ; défaut : fiche_da de piece.json"}}),
+    ("da_fiche",
+     "Contrôle gratuit d'une fiche DA (modèle build-evo/modeles/fiche-da.md) : champs remplis, palette en hex, 3 mots-images, 3 indices. "
+     "À lancer avant la maquette ; erreurs = fiche à compléter.",
+     {"fiche": {"type": "string", "description": "chemin de la fiche DA (.md) ; défaut : fiche_da de piece.json"}}),
+    ("sequence_controler",
+     "Contrôle gratuit d'une séquence (JSON de la maquette) : un seul effet primaire à la fois, anticipation avant le pic, silence "
+     "avant le sommet, une nouveauté par palier, crescendo, sons ponctuels espacés de 8 à 30 s. Format : outils/controle_sequence.py.",
+     {"sequence": {"type": "string", "description": "chemin du sequence.json"}}),
     ("banc_passe",
      "Une passe entière en un appel : générer (facultatif) -> contrôler et installer les scripts client -> attendre "
      "le rechargement à chaud -> coller + vues -> lire la console (planche refusée s'il y a une erreur Lua) -> planche "
@@ -331,6 +339,46 @@ def mesure_da(dossier, fiche=None):
         return "mesure DA : sautée (%s)" % str(e)[:80]
 
 
+def _outil(nom):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "outils"))
+    return __import__(nom)
+
+
+def _rapport(erreurs, attentions, ok):
+    lignes = ["ERREUR : " + e for e in erreurs] if erreurs else []
+    return "\n".join(lignes + ["ATTENTION : " + t for t in attentions]) or ok
+
+
+def da_fiche(a):
+    fiche = a.get("fiche")
+    if not fiche:
+        for d in [Path.cwd(), *Path.cwd().parents]:
+            f = d / ".claude" / "builds-evo" / "piece.json"
+            if f.is_file():
+                try:
+                    fiche = json.loads(f.read_text(encoding="utf-8")).get("fiche_da")
+                except ValueError:
+                    pass
+                break
+    if not fiche or not Path(fiche).is_file():
+        raise ValueError("fiche DA introuvable (donner `fiche` ou le champ fiche_da de piece.json)")
+    erreurs, att = _outil("controle_fiche").controler(Path(fiche).read_text(encoding="utf-8"))
+    # une fiche à compléter n'est pas une erreur du serveur : le texte commence par « fiche incomplète »
+    return _rapport(erreurs, att, "fiche DA complète") if not erreurs else "fiche incomplète :\n" + _rapport(erreurs, att, "")
+
+
+def sequence_controler(a):
+    chemin = Path(a["sequence"])
+    if not chemin.is_file():
+        raise ValueError("séquence introuvable : %s" % chemin)
+    try:
+        seq = json.loads(chemin.read_text(encoding="utf-8"))
+    except ValueError as e:
+        raise ValueError("séquence illisible : %s" % e) from None
+    erreurs, att = _outil("controle_sequence").controler(seq)
+    return _rapport(erreurs, att, "séquence conforme aux règles de rythme") if not erreurs else "séquence à corriger :\n" + _rapport(erreurs, att, "")
+
+
 def da_mesurer(a):
     return mesure_da(a["dossier"], a.get("fiche"))
 
@@ -407,7 +455,7 @@ def passe(a):
                      + ["planche : " + i for i in images] + ["temps : " + ", ".join(temps)])
 
 
-ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer}
+ACTIONS = {"banc_passe": passe, "banc_etat": etat, "banc_tester": tester, "banc_nettoyer": nettoyer, "banc_planche": planche, "banc_montrer": montrer, "da_mesurer": da_mesurer, "da_fiche": da_fiche, "sequence_controler": sequence_controler}
 
 
 def repondre(i, res=None, err=None):

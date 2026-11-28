@@ -11,6 +11,8 @@
 | `controle_auto.py` | Contrôle gratuit d'un dupe ou d'un `scene.json` avant le banc et la critique : `python controle_auto.py <dupe.txt|scene.json> [--budget N] [--boite DX DY DZ]`. Erreurs (code 1) : 400 posés ou budget, classes bloquées, playermodels, modèles hors `modeles_autorises.txt`, doublons au même endroit, hors boîte. Attentions : clé Frozen, props qui flottent (d'après `bornes_modeles.json`). `banc_passe` le lance tout seul. |
 | `controle_livraison.py` | Contrôle gratuit d'un addon avant la PR : `python controle_livraison.py <dossier> [--sans-gravure]` : `<nom>_tout_effacer`, aucune notification à l'écran, touches / coordonnées / musique (règles de `garde_lua`), gravure, `COMMANDES.md` et README qui listent toutes les commandes, diag, bind. |
 | `mesure_da.py` | Mesure gratuite d'une capture contre la fiche DA : `python mesure_da.py capture.jpg --fiche fiche-da.md`. Donne les couleurs dominantes, luminance, saturation, contraste du point focal, part d'accent, écart à la palette en hex, et des alertes. Avant la critique payante. Nécessite Pillow. |
+| `controle_fiche.py` | Contrôle gratuit d'une fiche DA : `python controle_fiche.py fiche-da.md`. Champs remplis, palette en hex (3 couleurs), 3 mots-images, 3 indices. Code 1 si incomplète. |
+| `controle_sequence.py` | Contrôle gratuit d'une séquence (JSON de la maquette) : `python controle_sequence.py sequence.json`. Un seul effet primaire à la fois, anticipation, silence avant le sommet, une nouveauté par palier, crescendo, ponctuels de 8 à 30 s. Format dans l'en-tête du script. |
 
 ## Variables d'environnement
 | Variable | Défaut | Sert à |

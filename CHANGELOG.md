@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- Contrôles gratuits supplémentaires (28/11/2026) : `outils/controle_fiche.py` (fiche DA complète avant la maquette) et `outils/controle_sequence.py` (règles de rythme des fiches 06, 08 et 14 sur la timeline), exposés par le MCP en `da_fiche` et `sequence_controler`. Tests : `test_controles_da.py`.
 - Mesure DA branchée sur le MCP (28/11/2026, demande d'Adrien : tout contrôler par outil, sans lire d'image) : outil `da_mesurer`, et `banc_passe` mesure ses captures contre `fiche_da` de `piece.json` (une ligne, vues avec alerte seulement) ; `mesure_da.py` ajoute le test yeux plissés (16 x 9) et le cadre sombre. Tests : 2 de plus.
 - DA outillée (28/11/2026) : `outils/mesure_da.py` (mesure d'une capture contre la fiche DA, tests `test_mesure_da.py`), fiche `effets-scene-lua/references/ambiance-gmod.md` (brume, étalonnage, bloom côté client, à confirmer au banc), champs « palette en hex » et « ambiance visée » dans `fiche-da.md`.
 - Goûts d'Adrien (composition-scene) : arbres en aplat vert, lisière en sucettes, démarcation au sol refusés ; herbe et fleurs en script aimées (Sumii P1, 27/11/2026).
