@@ -21,7 +21,7 @@ Une page, dans l'ordre. Le détail est dans les autres skills et `references/`, 
 
 ## 1. Écrire et maquetter avant de construire (Adrien valide, rien n'est posé ni lancé avant)
 0. **Cahier des charges** (`/builds-evo:cahier`) : scène, jeu, livraison, budget de travail ; validé en un message.
-1. **Fiche DA** d'une page (`modeles/fiche-da.md`). → skill `composition-scene`
+1. **Fiche DA** d'une page (`modeles/fiche-da.md`), (`/builds-evo:da`). → `composition-scene`
 2. **Points de vue** : arrivée des joueurs + 2 ou 3 vues de jugement. → `composition-scene`, `mise-en-scene`
 3. **Budget** : posés par élément sur 400 (props + particules + lumières du catalogue ; script hors quota). → `pieces-props`
 4. **Fiche de pièce** pour chaque élément héros (`modeles/fiche-piece.md`) : rôle, budget, 3 vues, critères « fini quand ».

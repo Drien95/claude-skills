@@ -3,6 +3,7 @@
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [semver](https://semver.org/lang/fr/) par plugin.
 
 ## Non publié
+- DA en mode automatique (28/11/2026, demande d'Adrien) : skill `/builds-evo:da` (fiche, palette, maquette capturée, grille pré-remplie, calibration) ; le hook `budget` refuse `banc_passe` et `banc_tester` tant que `fiche_da` de `piece.json` ne pointe pas une fiche complète (`outils/controle_fiche.py`) ou vaut `dispense` ; l'état de début de session signale la fiche manquante. Tests : classe `FicheDA`. À noter : les builds en cours sans `fiche_da` seront refusés jusqu'à ce champ ou `dispense`.
 - `outils/ressemblance.py` (MCP `da_ressemblance`) : compare des captures à l'image maîtresse de la fiche DA (couleurs, clair-obscur, tonalité) pour repérer une scène qui s'éloigne de l'ambiance visée. Tests ajoutés.
 - Calibration (28/11/2026) : `outils/calibration.py` (MCP `da_calibrer`) enregistre les mesures de chaque planche avec la note d'Adrien et dit, après 6 planches, quelles mesures suivent ses goûts et quel seuil sépare 7,5 du reste ; les seuils de `mesure_da.py` viennent des fiches et ne sont réglés qu'à sa demande. Tests : `test_calibration.py`.
 - Maquette three.js générée (28/11/2026) : `outils/faire_maquette.py` (+ `maquette/modele.html`) construit la maquette d'une pièce depuis le dupe, `outils/capturer_maquette.py` exporte des PNG par vue et par mode puis les mesure ; MCP `maquette_faire`. Testé de bout en bout en navigateur headless le 28/11 ; la capture n'est pas dans les tests de CI. Pas de bloom.
